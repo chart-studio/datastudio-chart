@@ -1,0 +1,24 @@
+{
+  "name": "My Visualizations",
+  "organization": "Lokalistic",
+  "description": "Data Design",
+  "logoUrl": "https://logo",
+  "organizationUrl": "https://url",
+  "supportUrl": "https://url",
+  "privacyPolicyUrl": "https://url",
+  "termsOfServiceUrl": "https://url",
+  "packageUrl": "https://url",
+  "devMode": "DEVMODE_BOOL",
+  "components": [
+    {
+      "name": "Lokalistic-TimeBrush",
+      "description": "Time Brush",
+      "iconUrl": "https://url",
+      "resource": {
+        "js": "gs://hamis_test/viz-test/index.js",
+        "config": "gs://hamis_test/viz-test/index.json",
+        "css": "gs://hamis_test/viz-test/index.css"
+      }
+    }
+  ]
+}

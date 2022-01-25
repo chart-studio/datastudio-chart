@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "id": "TimeBrush",
+      "label": "Time brush",
+      "elements": [
+        {
+          "id": "date",
+          "label": "Date format (aaaammdd)",
+          "type": "DIMENSION",
+          "options": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        {
+          "id": "effectif",
+          "label": "effectif (number)",
+          "type": "METRIC",
+          "options": {
+            "min": 1,
+            "max": 1
+          }
+        }
+      ]
+    }
+  ],
+  "style": [
+    {
+      "id": "color",
+      "label": "Bars colors",
+      "elements": [
+        {
+          "type": "FONT_COLOR",
+          "id": "colorBar",
+          "label": "color bars",
+          "defaultValue": { "color": "#4682B4" }
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorText",
+          "label": "color labels",
+          "defaultValue": { "color": "#808080" }
+        }
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "id": "filterZone",
+      "supportedActions": ["FILTER"]
+    }
+  ]
+}
