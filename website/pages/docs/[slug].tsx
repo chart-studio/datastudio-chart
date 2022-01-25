@@ -12,12 +12,14 @@ import "highlight.js/styles/atom-one-dark.css"
 import styled from "styled-components"
 import GraphsComponent from "../../components/GraphsComponents"
 import { useRouter } from "next/router"
-import Script from "next/script"
 const GridDocs = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.5fr 1fr;
   @media (max-width: 48rem) {
     grid-template-columns: 1fr;
+    h2 {
+      text-align: center;
+    }
   }
   @media (max-width: 70rem) {
   }
@@ -26,11 +28,28 @@ const GridDocs = styled.div`
     color: var(--text2);
     border-radius: 0.5rem;
   }
+  h1,
+  h2 {
+    margin: 1rem 0;
+  }
+  h3,
+  h4 {
+    margin: 0.8rem 0;
+  }
+  h5,
+  h6 {
+    margin: 0.6rem 0;
+  }
+  p {
+    margin-bottom: 0.5rem;
+  }
 `
 const GraphContent = styled.div`
   height: calc(100vh - 4rem);
   @media (max-width: 48rem) {
     height: auto;
+    position: initial;
+    //margin-bottom: 1rem;
   }
   @media (max-width: 70rem) {
   }
@@ -39,14 +58,48 @@ const GraphContent = styled.div`
   position: sticky;
   top: 4rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 `
 const DocContent = styled.div`
   margin: 1rem;
 `
+const DataContent = styled.div`
+  margin: 1rem 2rem 1rem 1rem;
+  @media (max-width: 48rem) {
+    margin: 1rem;
+  }
+  .tg {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+  }
+  .tg td {
+    border-color: var(--surface4);
+    border-style: solid;
+    border-width: 1px;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+  }
+  .tg th {
+    border-color: var(--surface4);
+    background-color: var(--surface3);
+    border-style: solid;
+    border-width: 1px;
+    font-weight: normal;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+  }
+  .tg .tg-0lax {
+    text-align: left;
+    vertical-align: top;
+  }
+`
+
 const test = ({ doc, locale }: { doc: MDXDoc; locale: locale }) => {
   const router = useRouter()
-
+  console.log(doc.meta.chartInfo.data, Object.keys(doc.meta.chartInfo.data[0]))
   return (
     <>
       <Head>
@@ -59,13 +112,41 @@ const test = ({ doc, locale }: { doc: MDXDoc; locale: locale }) => {
       </Head>
       <GridDocs>
         <GraphContent>
+          <h2>{doc.meta.title}</h2>
           <GraphsComponent val={doc.meta.chartInfo.chartComponent} />
         </GraphContent>
 
         <DocContent>
-          <h1>{doc.meta.title}</h1>
-          <MDXRemote {...doc.source} />
+          <MDXRemote {...doc.source} components={{}} />
         </DocContent>
+        <DataContent>
+          <h4>Data</h4>
+          <h6>Inputs</h6>
+          <table className="tg">
+            <thead>
+              <tr>
+                {Object.keys(doc.meta.chartInfo.data[0]).map(label => (
+                  <th className="tg-0lax">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {doc.meta.chartInfo.data.map((row: any) => {
+                return (
+                  <tr>
+                    {Object.keys(row).map((val: string) => (
+                      <td
+                        style={{ width: `${100 / Object.keys(row).length}%` }}
+                      >
+                        {row[val][0]}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </DataContent>
       </GridDocs>
     </>
   )

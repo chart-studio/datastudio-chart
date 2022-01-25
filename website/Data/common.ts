@@ -59,5 +59,22 @@ export const charts = [
     link_page: "/",
     vizTool: "Data Studio",
     chartComponent: "FunnelChart1",
+    source: {
+      credits: [],
+    },
+    data: [
+      {
+        labels: ["Impressions"],
+        effectif: [12000],
+      },
+      {
+        labels: ["Add To Cart"],
+        effectif: [5700],
+      },
+      {
+        labels: ["Buy"],
+        effectif: [360],
+      },
+    ],
   },
 ]
