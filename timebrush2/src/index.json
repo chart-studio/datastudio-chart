@@ -14,16 +14,6 @@
           }
         },
         {
-          "id": "detail_titre",
-          "label": "Detail title (string)",
-          "type": "DIMENSION"
-        },
-        {
-          "id": "detail_text",
-          "label": "Detail text (string)",
-          "type": "DIMENSION"
-        },
-        {
           "id": "effectif",
           "label": "effectif (number)",
           "type": "METRIC",
@@ -36,6 +26,18 @@
     }
   ],
   "style": [
+    {
+      "id": "text",
+      "label": "Text font",
+      "elements": [
+        {
+          "type": "FONT_FAMILY",
+          "id": "fontFamily",
+          "label": "Font Family",
+          "defaultValue": "Open Sans"
+        }
+      ]
+    },
     {
       "id": "color",
       "label": "Bars colors",
@@ -51,6 +53,48 @@
           "id": "colorText",
           "label": "color labels",
           "defaultValue": { "color": "#808080" }
+        }
+      ]
+    },
+    {
+      "id": "infos",
+      "label": "Informations",
+      "elements": [
+        {
+          "type": "TEXTINPUT",
+          "id": "TitleText",
+          "label": "Title Text",
+          "defaultValue": "Add a title"
+        },
+        {
+          "type": "TEXTAREA",
+          "id": "DescText",
+          "label": "Description Text",
+          "defaultValue": "Add a description"
+        }
+      ]
+    },
+    {
+      "id": "colorButton",
+      "label": "Info Slide",
+      "elements": [
+        {
+          "type": "FONT_COLOR",
+          "id": "colorValueBack",
+          "label": "Background cross color",
+          "defaultValue": { "color": "#999999" }
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorValueCross",
+          "label": "Cross colors",
+          "defaultValue": { "color": "#fff" }
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorValueInfoBack",
+          "label": "Background color",
+          "defaultValue": { "color": "#fff" }
         }
       ]
     }

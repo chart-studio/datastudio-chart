@@ -10,6 +10,13 @@ import { getAuth } from "firebase/auth"
 import { firebaseApp } from "../firebaseAuth"
 import { getAllDocs } from "../lib/mdx"
 import { InterDocs, locale } from "../@types/interface"
+import { useAuth } from "../hooks/useAuth"
+import { GetServerSideProps } from "next"
+import Stripe from "stripe"
+import ModalContainer from "../components/elements/ModalContainer"
+import { useClickAway } from "../hooks/useClickAway"
+import { useEffect, useState } from "react"
+import Modals from "../components/Modals"
 
 const auth = getAuth(firebaseApp)
 const Grid = styled.div`
@@ -24,13 +31,27 @@ const Grid = styled.div`
 `
 
 const HomePage = ({ docs, locale }: { docs: InterDocs[]; locale: locale }) => {
-  console.log(docs)
-  const [user, loading, error] = useAuthState(auth)
+  const { open, setOpen, refControler, refObject } = useClickAway(false)
+  const [selectedModal, setSelectedModal] = useState("")
+  const [selectedGraph, setSelectedGraph] = useState("")
+  const [selectedDoc, setSelectedDoc] = useState("")
+  const [selectedGrapPrice, setSelectedGrapPrice] = useState("")
+  const [connected, setConnected] = useState(false)
+
+  const { user } = useAuth()
+  console.log(docs, "test", user)
   const t = locale === "fr" ? fr : en
+  useEffect(() => {
+    if (user) {
+      setConnected(true)
+    } else {
+      setConnected(false)
+    }
+  }, [user])
   return (
     <>
       <Section1 t={t} />
-      <RecapAccount t={t} connected={user ? true : false} />
+      <RecapAccount t={t} connected={user ? true : false} user={user} />
       <Container>
         <Grid>
           {docs.map((val, i) => (
@@ -43,9 +64,35 @@ const HomePage = ({ docs, locale }: { docs: InterDocs[]; locale: locale }) => {
               addDate={val.meta.chartInfo.addedAt}
               key={val.meta.chartInfo.id}
               t={t}
+              stripePrice={val.meta.chartInfo.stripeInfo.priceId}
+              cloudName={val.meta.chartInfo.cloudName}
+              id={user ? user.uid : ""}
+              setOpenModal={setOpen}
+              connected={connected}
+              setSelectedModal={setSelectedModal}
+              setSelectedGraph={setSelectedGraph}
+              setSelectedDoc={setSelectedDoc}
+              setSelectedGrapPrice={setSelectedGrapPrice}
+              user={user}
             />
           ))}
         </Grid>
+        <ModalContainer
+          isOpen={open}
+          closeFunc={() => setOpen(false)}
+          refObject={refObject}
+          refControler={refControler}
+          isBlur
+          opacityBackground={0.2}
+        >
+          <Modals
+            selectedModal={selectedModal}
+            selectedGraph={selectedGraph}
+            setOpenModal={setOpen}
+            selectedDoc={selectedDoc}
+            selectedGrapPrice={selectedGrapPrice}
+          />
+        </ModalContainer>
       </Container>
     </>
   )
@@ -59,3 +106,9 @@ export async function getStaticProps({ locale }: { locale: locale }) {
     props: { docs, locale },
   }
 }
+
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+//     apiVersion: "2020-08-27",
+//   })
+// }

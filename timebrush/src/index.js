@@ -1,10 +1,9 @@
 const dscc = require("@google/dscc");
-const viz = require("@google/dscc-scripts/viz/initialViz.js");
 const local = require("./localMessage.js");
 import * as d3 from "d3v4";
 // change this to 'true' for local development
 // change this to 'false' before deploying
-export const LOCAL = true;
+export const LOCAL = false;
 
 // write viz code here
 const drawViz = (vizData) => {
@@ -20,23 +19,32 @@ const drawViz = (vizData) => {
       : message.style[styleId].defaultValue;
   };
 
+  let fontFamily = styleVal(vizData, "fontFamily") || "Open Sans";
+  let color = styleVal(vizData, "colorText") || "#808080"; //#00838F
+  let colorBar = styleVal(vizData, "colorBar") || "#4682b4"; //#E64A19
+  let colorSubBar = styleVal(vizData, "colorSubBar") || "#808080"; //#E64A19
+
+  let TitleText = styleVal(vizData, "TitleText") || "Add a title in style";
+  let DescText = styleVal(vizData, "DescText") || "Add a description in style";
+  let colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
+  let colorValueCross = styleVal(vizData, "colorValueCross") || "#fff";
+  let colorValueInfoBack = styleVal(vizData, "colorValueInfoBack") || "#fff";
+
   const dateFormat = "%Y%m%d";
   let positionAnchor = 10;
   let positionText = 5;
 
-  let color = styleVal(vizData, "colorText") || "gray"; //#00838F
-  let colorBar = styleVal(vizData, "colorBar") || "steelblue"; //#E64A19
-
   var styles = `
   body{
     overflow-y: hidden;
+    font-family: ${fontFamily}, sans-serif;
   }
     .bar {
       fill: ${colorBar};
       clip-path: url(#clip);
     }
     .subBar { 
-      fill: ${color};
+      fill: ${colorSubBar};
       opacity: 0.5;
     }
     svg {
@@ -58,13 +66,15 @@ const drawViz = (vizData) => {
       width: 2rem;
       border-radius: 50%;
       height:2rem;
-      background-color: 	hsla(210, 9%, 91%,0.6);
+      background-color: ${colorValueBack};
+      color:${color},
       backdrop-filter: blur(4px);
       z-index: 1;
       cursor: pointer;
     }
 
     #infoContent {
+      font-family: ${fontFamily};
       position: fixed;
       top: 0;
       right:0;
@@ -88,7 +98,7 @@ const drawViz = (vizData) => {
     #contentInside {
       height:100%;
       width:100%;
-      background: slategrey;
+      background: ${colorValueInfoBack};
       opacity:0.5;
       padding: 2em;
     }
@@ -108,7 +118,7 @@ const drawViz = (vizData) => {
   .vertical {
     width: 50%;
     height: 2px;
-    background-color: slategrey;
+    background-color: ${colorValueCross};
   }
   .vertical {
     position: relative;
@@ -118,6 +128,7 @@ const drawViz = (vizData) => {
 
   svg text {
     font-size: 12px;
+    font-family: ${fontFamily}, sans-serif;
   }
   `;
   window.onresize = function () {
@@ -209,7 +220,7 @@ const drawViz = (vizData) => {
     ])
     .on("start brush end", brushed);
 
-  d3.select("body").selectAll("svg").remove();
+  //d3.select("body").selectAll("svg").remove();
 
   var svg = d3
     .select("body")
@@ -349,6 +360,7 @@ const drawViz = (vizData) => {
 
   function brushed() {
     var s = d3.event.selection || x2.range();
+    let s1 = s;
     x.domain(s.map(x2.invert, x2));
     focus.select(".axis").call(xAxis);
     focus.selectAll(".bar").attr("x", (d, i) => {
@@ -411,12 +423,10 @@ const drawViz = (vizData) => {
     let val = [];
     let nbjours = dateDiff(parseDate(min), parseDate(max)).day;
     let newMin = new Date(parseDate(min));
-    console.log(min, max, nbjours, parseDate(min), parseDate(max), "minmax");
     for (let i = 0; i < nbjours; i++) {
       const date = formatDate2(new Date(newMin.setDate(newMin.getDate() + 1)));
       val = [...val, [date]];
     }
-    console.log(val);
     return val;
   };
   function dateDiff(start, end) {
@@ -497,18 +507,8 @@ const drawViz = (vizData) => {
     .attr("id", "contentInside");
 
   document.querySelector("#contentInside").innerHTML = [
-    `<h3>${
-      vizData.tables.DEFAULT[0].detail_titre &&
-      vizData.tables.DEFAULT[0].detail_titre !== ""
-        ? vizData.tables.DEFAULT[0].detail_titre
-        : "Add a column inside [detail_titre] to replace the value"
-    }</h3>`,
-    `<p>${
-      vizData.tables.DEFAULT[0].detail_text &&
-      vizData.tables.DEFAULT[0].detail_text !== ""
-        ? vizData.tables.DEFAULT[0].detail_text
-        : "Add a column inside [detail_text] to replace the value"
-    }</p>`,
+    `<h3>${TitleText}</h3>`,
+    `<p>${DescText}</p>`,
   ].join("\n");
 };
 
@@ -518,7 +518,6 @@ const handleInteraction = (interactionId, value, vizData) => {
     concepts: [vizData.fields.date[0].id],
     values: value,
   };
-  console.log(interactionData, "interactionData");
   dscc.sendInteraction(interactionId, FILTER, interactionData);
 };
 

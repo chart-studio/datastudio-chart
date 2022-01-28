@@ -7,6 +7,9 @@ import {
   tooltip,
   autreText,
   recap,
+  docPage,
+  credits,
+  modalText,
 } from "../../Data/common"
 export default {
   button: {
@@ -42,6 +45,29 @@ export default {
     option1: hero_section.option1["en"],
     option2: hero_section.option2["en"],
     option3: hero_section.option3["en"],
+  },
+  docPage: {
+    titreData: docPage.titreData["en"],
+    titreSubData: docPage.titreSubData["en"],
+  },
+  modalText: {
+    connect: modalText.connect["en"],
+    try: modalText.try["en"],
+    tryConfirm: modalText.tryConfirm["en"],
+    subsc: modalText.subsc["en"],
+    subscConfirm: modalText.subscConfirm["en"],
+    allcreditused: modalText.allcreditused["en"],
+    button: {
+      cancel: modalText.button.cancel["en"],
+      tryNext: modalText.button.tryNext["en"],
+      tryNextDocs: modalText.button.tryNextDocs["en"],
+      error: modalText.button.error["en"],
+    },
+  },
+  credits: {
+    title: credits.title["en"],
+    descTest: credits.descTest["en"],
+    lienTitle: credits.lienTitle["en"],
   },
   charts: charts.map(val => {
     return { ...val, name: val.name["en"], desc: val.desc["en"] }

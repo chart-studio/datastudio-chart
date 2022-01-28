@@ -1,8 +1,11 @@
+import { User } from "firebase/auth"
 import { useRouter } from "next/router"
 import React from "react"
 import styled from "styled-components"
+import { UserData } from "../../@types/interface"
 import { routerDir } from "../../helpers/routerDir"
 import { signIn } from "../../helpers/signIn"
+import { useAuth } from "../../hooks/useAuth"
 import fr from "../../locales/fr"
 import Google from "../icon/Google"
 
@@ -22,7 +25,7 @@ const Button = styled.button`
   background-color: var(--brand);
   border: none;
   border-radius: 0.25rem;
-  width: 13rem;
+  width: 15rem;
   outline: none;
   &:hover {
     opacity: 0.8;
@@ -64,12 +67,15 @@ const Text = styled.div`
 const RecapAccount = ({
   t,
   connected,
+  user,
 }: {
   t: typeof fr
   connected: boolean
+  user: (UserData & User) | null
 }) => {
   const router = useRouter()
   const { locale } = router
+  const { setUser } = useAuth()
   return (
     <BlockRecap>
       {connected ? (
@@ -77,18 +83,21 @@ const RecapAccount = ({
           <EssayWrapper>
             <Boule theme={{ val: "essay" }} />
             <Text>
-              00 <span>/ 30 {t.recap.credit}</span>
+              {user && user.trygraph.length !== 0
+                ? user.trygraph.length * 10
+                : "00"}{" "}
+              <span>/ 30 {t.recap.credit}</span>
             </Text>
           </EssayWrapper>
           <SubsWrapper>
             <Boule theme={{ val: "subsc" }} />
             <Text>
-              0 <span>{t.recap.subsc}</span>
+              {user ? user.subsc.length : 0} <span>{t.recap.subsc}</span>
             </Text>
           </SubsWrapper>
         </ConnectContainer>
       ) : (
-        <Button onClick={() => signIn(locale)}>
+        <Button onClick={() => signIn(locale, setUser)}>
           <Google />
           {t.button.account}
         </Button>

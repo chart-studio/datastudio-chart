@@ -1,3 +1,4 @@
 [ ] rajouter un logo dans la console google pour auth
 [ ] faire la page de confidentialité que j'ai renseigné dans google auth
 [ ] faire la page des conditions d'utilisations aussi que j'ai renseigné dans google auth
+[ ] modifier la facon de se connecter à stripe (éviter de sortir de l'application)

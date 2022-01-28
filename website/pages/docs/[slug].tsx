@@ -12,6 +12,10 @@ import "highlight.js/styles/atom-one-dark.css"
 import styled from "styled-components"
 import GraphsComponent from "../../components/GraphsComponents"
 import { useRouter } from "next/router"
+import en from "../../locales/en"
+import fr from "../../locales/fr"
+import RecapAccount from "../../components/elements/RecapAccount"
+import { useAuth } from "../../hooks/useAuth"
 const GridDocs = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.5fr 1fr;
@@ -97,9 +101,28 @@ const DataContent = styled.div`
   }
 `
 
-const test = ({ doc, locale }: { doc: MDXDoc; locale: locale }) => {
+const GraphContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`
+
+const Space = styled.div`
+  margin-top: auto;
+`
+
+const RecapContainer = styled.div``
+const Credits = styled.div`
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--surface4);
+  opacity: 0.8;
+`
+
+const Doc = ({ doc, locale }: { doc: MDXDoc; locale: locale }) => {
   const router = useRouter()
-  console.log(doc.meta.chartInfo.data, Object.keys(doc.meta.chartInfo.data[0]))
+  const t = locale === "fr" ? fr : en
+  const { user } = useAuth()
   return (
     <>
       <Head>
@@ -112,31 +135,65 @@ const test = ({ doc, locale }: { doc: MDXDoc; locale: locale }) => {
       </Head>
       <GridDocs>
         <GraphContent>
-          <h2>{doc.meta.title}</h2>
-          <GraphsComponent val={doc.meta.chartInfo.chartComponent} />
+          <GraphContentWrapper>
+            <h2>{doc.meta.title}</h2>
+            <GraphsComponent val={doc.meta.chartInfo.chartComponent} />
+            <RecapContainer>
+              <RecapAccount t={t} connected={user ? true : false} />
+            </RecapContainer>
+            <Space />
+            <Credits>
+              <h6>{t.credits.title} 🦄</h6>
+              <div>{t.credits.descTest}</div>
+              <div>
+                <b>
+                  <br />
+                  {t.credits.lienTitle}
+                </b>
+                <br />
+                <ul>
+                  {doc.meta.chartInfo.source.credits.map((credit, i) => (
+                    <li>
+                      {"-> "}
+                      <a
+                        href={credit.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {credit.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Credits>
+          </GraphContentWrapper>
         </GraphContent>
 
         <DocContent>
           <MDXRemote {...doc.source} components={{}} />
         </DocContent>
         <DataContent>
-          <h4>Data</h4>
-          <h6>Inputs</h6>
+          <h4>{t.docPage.titreData}</h4>
+          <h6>{t.docPage.titreSubData}</h6>
           <table className="tg">
             <thead>
               <tr>
-                {Object.keys(doc.meta.chartInfo.data[0]).map(label => (
-                  <th className="tg-0lax">{label}</th>
+                {Object.keys(doc.meta.chartInfo.data[0]).map((label, i) => (
+                  <th className="tg-0lax" key={i}>
+                    {label}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {doc.meta.chartInfo.data.map((row: any) => {
+              {doc.meta.chartInfo.data.map((row: any, i: number) => {
                 return (
-                  <tr>
-                    {Object.keys(row).map((val: string) => (
+                  <tr key={i}>
+                    {Object.keys(row).map((val: string, d: number) => (
                       <td
                         style={{ width: `${100 / Object.keys(row).length}%` }}
+                        key={`${i}${d}`}
                       >
                         {row[val][0]}
                       </td>
@@ -152,7 +209,7 @@ const test = ({ doc, locale }: { doc: MDXDoc; locale: locale }) => {
   )
 }
 
-export default test
+export default Doc
 
 export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
   const { slug } = params as { slug: string }

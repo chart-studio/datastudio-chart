@@ -1,13 +1,14 @@
 {
   "dsccViz": {
-    "gcsDevBucket": "gs://hamis_test/viz-test",
-    "gcsProdBucket": "gs://hamis_test/viz-prod",
+    "gcsDevBucket": "gs://vizdata/visualisations/test/timebrush_one",
+    "gcsProdBucket": "gs://vizdata/visualisations/prod/timebrush_one",
     "jsFile": "index.js",
     "jsonFile": "index.json",
     "cssFile": "index.css",
     "print": "printMessage.js"
   },
   "scripts": {
+    "prebuild:dev": "set GOOGLE_APPLICATION_CREDENTIALS='test' rimraf build",
     "build:dev": "dscc-scripts viz build -d dev",
     "build:prod": "dscc-scripts viz build -d prod",
     "push:dev": "dscc-scripts viz push -d dev",

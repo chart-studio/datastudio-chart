@@ -4,8 +4,6 @@ export const message = {
       {
         date: ["20180124"],
         effectif: [76339],
-        detail_titre: "Présentation",
-        detail_text: "Yves",
       },
       {
         date: ["20180126"],

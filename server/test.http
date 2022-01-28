@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/test/id_12345/funnel_one
+
+###
+
+POST http://localhost:3001/api/prod/id_123/funnel_one
+
+###
+
+POST http://localhost:3001/api/deletetest/2022_01_27

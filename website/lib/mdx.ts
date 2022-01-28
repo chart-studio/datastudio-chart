@@ -16,6 +16,8 @@ export const getAllDocs = (locale: "fr" | "en" = "fr") => {
       if (a.meta.publishedAt < b.meta.publishedAt) return 1
       return 0
     })
+
+  console.log(posts, "posts")
   return posts
 }
 

@@ -15,9 +15,9 @@
       "description": "Time Brush",
       "iconUrl": "https://url",
       "resource": {
-        "js": "gs://hamis_test/viz-test/index.js",
-        "config": "gs://hamis_test/viz-test/index.json",
-        "css": "gs://hamis_test/viz-test/index.css"
+        "js": "gs://vizdata/visualisations/test/timebrush_two/index.js",
+        "config": "gs://vizdata/visualisations/test/timebrush_two/index.json",
+        "css": "gs://vizdata/visualisations/test/timebrush_two/index.css"
       }
     }
   ]

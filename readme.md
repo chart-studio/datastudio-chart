@@ -14,6 +14,22 @@ sinon ca ne marchera pas.
 
       gcloud config set project project_name_id
 
+## Annuler le project
+
+      gcloud config unset project
+
+## Copier un fichier dans GCP
+
+      gsutil cp "directory/file" "gs://directory"
+
+## Créer un espace de stockage avec
+
+      gsutil mb -b on us-east1 gs://name
+
+## Rendre un bucket public
+
+      gsutil acl ch -u AllUsers:R gs://name
+
 ## Installer les dépendances
 
       //ne fonctionne pas

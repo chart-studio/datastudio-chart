@@ -1,0 +1,2 @@
+https://www.youtube.com/watch?v=vyz47fUXcxU&ab_channel=TheNerdyCanuck
+https://www.npmjs.com/package/eslint

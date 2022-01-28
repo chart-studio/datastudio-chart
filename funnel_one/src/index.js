@@ -5,7 +5,7 @@ import * as FunnelGraph from "funnel-graph-js";
 
 // change this to 'true' for local development
 // change this to 'false' before deploying
-export const LOCAL = true;
+export const LOCAL = false;
 
 const svgWidth = dscc.getWidth();
 const svgHeight = (dscc.getHeight() * 85) / 100;
@@ -28,8 +28,12 @@ const drawViz = (vizData) => {
   let colorTitle = styleVal(vizData, "colorTitle") || "#21ffa2"; //#00838F
   let colorPercent = styleVal(vizData, "colorPercent") || "#9896dc"; //#E64A19
   let fontFamily = styleVal(vizData, "fontFamily") || "Open Sans";
-  let TitleText = styleVal(vizData, "TitleText") || "Add a title";
-  let DescText = styleVal(vizData, "DescText") || "Add a description";
+  let TitleText = styleVal(vizData, "TitleText") || "Add a title in style";
+  let DescText = styleVal(vizData, "DescText") || "Add a description in style";
+
+  let colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
+  let colorValueCross = styleVal(vizData, "colorValueCross") || "#fff";
+  let colorValueInfoBack = styleVal(vizData, "colorValueInfoBack") || "#fff";
 
   var styles = `
   body{
@@ -210,13 +214,15 @@ const drawViz = (vizData) => {
       width: 2rem;
       border-radius: 50%;
       height:2rem;
-      background-color: 	hsla(210, 9%, 91%,0.6);
+      background-color: ${colorValueBack};
+      color:${colorValue},
       backdrop-filter: blur(4px);
       z-index: 1;
       cursor: pointer;
     }
 
     #infoContent {
+      font-family: ${fontFamily};
       position: fixed;
       top: 0;
       right:0;
@@ -240,7 +246,7 @@ const drawViz = (vizData) => {
     #contentInside {
       height:100%;
       width:100%;
-      background: slategrey;
+      background: ${colorValueInfoBack};
       opacity:0.5;
       padding: 2em;
     }
@@ -260,7 +266,7 @@ const drawViz = (vizData) => {
   .vertical {
     width: 50%;
     height: 2px;
-    background-color: slategrey;
+    background-color: ${colorValueCross};
   }
   .vertical {
     position: relative;
@@ -287,6 +293,8 @@ const drawViz = (vizData) => {
 
   //https://www.w3schools.com/colors/colors_converter.asp
   const datasetSource = vizData.tables.DEFAULT;
+
+  console.log(datasetSource);
 
   const labels = datasetSource.map((e, i) => e.labels[0]);
   const values = datasetSource.map((e, i) => e.effectif[0]);
@@ -333,8 +341,6 @@ const drawViz = (vizData) => {
   vertical.setAttribute("class", "vertical");
 
   const Button = BlockInfo.appendChild(lineWrapper);
-
-  console.log(lineWrapper, "lineWrapper");
 
   Button.appendChild(horizontal);
   Button.appendChild(vertical);

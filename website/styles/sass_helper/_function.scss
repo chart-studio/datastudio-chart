@@ -93,7 +93,7 @@
 
   $responsive: calc(
     #{$min-no-unit}px + (#{$max-no-unit} - #{$min-no-unit}) *
-      ((100vw - #{$min-vw}vw) / (#{$max-vw-no-unit} - #{$min-vw-no-unit}))
+      ((100vw - #{$min-vw}) / (#{$max-vw-no-unit} - #{$min-vw-no-unit}))
   );
 
   @if $fallback {

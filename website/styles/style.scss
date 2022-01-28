@@ -399,8 +399,8 @@ nav > ul {
 p {
   //max-inline-size: 70ch;
   //font-size: 1.25rem;
-  @include function.fluid-font($font-size, $font-size + 4px, $line-height);
-  //line-height: 1.5;
+  @include function.fluid-font($font-size, $font-size + 4px);
+  line-height: $line-height;
 }
 ol {
 }

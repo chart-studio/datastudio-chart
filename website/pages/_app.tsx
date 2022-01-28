@@ -5,14 +5,17 @@ import { ThemeProvider } from "styled-components"
 import GlobalStyle from "../styles/GlobalStyle"
 import "../styles/style.scss"
 import { useEffect, useState } from "react"
+import { AuthProvider } from "../Context/Auth"
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <ThemeProvider theme={{}}>
-        <GlobalStyle />
-        <Navbar />
-        <Component {...pageProps} />
+        <AuthProvider>
+          <GlobalStyle />
+          <Navbar />
+          <Component {...pageProps} />
+        </AuthProvider>
       </ThemeProvider>
     </>
   )

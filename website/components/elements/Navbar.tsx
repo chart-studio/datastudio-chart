@@ -13,6 +13,8 @@ import { useClickAway } from "../../hooks/useClickAway"
 import ButtonLang from "./ButtonLang"
 import ButtonLight from "./ButtonLight"
 import ButtonMobMenu from "./ButtonMobMenu"
+import ButtonAccount from "./ButtonAccount"
+import { useAuth } from "../../hooks/useAuth"
 
 const Header = styled.header`
   //min-height: 4rem;
@@ -109,7 +111,7 @@ const NavBar = () => {
   const router = useRouter()
   const { locale } = router
   const t = locale === "fr" ? fr : en
-
+  const { user } = useAuth()
   let [statusDark, setStatusDark] = useDarkMode("", "statusDark")
   let { refControler, open, setOpen, refObject } = useClickAway(false)
 
@@ -215,6 +217,7 @@ const NavBar = () => {
             statusDark={statusDark}
             setStatusDark={setStatusDark}
           />
+          {user && <ButtonAccount url={user.photoURL!} />}
           <div ref={refControler}>
             <ButtonMobMenu nbLignes={2} openMenu={open} setOpenMenu={setOpen} />
           </div>

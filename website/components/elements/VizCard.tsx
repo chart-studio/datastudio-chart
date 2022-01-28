@@ -5,16 +5,11 @@ import Book_icon from "../icon/Book_icon"
 import ToolTipWrapper from "./ToolTipWrapper"
 import fr from "../../locales/fr"
 import Share from "../icon/Share"
+import { subscribe } from "../../helpers/subscribe"
+import { tryGraph } from "../../helpers/tryGraph"
+import { Dispatch, SetStateAction } from "react"
+import { Card } from "../../@types/interface"
 
-type Card = {
-  link: string
-  link_image: string
-  title: string
-  desc: string
-  addDate: string
-  tool: string
-  t: typeof fr
-}
 const VizContainer = styled.div`
   width: 100%;
   background-color: var(--surface3);
@@ -116,8 +111,30 @@ const Tool = styled.div`
   background-color: var(--surface2);
   opacity: 0.95;
 `
+const Span = styled.span`
+  text-decoration: ${props => (props.theme.selected ? "line-through" : null)};
+  cursor: ${props => (props.theme.selected ? "not-allowed" : null)};
+`
 
-const VizCard = ({ link, link_image, title, desc, addDate, t, tool }: Card) => {
+const VizCard = ({
+  link,
+  link_image,
+  title,
+  desc,
+  addDate,
+  t,
+  tool,
+  stripePrice,
+  cloudName,
+  id,
+  setOpenModal,
+  connected,
+  setSelectedModal,
+  setSelectedGraph,
+  setSelectedDoc,
+  user,
+  setSelectedGrapPrice,
+}: Card) => {
   return (
     <VizContainer>
       <Tool>{tool}</Tool>
@@ -129,7 +146,6 @@ const VizCard = ({ link, link_image, title, desc, addDate, t, tool }: Card) => {
         >
           <Share />
         </ToolTipWrapper>
-
         <div>
           <span>{t.autreText.add}</span>
           <time dateTime={addDate}>{addDate}</time>
@@ -156,12 +172,71 @@ const VizCard = ({ link, link_image, title, desc, addDate, t, tool }: Card) => {
           </ButtonContainer>
         </Link>
 
-        <ButtonContainerInfo>
+        <ButtonContainerInfo
+          onClick={() => {
+            if (!connected) {
+              setSelectedModal("connect")
+              setOpenModal(true)
+            } else if (
+              user &&
+              (user.trygraph.findIndex(x => x.graphname == cloudName) > -1 ||
+                user.subsc.findIndex(x => x.graphname == cloudName) > -1)
+            ) {
+              //do nothing
+            } else if (user && user.trygraph.length >= 3) {
+              setSelectedModal("allCreditUsed")
+              setOpenModal(true)
+            } else {
+              setSelectedModal("try")
+              setSelectedGraph(cloudName)
+              setSelectedDoc(link)
+              setOpenModal(true)
+            }
+          }}
+        >
           <ToolTipWrapper tooltiptext={t.tooltip.essai}>
-            <Info_icon width="0.8rem" /> <span>{t.button.essai}</span>
+            <Info_icon width="0.8rem" />{" "}
+            <Span
+              theme={{
+                selected:
+                  user &&
+                  (user.trygraph.findIndex(x => x.graphname == cloudName) >
+                    -1 ||
+                    user.subsc.findIndex(x => x.graphname == cloudName) > -1),
+              }}
+            >
+              {t.button.essai}
+            </Span>
           </ToolTipWrapper>
         </ButtonContainerInfo>
-        <ButtonContainerSub>{t.button.sousc}</ButtonContainerSub>
+        <ButtonContainerSub
+          onClick={() => {
+            if (!connected) {
+              setOpenModal(true)
+              setSelectedModal("connect")
+            } else if (
+              user &&
+              user.subsc.findIndex(x => x.graphname == cloudName) > -1
+            ) {
+            } else {
+              setOpenModal(true)
+              setSelectedModal("subsc")
+              setSelectedGraph(cloudName)
+              setSelectedDoc(link)
+              setSelectedGrapPrice(stripePrice)
+            }
+          }}
+        >
+          <Span
+            theme={{
+              selected:
+                user &&
+                user.subsc.findIndex(x => x.graphname == cloudName) > -1,
+            }}
+          >
+            {t.button.sousc}
+          </Span>
+        </ButtonContainerSub>
       </BlockButton>
     </VizContainer>
   )

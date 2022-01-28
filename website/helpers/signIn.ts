@@ -1,65 +1,77 @@
 import {
   getAuth,
   signInWithPopup,
-  signInWithRedirect,
   GoogleAuthProvider,
-  getRedirectResult,
+  setPersistence,
+  browserSessionPersistence,
 } from "firebase/auth"
-import { firebaseApp, dbStore, collection, addDoc } from "../firebaseAuth"
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore"
+import { firebaseApp, dbStore } from "../firebaseAuth"
 const auth = getAuth(firebaseApp)
-export const signIn = (locale: string = "en") => {
+export const signIn = (locale: string = "en", setUser: any) => {
   auth.languageCode = locale
   const provider = new GoogleAuthProvider()
-  //ne fonctionne pas car ferme la page de next
-  // signInWithRedirect(auth, provider)
-  // getRedirectResult(auth)
-  //   .then(result => {
-  //     const credential = GoogleAuthProvider.credentialFromResult(result!)
-  //     const token = credential!.accessToken
-  //     const userCredentials = result!.user
-  //     console.log(userCredentials, typeof userCredentials)
-  //   })
-  //   .catch(error => {
-  //     // Handle Errors here.
-  //     const errorCode = error.code
-  //     const errorMessage = error.message
-  //     // The email of the user's account used.
-  //     const email = error.email
-  //     // The AuthCredential type that was used.
-  //     const credential = GoogleAuthProvider.credentialFromError(error)
-  //     // ...
-  //   })
+  setPersistence(auth, browserSessionPersistence)
+    .then(async () => {
+      return signInWithPopup(auth, provider)
+        .then(async result => {
+          const credential = GoogleAuthProvider.credentialFromResult(result)
+          const token = credential!.accessToken
+          const userCredentials = result.user
+          const docRef = doc(dbStore, "user", userCredentials.uid)
+          const docSnap = await getDoc(docRef)
 
-  signInWithPopup(auth, provider)
-    .then(async result => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result)
-      const token = credential!.accessToken
-      // The signed-in user info.
-      const userCredentials = result.user
+          if (!docSnap.exists()) {
+            await setDoc(doc(dbStore, "user", userCredentials.uid), {
+              email: userCredentials.email!,
+              name: userCredentials.displayName!,
+              provider: userCredentials.providerData[0].providerId!,
+              photoUrl: userCredentials.photoURL!,
+              phoneNumber: userCredentials.phoneNumber!,
+              token: token!,
+              trygraph: [],
+              subsc: [],
+              timestamp: serverTimestamp(),
+            })
+            setUser({
+              uid: userCredentials.uid,
+              email: userCredentials.email!,
+              name: userCredentials.displayName!,
+              provider: userCredentials.providerData[0].providerId!,
+              photoUrl: userCredentials.photoURL!,
+              phoneNumber: userCredentials.phoneNumber!,
+              token: token!,
+              trygraph: [],
+              subsc: [],
+            })
+          } else {
+            let userInfos = docSnap.data()
+            console.log(userInfos, "userInfos")
+            setUser({
+              uid: userCredentials.uid,
+              email: userInfos.email!,
+              name: userInfos.displayName!,
+              provider: userInfos.providerData[0].providerId!,
+              photoUrl: userInfos.photoURL!,
+              phoneNumber: userInfos.phoneNumber!,
+              trygraph: userInfos.trygraph,
+              subsc: userInfos.subsc,
+            })
+          }
 
-      // console.log(userCredentials, typeof userCredentials)
-
-      const docUser = await addDoc(collection(dbStore, "user"), {
-        uid: userCredentials.uid,
-        email: userCredentials.email,
-        name: userCredentials.displayName,
-        provider: userCredentials.providerData[0].providerId,
-        photoUrl: userCredentials.photoURL,
-        phoneNumber: userCredentials.phoneNumber,
-      })
-
-      console.log("Document written with ID: ", docUser.id)
+          console.log("Document written with ID: ", userCredentials.uid)
+        })
+        .catch(error => {
+          const errorCode = error.code
+          const errorMessage = error.message
+          const email = error.email
+          const credential = GoogleAuthProvider.credentialFromError(error)
+          console.log(errorCode, errorMessage, email, credential, auth)
+        })
     })
     .catch(error => {
-      // Handle Errors here.
       const errorCode = error.code
       const errorMessage = error.message
-      // The email of the user's account used.
-      const email = error.email
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error)
-      // ...
-      console.log(errorCode, errorMessage, email, credential, auth)
+      console.log(errorCode, errorMessage)
     })
 }
