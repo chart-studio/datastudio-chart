@@ -16,6 +16,7 @@ import en from "../../locales/en"
 import fr from "../../locales/fr"
 import RecapAccount from "../../components/elements/RecapAccount"
 import { useAuth } from "../../hooks/useAuth"
+import LinkHold from "../../components/elements/LinkHold"
 const GridDocs = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.5fr 1fr;
@@ -111,7 +112,6 @@ const Space = styled.div`
   margin-top: auto;
 `
 
-const RecapContainer = styled.div``
 const Credits = styled.div`
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -138,9 +138,8 @@ const Doc = ({ doc, locale }: { doc: MDXDoc; locale: locale }) => {
           <GraphContentWrapper>
             <h2>{doc.meta.title}</h2>
             <GraphsComponent val={doc.meta.chartInfo.chartComponent} />
-            <RecapContainer>
-              <RecapAccount t={t} connected={user ? true : false} />
-            </RecapContainer>
+            <LinkHold testLink={user?.trygraph[0].link || ""} />
+
             <Space />
             <Credits>
               <h6>{t.credits.title} 🦄</h6>
