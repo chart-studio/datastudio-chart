@@ -3,7 +3,7 @@ const local = require("./localMessage.js");
 import * as d3 from "d3v4";
 // change this to 'true' for local development
 // change this to 'false' before deploying
-export const LOCAL = false;
+export const LOCAL = true;
 
 // write viz code here
 const drawViz = (vizData) => {

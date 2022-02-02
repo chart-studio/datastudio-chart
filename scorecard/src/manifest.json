@@ -1,0 +1,24 @@
+{
+  "name": "My Visualizations",
+  "organization": "Lokalistic",
+  "description": "Data Design",
+  "logoUrl": "https://logo",
+  "organizationUrl": "https://url",
+  "supportUrl": "https://url",
+  "privacyPolicyUrl": "https://url",
+  "termsOfServiceUrl": "https://url",
+  "packageUrl": "https://url",
+  "devMode": true,
+  "components": [
+    {
+      "name": "Lokalistic-TimeBrush",
+      "description": "Time Brush",
+      "iconUrl": "https://url",
+      "resource": {
+        "js": "gs://vizdata/visualisations/test/timebrush_one/index.js",
+        "config": "gs://vizdata/visualisations/test/timebrush_one/index.json",
+        "css": "gs://vizdata/visualisations/test/timebrush_one/index.css"
+      }
+    }
+  ]
+}

@@ -3,15 +3,22 @@
 # dependencies
 /website/node_modules
 /timebrush/node_modules
+timebrush/data/
+/timebrush/build
+
 /timebrush2/node_modules
 /server/node_modules
 /funnel_one/node_modules
 /funnel_one/build
-/timebrush/build
+/scorecard/build
+/scorecard/data
+
 /timebrush2/build
 /server/build
 /funnel_one/data
-/timebrush/data/
+
+
+
 /timebrush2/data
 /website/.next
 .vscode
@@ -23,8 +30,8 @@
 
 */dist
 */data/2018 Movie Rankings.csv
-data
-
+/data
+testt
 # testing
 /coverage
 
