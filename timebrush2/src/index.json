@@ -64,13 +64,13 @@
           "type": "TEXTINPUT",
           "id": "TitleText",
           "label": "Title Text",
-          "defaultValue": "Add a title"
+          "defaultValue": "Add a title in style 212"
         },
         {
           "type": "TEXTAREA",
           "id": "DescText",
           "label": "Description Text",
-          "defaultValue": "Add a description"
+          "defaultValue": "Add a description in style 212"
         }
       ]
     },
