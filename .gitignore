@@ -9,6 +9,7 @@ timebrush/data/
 /timebrush2/node_modules
 /server/node_modules
 /funnel_one/node_modules
+/scorecard/node_modules
 /funnel_one/build
 /scorecard/build
 /scorecard/data
@@ -28,7 +29,6 @@ timebrush/data/
 /.pnp
 .pnp.js
 
-*/dist
 */data/2018 Movie Rankings.csv
 /data
 testt

@@ -14,74 +14,43 @@ var dscc_1 = require("@google/dscc");
 var local = require("./localMessage");
 var d3 = require("d3v4");
 exports.LOCAL = false;
+//Global constiables
 var startDate = "";
 var endDate = "";
-//https://www.w3schools.com/colors/colors_converter.asp
+window.onresize = function () {
+    location.reload();
+};
 var drawViz = function (vizData) {
     var _a, _b, _c, _d;
-    window.onresize = function () {
-        location.reload();
-    };
+    //constants
+    var positionAnchor = 50;
+    var positionText = 5;
+    var dateFormat = "%Y%m%d";
+    var parseDate = d3.timeParse(dateFormat);
+    var formatDate = d3.timeFormat("%Y-%m-%d");
+    var formatDate2 = d3.timeFormat("%Y%m%d");
     // iniialize date
     if (startDate === "" && endDate === "") {
         startDate = ((_b = (_a = vizData.dateRanges) === null || _a === void 0 ? void 0 : _a.DEFAULT) === null || _b === void 0 ? void 0 : _b.start) || "";
         endDate = ((_d = (_c = vizData.dateRanges) === null || _c === void 0 ? void 0 : _c.DEFAULT) === null || _d === void 0 ? void 0 : _d.end) || "";
     }
     // Reset all elements of the page
-    if (document.querySelector("svg")) {
-        //Reset svg when the date range change
-        if (startDate !== vizData.dateRanges.DEFAULT.start ||
-            endDate !== vizData.dateRanges.DEFAULT.end) {
-            var FILTER = dscc_1.InteractionType.FILTER;
-            (0, dscc_1.clearInteraction)("filterZones", FILTER, undefined);
-            var oldSvg = document.querySelector("svg");
-            oldSvg.parentNode.removeChild(oldSvg);
-            d3.select("body").selectAll("svg").remove();
-            startDate = vizData.dateRanges.DEFAULT.start;
-            endDate = vizData.dateRanges.DEFAULT.end;
-        }
-        //Reset Info Box
-        if (document.querySelector(".info")) {
-            var oldInfo = document.querySelector(".info");
-            oldInfo.parentNode.removeChild(oldInfo);
-        }
-        if (document.querySelector("#infoContent")) {
-            var oldContent = document.querySelector("#infoContent");
-            oldContent.parentNode.removeChild(oldContent);
-        }
-    }
-    //Check if data is available
-    var hasData = vizData.tables.DEFAULT.length > 0;
-    if (!hasData) {
-        throw new Error("No Data");
-    }
-    //Define variables
-    var positionAnchor = 50;
-    var positionText = 5;
-    var dateFormat = "%Y%m%d";
+    resetAllElements(vizData);
     //Define style
     var styles = getStyle(vizData);
-    var datasetSource = vizData.tables.DEFAULT;
-    var dataset = datasetSource.map(function (e, i) {
-        verifData(e, i);
-        return {
-            date: e.date[0],
-            effectif: e.effectif[0] === "" ? 0 : e.effectif[0]
-        };
-    });
+    var styleSheet = document.createElement("style");
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+    //Get data and check
+    var dataset = transformData(vizData.tables.DEFAULT, verifData);
+    dataset.sort(compareDate(parseDate));
+    var periode = alldays(dataset, parseDate).day;
+    //Create SVG
     var svgWidth = (0, dscc_1.getWidth)();
     var svgHeight = (0, dscc_1.getHeight)();
     var margin2 = { top: 15, right: 50, bottom: 30, left: 70 };
     var width = +svgWidth - margin2.left - margin2.right;
     var height2 = +svgHeight - margin2.top - margin2.bottom;
-    var parseDate = d3.timeParse(dateFormat);
-    var formatDate = d3.timeFormat("%Y-%m-%d");
-    var formatDate2 = d3.timeFormat("%Y%m%d");
-    dataset.sort(compareDate(parseDate));
-    var periode = alldays(dataset, parseDate).day + 2;
-    var styleSheet = document.createElement("style");
-    styleSheet.innerText = styles;
-    document.head.appendChild(styleSheet);
     var x2 = d3.scaleTime().range([0, width]), y2 = d3.scaleLinear().range([height2, 0]);
     var factorBand = 0.7;
     var xBand = d3
@@ -95,7 +64,11 @@ var drawViz = function (vizData) {
     var extent = d3.extent(dataset, function (d) {
         return parseDate(d.date);
     });
-    x2.domain(extent);
+    //use an offset to include the first and last date
+    x2.domain([
+        d3.timeDay.offset(extent[0], -1),
+        d3.timeDay.offset(extent[1], 1),
+    ]);
     y2.domain([
         0,
         d3.max(dataset, function (d) {
@@ -127,7 +100,7 @@ var drawViz = function (vizData) {
         .append("rect")
         .attr("class", "subBar")
         .attr("x", function (d, i) {
-        return x2(parseDate(d.date)) - (xBand.bandwidth() * factorBand) / 2;
+        return x2(parseDate(d.date)); // (pour centrer)- (xBand.bandwidth() * factorBand) / 2;
     })
         .attr("y", function (d, i) { return y2(d.effectif); })
         .attr("width", xBand.bandwidth() * factorBand)
@@ -212,18 +185,62 @@ var drawViz = function (vizData) {
     }
     createSlider(vizData);
 };
-function verifData(lineData, lineNumber) {
-    if (lineData.date.length === 0 || lineData.effectif.length === 0) {
-        throw new Error("Dimension or Metric should not be empty: line ".concat(lineNumber));
+function resetAllElements(vizData) {
+    if (document.querySelector(".error")) {
+        var oldError = document.querySelector(".error");
+        oldError.parentNode.removeChild(oldError);
     }
-    if (lineData.date[0].length !== 8 ||
-        (lineData.date[0].slice(0, 1) !== "1" &&
-            lineData.date[0].slice(0, 1) !== "2")) {
-        throw new Error("Dimension should be a date : line ".concat(lineNumber, " does not have the correct format (yyyymmdd)"));
+    if (document.querySelector("svg")) {
+        //Reset svg when the date range change
+        if (startDate !== vizData.dateRanges.DEFAULT.start ||
+            endDate !== vizData.dateRanges.DEFAULT.end) {
+            var FILTER = dscc_1.InteractionType.FILTER;
+            (0, dscc_1.clearInteraction)("filterZones", FILTER, undefined);
+            var oldSvg = document.querySelector("svg");
+            oldSvg.parentNode.removeChild(oldSvg);
+            d3.select("body").selectAll("svg").remove();
+            startDate = vizData.dateRanges.DEFAULT.start;
+            endDate = vizData.dateRanges.DEFAULT.end;
+        }
+        //Reset Info Box
+        if (document.querySelector(".info")) {
+            var oldInfo = document.querySelector(".info");
+            oldInfo.parentNode.removeChild(oldInfo);
+        }
+        if (document.querySelector("#infoContent")) {
+            var oldContent = document.querySelector("#infoContent");
+            oldContent.parentNode.removeChild(oldContent);
+        }
     }
-    if (isNaN(lineData.effectif[0])) {
-        throw new Error("Metric should be a number : line ".concat(lineNumber, " does not have a number"));
+}
+function verifData(datasetSource) {
+    var hasData = datasetSource.length > 0;
+    if (!hasData) {
+        throw new Error("No Data");
     }
+    datasetSource.map(function (lineData, lineNumber) {
+        if (lineData.date.length === 0 || lineData.effectif.length === 0) {
+            throw new Error("Dimension or Metric should not be empty: line ".concat(lineNumber));
+        }
+        if (lineData.date[0].length !== 8 ||
+            (lineData.date[0].slice(0, 1) !== "1" &&
+                lineData.date[0].slice(0, 1) !== "2")) {
+            throw new Error("Dimension should be a date : line ".concat(lineNumber, " does not have the correct format (yyyymmdd)"));
+        }
+        if (isNaN(lineData.effectif[0])) {
+            throw new Error("Metric should be a number : line ".concat(lineNumber, " does not have a number"));
+        }
+    });
+}
+function transformData(datasetSource, checkDataFn) {
+    checkDataFn(datasetSource);
+    var newData = datasetSource.map(function (e, i) {
+        return {
+            date: e.date[0],
+            effectif: e.effectif[0] === "" ? 0 : e.effectif[0]
+        };
+    });
+    return newData;
 }
 function createBrushResize(height) {
     return function brushResizePath(d) {
@@ -342,9 +359,7 @@ var handleInteraction = function (interactionId, value, vizData) {
     };
     (0, dscc_1.sendInteraction)(interactionId, FILTER, interactionData);
 };
-var C_GENERAL = "Global error contact the owner!!!";
-function displayError(msg, consoleMsg) {
-    if (consoleMsg === void 0) { consoleMsg = C_GENERAL; }
+function displayError(msg) {
     document.body.innerHTML = "";
     var msgDiv = document.createElement("div");
     msgDiv.className = "error";
@@ -397,7 +412,6 @@ var handleDrawViz = function (vizData) {
     }
     catch (error) {
         displayError("<h3>".concat(error.message, "</h3>"));
-        console.log(drawViz.name, error);
     }
 };
 if (exports.LOCAL) {

@@ -1,6 +1,7 @@
 body {
   font-family: Roboto;
-  overflow: hidden;
+  /*font-size: 14px;
+  overflow: hidden;*/
 }
 
 code {
@@ -14,4 +15,23 @@ code {
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
 }

@@ -12,91 +12,50 @@ import {
 import * as local from "./localMessage";
 import * as d3 from "d3v4";
 export const LOCAL = false;
+
+//Global constiables
 let startDate: string = "";
 let endDate: string = "";
 
-//https://www.w3schools.com/colors/colors_converter.asp
+window.onresize = function () {
+  location.reload();
+};
 
 const drawViz = (vizData: ObjectFormat) => {
-  window.onresize = function () {
-    location.reload();
-  };
-
+  //constants
+  const positionAnchor = 50;
+  const positionText = 5;
+  const dateFormat = "%Y%m%d";
+  const parseDate = d3.timeParse(dateFormat);
+  const formatDate = d3.timeFormat("%Y-%m-%d");
+  const formatDate2 = d3.timeFormat("%Y%m%d");
   // iniialize date
   if (startDate === "" && endDate === "") {
     startDate = vizData.dateRanges?.DEFAULT?.start || "";
     endDate = vizData.dateRanges?.DEFAULT?.end || "";
   }
   // Reset all elements of the page
-  if (document.querySelector("svg")) {
-    //Reset svg when the date range change
-    if (
-      startDate !== vizData.dateRanges.DEFAULT.start ||
-      endDate !== vizData.dateRanges.DEFAULT.end
-    ) {
-      const FILTER = InteractionType.FILTER;
-      clearInteraction("filterZones", FILTER, undefined);
-      let oldSvg = document.querySelector("svg");
-      oldSvg.parentNode.removeChild(oldSvg);
-      d3.select("body").selectAll("svg").remove();
-      startDate = vizData.dateRanges.DEFAULT.start;
-      endDate = vizData.dateRanges.DEFAULT.end;
-    }
-    //Reset Info Box
-    if (document.querySelector(".info")) {
-      let oldInfo = document.querySelector(".info");
-      oldInfo.parentNode.removeChild(oldInfo);
-    }
-    if (document.querySelector("#infoContent")) {
-      let oldContent = document.querySelector("#infoContent");
-      oldContent.parentNode.removeChild(oldContent);
-    }
-  }
-
-  //Check if data is available
-  const hasData: boolean = vizData.tables.DEFAULT.length > 0;
-
-  if (!hasData) {
-    throw new Error("No Data");
-  }
-
-  //Define variables
-  let positionAnchor = 50;
-  let positionText = 5;
-
-  const dateFormat = "%Y%m%d";
+  resetAllElements(vizData);
 
   //Define style
-  var styles = getStyle(vizData);
+  const styles = getStyle(vizData);
+  const styleSheet = document.createElement("style");
+  styleSheet.innerText = styles;
+  document.head.appendChild(styleSheet);
 
-  const datasetSource = vizData.tables.DEFAULT;
+  //Get data and check
+  const dataset = transformData(vizData.tables.DEFAULT, verifData);
+  dataset.sort(compareDate(parseDate));
+  const periode = alldays(dataset, parseDate).day;
 
-  const dataset = datasetSource.map((e, i) => {
-    verifData(e, i);
-
-    return {
-      date: e.date[0],
-      effectif: e.effectif[0] === "" ? 0 : e.effectif[0],
-    };
-  });
-
+  //Create SVG
   const svgWidth = getWidth();
   const svgHeight = getHeight();
   const margin2 = { top: 15, right: 50, bottom: 30, left: 70 };
   const width = +svgWidth - margin2.left - margin2.right;
   const height2 = +svgHeight - margin2.top - margin2.bottom;
 
-  var parseDate = d3.timeParse(dateFormat);
-  var formatDate = d3.timeFormat("%Y-%m-%d");
-  var formatDate2 = d3.timeFormat("%Y%m%d");
-  dataset.sort(compareDate(parseDate));
-  const periode = alldays(dataset, parseDate).day + 2;
-
-  var styleSheet = document.createElement("style");
-  styleSheet.innerText = styles;
-  document.head.appendChild(styleSheet);
-
-  var x2 = d3.scaleTime().range([0, width]),
+  const x2 = d3.scaleTime().range([0, width]),
     y2 = d3.scaleLinear().range([height2, 0]);
 
   const factorBand = 0.7;
@@ -108,13 +67,17 @@ const drawViz = (vizData: ObjectFormat) => {
 
   let yAxis = d3.axisLeft(y2);
 
-  var xAxis2 = d3.axisBottom(x2);
+  const xAxis2 = d3.axisBottom(x2);
   //.tickFormat(formatDate);
 
   const extent = d3.extent(dataset, function (d: any) {
     return parseDate(d.date);
   });
-  x2.domain(extent);
+  //use an offset to include the first and last date
+  x2.domain([
+    d3.timeDay.offset(extent[0], -1),
+    d3.timeDay.offset(extent[1], 1),
+  ]);
   y2.domain([
     0,
     d3.max(dataset, function (d: any) {
@@ -122,7 +85,7 @@ const drawViz = (vizData: ObjectFormat) => {
     }),
   ]);
 
-  var brush = d3
+  const brush = d3
     .brushX()
     .handleSize(8)
     .extent([
@@ -131,14 +94,14 @@ const drawViz = (vizData: ObjectFormat) => {
     ])
     .on("start brush end", brushed);
 
-  var svg = d3
+  const svg = d3
     .select("body")
     .append("svg")
     .attr("width", svgWidth)
     .attr("height", svgHeight)
     .attr("viewBox", [0, 0, svgWidth, svgHeight]);
 
-  var context = svg
+  const context = svg
     .append("g")
     .attr("class", "context")
     .attr("transform", `translate(${margin2.left}, ${margin2.top})`);
@@ -150,7 +113,7 @@ const drawViz = (vizData: ObjectFormat) => {
     .append("rect")
     .attr("class", "subBar")
     .attr("x", (d: any, i: any) => {
-      return x2(parseDate(d.date)) - (xBand.bandwidth() * factorBand) / 2;
+      return x2(parseDate(d.date)); // (pour centrer)- (xBand.bandwidth() * factorBand) / 2;
     })
     .attr("y", (d: any, i: any) => y2(d.effectif))
     .attr("width", xBand.bandwidth() * factorBand)
@@ -166,11 +129,11 @@ const drawViz = (vizData: ObjectFormat) => {
 
   context.append("g").attr("class", "axis axis--y").call(yAxis);
 
-  var gBrush = context.append("g").attr("class", "brush").call(brush);
+  const gBrush = context.append("g").attr("class", "brush").call(brush);
 
-  var brushResizePath = createBrushResize(height2);
+  const brushResizePath = createBrushResize(height2);
 
-  var handle = gBrush
+  const handle = gBrush
     .selectAll(".handles")
     .data([{ type: "w" }, { type: "e" }])
     .enter()
@@ -252,30 +215,78 @@ const drawViz = (vizData: ObjectFormat) => {
   }
   createSlider(vizData);
 };
-function verifData(lineData: ObjectRow, lineNumber: number) {
-  if (lineData.date.length === 0 || lineData.effectif.length === 0) {
-    throw new Error(
-      `Dimension or Metric should not be empty: line ${lineNumber}`
-    );
+function resetAllElements(vizData: ObjectFormat) {
+  if (document.querySelector(".error")) {
+    let oldError = document.querySelector(".error");
+    oldError.parentNode.removeChild(oldError);
   }
-  if (
-    (lineData.date[0] as string).length !== 8 ||
-    ((lineData.date[0] as string).slice(0, 1) !== "1" &&
-      (lineData.date[0] as string).slice(0, 1) !== "2")
-  ) {
-    throw new Error(
-      `Dimension should be a date : line ${lineNumber} does not have the correct format (yyyymmdd)`
-    );
-  }
-  if (isNaN(lineData.effectif[0] as number)) {
-    throw new Error(
-      `Metric should be a number : line ${lineNumber} does not have a number`
-    );
+  if (document.querySelector("svg")) {
+    //Reset svg when the date range change
+    if (
+      startDate !== vizData.dateRanges.DEFAULT.start ||
+      endDate !== vizData.dateRanges.DEFAULT.end
+    ) {
+      const FILTER = InteractionType.FILTER;
+      clearInteraction("filterZones", FILTER, undefined);
+      let oldSvg = document.querySelector("svg");
+      oldSvg.parentNode.removeChild(oldSvg);
+      d3.select("body").selectAll("svg").remove();
+      startDate = vizData.dateRanges.DEFAULT.start;
+      endDate = vizData.dateRanges.DEFAULT.end;
+    }
+    //Reset Info Box
+    if (document.querySelector(".info")) {
+      let oldInfo = document.querySelector(".info");
+      oldInfo.parentNode.removeChild(oldInfo);
+    }
+    if (document.querySelector("#infoContent")) {
+      let oldContent = document.querySelector("#infoContent");
+      oldContent.parentNode.removeChild(oldContent);
+    }
   }
 }
+function verifData(datasetSource: ObjectRow[]) {
+  const hasData: boolean = datasetSource.length > 0;
+  if (!hasData) {
+    throw new Error("No Data");
+  }
+  datasetSource.map((lineData, lineNumber) => {
+    if (lineData.date.length === 0 || lineData.effectif.length === 0) {
+      throw new Error(
+        `Dimension or Metric should not be empty: line ${lineNumber}`
+      );
+    }
+    if (
+      (lineData.date[0] as string).length !== 8 ||
+      ((lineData.date[0] as string).slice(0, 1) !== "1" &&
+        (lineData.date[0] as string).slice(0, 1) !== "2")
+    ) {
+      throw new Error(
+        `Dimension should be a date : line ${lineNumber} does not have the correct format (yyyymmdd)`
+      );
+    }
+    if (isNaN(lineData.effectif[0] as number)) {
+      throw new Error(
+        `Metric should be a number : line ${lineNumber} does not have a number`
+      );
+    }
+  });
+}
+
+function transformData(datasetSource: ObjectRow[], checkDataFn: Function) {
+  checkDataFn(datasetSource);
+  const newData = datasetSource.map((e, i) => {
+    return {
+      date: e.date[0],
+      effectif: e.effectif[0] === "" ? 0 : e.effectif[0],
+    };
+  });
+  return newData;
+}
+
 function createBrushResize(height: any) {
   return function brushResizePath(d: any) {
-    var e = +(d.type == "e"),
+    const e = +(d.type == "e"),
       x = e ? 1 : -1,
       y = height / 2;
     return (
@@ -453,8 +464,8 @@ function alldays(array: any[], parseDate: any) {
 }
 
 function dateDiff(start: any, end: any) {
-  var diff: any = {}; // Initialisation du retour
-  var tmp = end - start;
+  const diff: any = {}; // Initialisation du retour
+  let tmp = end - start;
 
   tmp = Math.floor(tmp / 1000); // Nombre de secondes entre les 2 dates
   diff.sec = tmp % 60; // Extraction du nombre de secondes
@@ -504,9 +515,7 @@ const handleInteraction = (interactionId: any, value: any, vizData: any) => {
   sendInteraction(interactionId, FILTER, interactionData);
 };
 
-const C_GENERAL = `Global error contact the owner!!!`;
-
-function displayError(msg: string, consoleMsg = C_GENERAL) {
+function displayError(msg: string) {
   document.body.innerHTML = "";
   let msgDiv = document.createElement("div");
   msgDiv.className = "error";
@@ -559,7 +568,6 @@ const handleDrawViz = (vizData: any) => {
     drawViz(vizData);
   } catch (error) {
     displayError(`<h3>${error.message}</h3>`);
-    console.log(drawViz.name, error);
   }
 };
 

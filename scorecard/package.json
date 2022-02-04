@@ -1,7 +1,7 @@
 {
   "dsccViz": {
-    "gcsDevBucket": "gs://vizdata/visualisations/test/timebrush_one",
-    "gcsProdBucket": "gs://vizdata/visualisations/prod/timebrush_one",
+    "gcsDevBucket": "gs://vizdata/visualisations/test/simple_scorecard",
+    "gcsProdBucket": "gs://vizdata/visualisations/test/simple_scorecard",
     "jsFile": "index.js",
     "jsonFile": "index.json",
     "cssFile": "index.css",
@@ -17,7 +17,7 @@
     "start": "dscc-scripts viz start"
   },
   "devDependencies": {
-    "@google/dscc": "^0.3.17",
+    "@google/dscc": "^0.3.22",
     "typescript": "^4.5.5",
     "webpack-cli": "^4.9.2"
   },
@@ -27,6 +27,8 @@
     "copy-webpack-plugin": "4",
     "d3": "4",
     "d3v4": "^4.2.2",
+    "dayjs": "^1.10.7",
+    "millify": "^4.0.0",
     "mini-css-extract-plugin": "^2.5.3",
     "ts-loader": "7",
     "webpack": "^5.67.0"
