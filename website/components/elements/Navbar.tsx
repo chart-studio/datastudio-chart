@@ -15,6 +15,7 @@ import ButtonLight from "./ButtonLight"
 import ButtonMobMenu from "./ButtonMobMenu"
 import ButtonAccount from "./ButtonAccount"
 import { useAuth } from "../../hooks/useAuth"
+import Logo from "../icon/Logo"
 
 const Header = styled.header`
   //min-height: 4rem;
@@ -100,10 +101,18 @@ const LinkPage = styled.li`
   }
 `
 
-const ContainerImage = styled.div`
-  height: 100%;
-  img {
-    object-fit: cover;
+const ContainerLogo = styled.div`
+  display: inline-flex;
+  span {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    span {
+      display: flex;
+      align-items: center;
+    }
+    margin-right: 1rem;
   }
 `
 
@@ -130,8 +139,13 @@ const NavBar = () => {
         <ContainerNav className="container-nav">
           <LogoWrapper className="m-2">
             <Link href="/">
-              <a rel="noopener noreferrer">
-                <ContainerImage>LOGO</ContainerImage>
+              <a rel="noopener noreferrer" href="/">
+                <ContainerLogo>
+                  <Logo />{" "}
+                  <span>
+                    <b>ChartStudio</b>
+                  </span>
+                </ContainerLogo>
               </a>
             </Link>
           </LogoWrapper>
@@ -150,11 +164,46 @@ const NavBar = () => {
                     }}
                   >
                     <a
+                      href="/"
                       className="m-3"
                       rel="noopener noreferrer"
                       style={{ width: "100%" }}
                     >
                       {t.navbar.link1}
+                    </a>
+                  </LinkPage>
+                </Link>
+                <Link href="/faq">
+                  <LinkPage
+                    className="pt-2 pb-2 navLink"
+                    theme={{
+                      active: router.asPath.includes("/faq"),
+                    }}
+                  >
+                    <a
+                      href="#"
+                      className="m-3"
+                      rel="noopener noreferrer"
+                      style={{ width: "100%" }}
+                    >
+                      {t.navbar.link2}
+                    </a>
+                  </LinkPage>
+                </Link>
+                <Link href="/library">
+                  <LinkPage
+                    className="pt-2 pb-2 navLink"
+                    theme={{
+                      active: router.asPath.includes("/library"),
+                    }}
+                  >
+                    <a
+                      href="#"
+                      className="m-3"
+                      rel="noopener noreferrer"
+                      style={{ width: "100%" }}
+                    >
+                      {t.navbar.link3}
                     </a>
                   </LinkPage>
                 </Link>
@@ -166,27 +215,12 @@ const NavBar = () => {
                     }}
                   >
                     <a
+                      href="#"
                       className="m-3"
                       rel="noopener noreferrer"
                       style={{ width: "100%" }}
                     >
-                      {t.navbar.link2}
-                    </a>
-                  </LinkPage>
-                </Link>
-                <Link href="/about">
-                  <LinkPage
-                    className="pt-2 pb-2 navLink"
-                    theme={{
-                      active: router.asPath.includes("/about"),
-                    }}
-                  >
-                    <a
-                      className="m-3"
-                      rel="noopener noreferrer"
-                      style={{ width: "100%" }}
-                    >
-                      {t.navbar.link3}
+                      {t.navbar.link4}
                     </a>
                   </LinkPage>
                 </Link>
@@ -198,11 +232,12 @@ const NavBar = () => {
                     }}
                   >
                     <a
+                      href="#"
                       className="m-3"
                       rel="noopener noreferrer"
                       style={{ width: "100%" }}
                     >
-                      {t.navbar.link4}
+                      {t.navbar.link5}
                     </a>
                   </LinkPage>
                 </Link>
@@ -245,12 +280,12 @@ const NavBar = () => {
                         </a>
                       </LinkPage>
                     </Link>
-                    <Link href="/pricing">
+                    <Link href="/faq">
                       <LinkPage
                         className="pt-2 pb-2 navLink mt-2"
                         onClick={() => setOpen(false)}
                         theme={{
-                          active: router.asPath.includes("/pricing"),
+                          active: router.asPath.includes("/faq"),
                         }}
                       >
                         <a className="m-3" rel="noopener noreferrer">
@@ -258,13 +293,12 @@ const NavBar = () => {
                         </a>
                       </LinkPage>
                     </Link>
-
-                    <Link href="/about">
+                    <Link href="/library">
                       <LinkPage
                         className="pt-2 pb-2 navLink mt-2"
                         onClick={() => setOpen(false)}
                         theme={{
-                          active: router.asPath.includes("/about"),
+                          active: router.asPath.includes("/library"),
                         }}
                       >
                         <a className="m-3" rel="noopener noreferrer">
@@ -272,7 +306,19 @@ const NavBar = () => {
                         </a>
                       </LinkPage>
                     </Link>
-
+                    <Link href="/pricing">
+                      <LinkPage
+                        className="pt-2 pb-2 navLink"
+                        onClick={() => setOpen(false)}
+                        theme={{
+                          active: router.asPath.includes("/pricing"),
+                        }}
+                      >
+                        <a className="m-3" rel="noopener noreferrer">
+                          {t.navbar.link4}
+                        </a>
+                      </LinkPage>
+                    </Link>
                     <Link href="/contact">
                       <LinkPage
                         className="pt-2 pb-2 navLink"
@@ -282,7 +328,7 @@ const NavBar = () => {
                         }}
                       >
                         <a className="m-3" rel="noopener noreferrer">
-                          {t.navbar.link4}
+                          {t.navbar.link5}
                         </a>
                       </LinkPage>
                     </Link>

@@ -15,7 +15,7 @@ import millify from "millify";
 dayjs.extend(quarterOfYear);
 dayjs.extend(weekOfYear);
 
-export const LOCAL = true;
+export const LOCAL = false;
 
 window.onresize = function () {
   location.reload();
@@ -23,14 +23,7 @@ window.onresize = function () {
 
 //Global constiables
 const dateFormat = "%Y%m%d";
-const minCardHeight = 40;
-const minCardWidth = 62;
-const maxNumberCards = 8;
 const borderRadius = 8;
-const gap = {
-  h: 10,
-  v: 10,
-};
 
 const drawViz = (vizData: ObjectFormat) => {
   //check size of the visualisation
@@ -44,9 +37,13 @@ const drawViz = (vizData: ObjectFormat) => {
   let compactNumber = styleVal(vizData, "compactNumber");
   let decimalPrecisionMetric = styleVal(vizData, "decimalPrecisionMetric") || 1;
   let decimalPrecisionChangePercent =
-    styleVal(vizData, "decimalPrecisionChangePercent") || 1;
+    styleVal(vizData, "decimalPrecisionChangePercent") || 2;
   let currency = styleVal(vizData, "currency") || "€";
   let missingData = styleVal(vizData, "missingData") || "-";
+  let colorSumRecap = styleVal(vizData, "colorSumRecap") || "#222222";
+  let fontSizeSumRecap = styleVal(vizData, "fontSizeSumRecap") || 25;
+  let boldNumber = styleVal(vizData, "boldNumber");
+
   //colorBars
   let colorHeader = styleVal(vizData, "colorHeader") || "#4682b4";
   let colorBackg = styleVal(vizData, "colorBackg") || "#D3D3D3";
@@ -54,68 +51,63 @@ const drawViz = (vizData: ObjectFormat) => {
   let horizontalGap = styleVal(vizData, "horizontalGap") || 15;
   let verticalGap = styleVal(vizData, "verticalGap") || 10;
   const borderSize = styleVal(vizData, "addBorder") ? 1 : 0;
-  let fontSize = styleVal(vizData, "fontSize") || 24;
-  let colorTitleDim = "white";
+  let colorTitleDim = styleVal(vizData, "colorTitleDim") || "#ffffff";
+  //others
+  let fontFamily = styleVal(vizData, "fontFamily") || "Arial";
+  let colorInfoBoxText = styleVal(vizData, "colorInfoBoxText") || "#808080"; //#00838F
+  let colorBar = styleVal(vizData, "colorBar") || "#D3D3D3"; //#E64A19
+  let colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
+  let colorValueCross = styleVal(vizData, "colorValueCross") || "#fff";
+  let colorValueInfoBack = styleVal(vizData, "colorValueInfoBack") || "#fff";
+  let topPositionButton = styleVal(vizData, "topPositionButton") || 2;
 
-  //list of variables
-  // const listVarsMetric = Object.keys(vizData.tables.DEFAULT[0]).filter(
-  //   (x) => x !== "date"
-  // );
-  const listVarsMetric = [
-    "effectif",
-    "effectif",
-    "effectif",
-    "effectif",
-    "effectif",
-  ];
-  const nbCardToCreate = listVarsMetric.length;
-  const widthCard = evalLength(
-    getWidth(),
-    horizontalGap,
-    maxNumberCards,
-    minCardWidth,
-    nbCardToCreate
+  //comparison val
+  let fillSvgNeg = styleVal(vizData, "fillSvgNeg") || "#b30000";
+  let fillSvgPositiv = styleVal(vizData, "fillSvgPositiv") || "#00b300";
+  let textToIllustrate =
+    styleVal(vizData, "textToIllustrate") || "Last period 30days";
+  let positionTextStartToIllustrate = styleVal(
+    vizData,
+    "positionTextStartToIllustrate"
   );
-  const heightCard = evalLength(
-    getHeight(),
-    verticalGap,
-    maxNumberCards,
-    minCardHeight,
-    nbCardToCreate
-  );
-
-  const stopCardLine = evalLength(
-    getWidth(),
-    horizontalGap,
-    maxNumberCards,
-    minCardWidth,
-    nbCardToCreate,
-    true
-  );
-
-  console.log(
-    listVarsMetric,
-    nbCardToCreate,
-    stopCardLine,
-    "stopCardLine listVarsMetric"
-  );
+  let fontSizeTextToIllustrate =
+    styleVal(vizData, "fontSizeTextToIllustrate") || 20;
+  let colorTextToIllustrate =
+    styleVal(vizData, "colorTextToIllustrate") || "#222222";
+  const gap = {
+    h: horizontalGap,
+    v: verticalGap,
+  };
+  const listVarsMetric = vizData.fields.effectif;
+  const nbDims = listVarsMetric.length;
 
   //check if comparison table exists
   const hasCompareTables = (vizData.tables as Object).hasOwnProperty(
     "COMPARISON"
   );
+  const allDatasetCompare = hasCompareTables
+    ? vizData.tables.COMPARISON.length === 0
+      ? null
+      : transformData(vizData.tables.COMPARISON, nbDims)
+    : null;
 
   //Get data and check and sort
-  const dataset = transformData(vizData.tables.DEFAULT, verifData);
+  const allDataset = transformData(vizData.tables.DEFAULT, nbDims, verifData);
 
   // Reset all elements of the page
-  resetAllElements(vizData);
+  resetAllElements();
 
-  //Define style
-  const styles = getStyle(vizData);
-  const styleSheet = document.createElement("style");
-  styleSheet.innerText = styles;
-  document.head.appendChild(styleSheet);
+  //insert svg icon sprite
+  d3.select("body").node().innerHTML = `
+  <svg style="display:none">
+    <symbol id="trending_up" viewBox="0 0 256 256">
+      <path d="M240.00244,56.00513V120a8,8,0,0,1-16,0V75.314l-82.34277,82.34278a8.00122,8.00122,0,0,1-11.31446,0L96.00244,123.314,29.65967,189.65674a8.00018,8.00018,0,0,1-11.31446-11.31348l72-72a8.00122,8.00122,0,0,1,11.31446,0L136.00244,140.686,212.68848,64h-44.686a8,8,0,0,1,0-16h64c.02979,0,.0586.00415.08838.00439.2334.00269.46631.01246.69824.0354.12891.01246.25391.03638.38086.05494.13135.01928.26319.03418.39356.06006.14013.02783.27685.06591.41455.10107.11474.0293.23047.0542.34424.08862.13427.04053.26367.09058.395.13794.11523.04151.231.07935.34472.12647.1211.05.23682.10864.35449.16455.11914.05615.23926.10888.356.17138.11133.05957.21729.12745.3252.19214.11621.06934.23388.135.34668.2107.11718.07812.227.16552.33984.24951.09668.07226.1958.13965.28955.21679.18652.15284.36426.31519.53565.48389.01611.01611.03417.0293.05029.04541.02051.02051.0376.04321.05762.064.16357.167.32177.33935.47021.52026.083.10059.15527.20654.23193.31006.07862.10571.16065.20874.23438.31836.08057.1206.15088.24585.22461.36987.05957.1001.12207.19751.17724.30029.06788.126.125.25538.18506.384.05078.1084.10547.2146.15137.32568.05127.12476.09326.252.13867.37842.04248.11987.08887.238.126.36059.03857.12769.06738.25757.09912.38672.03125.124.06592.2461.09131.37256.02978.15088.04785.30322.06933.45532.01465.10645.03516.21094.0459.31861Q240.002,55.60571,240.00244,56.00513Z"/>
+    </symbol>  
+    <symbol id="trending_down" viewBox="0 0 256 256">
+        <path d="M233.14111,207.90967c-.1167.01672-.231.03882-.34912.05041-.2622.02588-.52588.03992-.78955.03992h-64a8,8,0,1,1,0-16h44.686l-76.686-76.686-34.34277,34.34278a8.00122,8.00122,0,0,1-11.31446,0l-72-72A8.00018,8.00018,0,1,1,29.65967,66.34326L96.00244,132.686l34.34277-34.34278a8.00122,8.00122,0,0,1,11.31446,0L224.00244,180.686V136a8,8,0,0,1,16,0v63.99487q0,.39918-.04.79712c-.01074.10767-.03125.21216-.0459.31861-.02148.1521-.03955.30456-.06933.45544-.02539.12622-.06006.24841-.09131.37244-.03174.12915-.06055.259-.09912.38672-.03711.12255-.0835.24072-.126.36059-.04541.12647-.0874.25379-.13867.37842-.0459.11108-.10059.21728-.15137.32568-.06006.12866-.11718.25806-.18506.384-.05517.10278-.11767.20019-.17724.30029-.07373.124-.144.24927-.22461.36987-.07373.10974-.15576.21265-.23438.31836-.07666.10352-.14892.20947-.23193.31006-.14844.18091-.30664.35327-.47021.52026-.02.02076-.03711.04346-.05762.064-.01612.01611-.03418.0293-.05029.04529-.17139.16882-.34913.33117-.53565.48413-.09424.07751-.19385.145-.291.21765-.11181.08374-.22167.17053-.33789.24853-.11474.07679-.23388.14331-.35156.21363-.10644.06347-.21045.13012-.31933.18872-.12012.06421-.24366.11865-.36622.17627-.11425.05395-.22656.11084-.34375.15942-.11816.04907-.23876.0885-.35888.13147-.12647.04553-.25147.09387-.38037.13318-.12012.03613-.2417.06262-.36231.093-.13183.03332-.2622.07031-.39648.09692C233.42529,207.8728,233.28271,207.8894,233.14111,207.90967Z"/>
+    </symbol>
+  </svg>
+  `;
 
   //create wrapper div
   const wrapper = d3
@@ -132,7 +124,7 @@ const drawViz = (vizData: ObjectFormat) => {
   const maxDimensions = getMaxDimensions("body");
   const grid = calculGrid(
     maxDimensions,
-    listVarsMetric.length,
+    nbDims,
     1,
     maxDimensions.direction === "vertical" ? 3 : 4,
     maxDimensions.direction === "vertical" ? 4 : 3
@@ -146,79 +138,27 @@ const drawViz = (vizData: ObjectFormat) => {
     },
     gap
   );
-  console.log(maxDimensions, grid, cardSize, "maxDimensions, grid, cardSize");
 
-  function getGapBreak(
-    cardSizeW: number,
-    cardSizeH: number,
-    maxDimensions: GetMaxDims,
-    nbDims: number,
-    gap: {
-      h: number;
-      v: number;
-    }
-  ) {
-    const breakp = {} as { col: number; lines: number };
-
-    const ratioNbCardLines = maxDimensions.h / (cardSizeH + gap.h);
-    //( * nbDims) / maxDimensions.h;
-    const ratioNbCardCols = maxDimensions.w / (cardSizeW + gap.v);
-    // (cardSizeW * nbDims) / maxDimensions.w;
-
-    breakp.lines = ratioNbCardLines > 1 ? Math.trunc(ratioNbCardLines) : 1;
-    breakp.col = ratioNbCardCols > 1 ? Math.trunc(ratioNbCardCols) : 1;
-
-    console.log(
-      ratioNbCardLines,
-      ratioNbCardCols,
-      cardSizeW,
-      cardSizeH,
-      maxDimensions,
-      nbDims,
-      breakp,
-      "ratioNbCardLines,ratioNbCardCols,cardSizeW, cardSizeH, maxDimensions, nbDims, breakp"
-    );
-    return breakp;
-  }
-
-  let gapBreak = getGapBreak(
-    cardSize.w,
-    cardSize.h,
-    maxDimensions,
-    listVarsMetric.length,
-    gap
-  );
+  let gapBreak = getGapBreak(cardSize.w, cardSize.h, maxDimensions, gap);
 
   //create cards
   listVarsMetric.map((metric, i) => {
-    const metricName = vizData.fields[metric][0].name;
+    const metricName = metric.name;
+    let dataset = allDataset[i];
     const sumTotalEffectifs = dataset.reduce((prev, curr) => {
-      return prev + curr[metric];
+      return prev + curr["effectif" + (i === 0 ? "" : i)];
     }, 0);
-    //console.log(sumTotalEffectifs, "sumTotalEffectifs");
     const card = wrapper
       .append("div")
       .attr("class", "cardWrapper")
       .attr(
         "style",
-        `position: relative; width:${
-          //widthCard < minCardWidth ? minCardWidth : widthCard
+        `font-family: ${fontFamily}, sans-serif; position: relative; width:${
           cardSize.w
-        }px; height: ${
-          //heightCard < minCardHeight ? minCardHeight : heightCard
-          cardSize.h
-        }px;border-radius:${borderRadius}px; ${
+        }px; height: ${cardSize.h}px;border-radius:${borderRadius}px; ${
           i !== 0 && i % gapBreak.col !== 0 ? `margin-left:${gap.h}px` : ""
         };${i >= gapBreak.col ? `margin-top:${gap.v}px` : ""}`
       );
-    console.log(
-      cardSize.h,
-      i > 0 && i < grid.col,
-      (i + 1) % gapBreak.col,
-      "cardSize.h, i > 0 && i < grid.col modulo",
-      gapBreak,
-      i
-    );
     const header = card
       .append("div")
       .attr("class", "cardHeader")
@@ -263,12 +203,32 @@ const drawViz = (vizData: ObjectFormat) => {
       .attr("class", "textSum")
       .attr(
         "style",
-        `height: ${(cardSize.h * 1.2) / 5}px; display: flex;
-        align-items: center; justify-content: flex-end; margin: 0 ${marginDiv}px`
-      )
-      .append("span");
-    textSum.attr("style", `font-size:${fontSize}px`);
-    textSum.node().innerHTML =
+        `height: ${(cardSize.h * 1.5) / 5}px; display: flex;
+        align-items: center; justify-content: ${
+          positionTextStartToIllustrate ? "space-between" : "flex-end"
+        }; margin: 0 ${marginDiv}px`
+      );
+
+    if (hasCompareTables) {
+      if (vizData.tables.COMPARISON.length !== 0) {
+        textSum
+          .append("span")
+          .attr(
+            "style",
+            `align-self: end;margin-right: ${marginDiv}px; font-size:${fontSizeTextToIllustrate}px; color: ${colorTextToIllustrate} `
+          )
+          .node().innerHTML = `${textToIllustrate}`;
+      }
+    }
+
+    const textSumSpan = textSum.append("span");
+    textSumSpan.attr(
+      "style",
+      `${
+        boldNumber ? "font-weight: bold" : ""
+      };font-size:${fontSizeSumRecap}px; color:${colorSumRecap}`
+    );
+    textSumSpan.node().innerHTML =
       (isNaN(sumTotalEffectifs) || sumTotalEffectifs === 0
         ? missingData
         : compactNumber === true
@@ -280,13 +240,26 @@ const drawViz = (vizData: ObjectFormat) => {
       .attr(
         "style",
         `height: ${
-          (cardSize.h * 0.8) / 5
+          (cardSize.h * 0.5) / 5
         }px; display:flex;justify-content: flex-end;align-items: center`
       );
-    textVarChange
-      .append("span")
-      .attr("style", `margin: 0 ${marginDiv}px`)
-      .node().innerHTML = "test";
+
+    if (allDatasetCompare) {
+      createBlockChange(
+        allDatasetCompare[i],
+        textVarChange,
+        marginDiv,
+        i,
+        sumTotalEffectifs,
+        decimalPrecisionChangePercent,
+        (cardSize.h * 0.5) / 5,
+        fillSvgNeg,
+        fillSvgPositiv
+      );
+    }
+
+    //create svg Graph
+
     const margin = { top: 1.5, right: 5, bottom: 3, left: 7 };
     const svgWidth = +cardSize.w - margin.left - margin.right;
     const svgHeight = +contentHeight - margin.top - margin.bottom;
@@ -307,7 +280,7 @@ const drawViz = (vizData: ObjectFormat) => {
     y.domain([
       0,
       d3.max(dataset, function (d: any) {
-        return d[metric];
+        return d["effectif" + (i === 0 ? "" : i)];
       }),
     ]);
 
@@ -317,18 +290,27 @@ const drawViz = (vizData: ObjectFormat) => {
       .enter()
       .append("rect")
       .attr("class", "bar")
+      .attr("style", `fill: ${colorBar};`)
       .attr("x", function (d: any) {
         return x(d.date);
       })
       .attr("width", x.bandwidth())
       .attr("y", function (d: any) {
-        return y(d[metric]);
+        return y(d["effectif" + (i === 0 ? "" : i)]);
       })
       .attr("height", function (d: any) {
-        return svgHeight - y(d[metric]);
+        return svgHeight - y(d["effectif" + (i === 0 ? "" : i)]);
       });
   });
-  createSlider(vizData);
+  createSlider(
+    vizData,
+    colorValueCross,
+    colorValueInfoBack,
+    fontFamily,
+    colorInfoBoxText,
+    topPositionButton,
+    colorValueBack
+  );
 };
 type GetMaxDims = {
   w: number;
@@ -336,6 +318,65 @@ type GetMaxDims = {
   max: number;
   direction: string;
 };
+function createBlockChange(
+  datasetCompare: {
+    [x: string]: any;
+  }[],
+  textVarChange: any,
+  marginDiv: number,
+  i: number,
+  sumTotal: number,
+  decimalPrecisionChangePercent: number,
+  heightSvg: number,
+  fillSvgNeg: string,
+  fillSvgPositiv: string
+) {
+  if (datasetCompare) {
+    const sumTotalCompare = datasetCompare.reduce((prev, curr) => {
+      return prev + curr["effectif" + (i === 0 ? "" : i)];
+    }, 0);
+    let ecart = (100 * (sumTotal - sumTotalCompare)) / sumTotalCompare;
+    textVarChange
+      .append("svg")
+      .attr(
+        "style",
+        `height: ${heightSvg}px; width: ${heightSvg}px; fill: ${
+          ecart < 0 ? fillSvgNeg : fillSvgPositiv
+        }`
+      )
+      .attr("class", "icon")
+      .append("use")
+      .attr("xlink:href", `${ecart < 0 ? "#trending_down" : "#trending_up"}`);
+    const spanText = textVarChange
+      .append("span")
+      .attr(
+        "style",
+        `margin: 0 ${marginDiv}px; color: ${
+          ecart < 0 ? fillSvgNeg : fillSvgPositiv
+        }`
+      );
+    spanText.node().innerHTML = `${Number(ecart).toFixed(
+      decimalPrecisionChangePercent
+    )}%`;
+  }
+}
+
+function getGapBreak(
+  cardSizeW: number,
+  cardSizeH: number,
+  maxDimensions: GetMaxDims,
+  gap: {
+    h: number;
+    v: number;
+  }
+) {
+  const breakp = {} as { col: number; lines: number };
+  const ratioNbCardLines = maxDimensions.h / (cardSizeH + gap.h);
+  const ratioNbCardCols = maxDimensions.w / (cardSizeW + gap.v);
+  breakp.lines = ratioNbCardLines > 1 ? Math.trunc(ratioNbCardLines) : 1;
+  breakp.col = ratioNbCardCols > 1 ? Math.trunc(ratioNbCardCols) : 1;
+  return breakp;
+}
 
 function calculGrid(
   canvas: GetMaxDims,
@@ -380,7 +421,6 @@ function calculObjectSize(
     i = o / a,
     s = ratio.y / ratio.x,
     l = {} as { w: number; h: number; max: number };
-  console.log(a, i, s, l, ratio.y, ratio.x, "a,i,s,l,ratio.y,ratio.x");
   return (
     (l.w = Math.round(i > s ? a : o / s)),
     (l.h = Math.round(i > s ? a * s : o)),
@@ -407,12 +447,10 @@ function evalLength(
   nbVars: number,
   stop?: boolean
 ) {
-  console.log(maxLength, space, maxCards, minCardLength, nbVars);
   if (nbVars <= maxCards) {
     let length = (maxLength - space * (nbVars - 1)) / nbVars;
     for (let i = nbVars; i > 0; i--) {
       /*+ space * (i === 1 ? 0 : 1)*/
-      console.log(length, "length");
       if (length * i <= maxLength) {
         // if (length <= minCardLength) {
         //   throw new Error("Cards are too small");
@@ -428,9 +466,13 @@ function evalLength(
   }
 }
 
-function resetAllElements(vizData: ObjectFormat) {
+function resetAllElements() {
   if (document.querySelector(".error")) {
     let oldError = document.querySelector(".error");
+    oldError.parentNode.removeChild(oldError);
+  }
+  if (document.querySelector("svg")) {
+    let oldError = document.querySelector("svg");
     oldError.parentNode.removeChild(oldError);
   }
   if (document.querySelector(".wrapper")) {
@@ -542,9 +584,13 @@ function groupByAndSum(
   return result;
 }
 
-function transformData(datasetSource: ObjectRow[], checkDataFn: Function) {
+function transformData(
+  datasetSource: ObjectRow[],
+  nbDims: number,
+  checkDataFn?: Function
+) {
   const parseDate = d3.timeParse(dateFormat);
-  checkDataFn(datasetSource);
+  checkDataFn && checkDataFn(datasetSource);
   // const newData = datasetSource.map((e, i) => {
   //   return {
   //     date: e.date[0],
@@ -571,107 +617,23 @@ function transformData(datasetSource: ObjectRow[], checkDataFn: Function) {
       e.date[0] as string,
       infos
     );
-    return {
-      date: valTokeep,
-      effectif: e.effectif[0] === "" ? 0 : e.effectif[0],
-    };
+    let res = {} as { [x: string]: any };
+    res.date = valTokeep;
+    e.effectif.map((v, i) => {
+      res["effectif" + (i === 0 ? "" : i)] = e.effectif[i];
+    });
+    return res;
   });
 
-  let valGroupByAndSum = groupByAndSum(newData2, "date", "effectif");
-  return valGroupByAndSum;
-}
-
-function getStyle(vizData: ObjectFormat) {
-  let fontFamily = styleVal(vizData, "fontFamily") || "Open Sans";
-  let color = styleVal(vizData, "colorText") || "#808080"; //#00838F
-  let colorBar = styleVal(vizData, "colorBar") || "#D3D3D3"; //#E64A19
-  let colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
-  let colorValueCross = styleVal(vizData, "colorValueCross") || "#fff";
-  let colorValueInfoBack = styleVal(vizData, "colorValueInfoBack") || "#fff";
-  let topPositionButton = styleVal(vizData, "topPositionButton") || 2;
-
-  return `
-    body{
-      font-family: ${fontFamily}, sans-serif;
-      overflow: hidden;
-    }
-    .bar { 
-      fill: ${colorBar};
-      opacity: 0.5;
-    }
-    svg {
-      position: relative;
-      user-select: none
-    }
-
-
-    .info {
-      position: fixed;
-      top: ${topPositionButton}rem;
-      right:1rem;
-      width: 2rem;
-      border-radius: 50%;
-      height:2rem;
-      background-color: ${colorValueBack};
-      color:${color},
-      backdrop-filter: blur(4px);
-      z-index: 1;
-      cursor: pointer;
-    }
-
-    #infoContent {
-      font-family: ${fontFamily};
-      position: fixed;
-      top: 0;
-      right:0;
-      width: 100%;
-      height:100%;
-      transform:translateX(100%);
-      transition: transform 300ms ease-in;
-      
-    }
-
-    #content {display: flex;
-      align-items: center;
-      justify-content: center;
-      height:100%;
-      transform:translateX(100%);
-      transition: transform 300ms ease-out;
-      backdrop-filter: blur(10px);
-      width:100%;
-    }
-
-    #contentInside {
-      height:100%;
-      width:100%;
-      background: ${colorValueInfoBack};
-      opacity:0.5;
-      padding: 2em;
-    }
-
-    #line-wrapper {
-      position:relative;
-      transition: transform 300ms ease-out;
-      transform: rotate(0deg);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .horizontal,
-    .vertical {
-      width: 50%;
-      height: 2px;
-      background-color: ${colorValueCross};
-    }
-    .vertical {
-      position: relative;
-      bottom: 2px;
-      transform: rotate(90deg);
-    }
-  `;
+  let allData = Array.from({ length: nbDims }, (v, k) => {
+    let valGroupByAndSum = groupByAndSum(
+      newData2,
+      "date",
+      "effectif" + (k === 0 ? "" : k)
+    );
+    return valGroupByAndSum;
+  });
+  return allData;
 }
 
 function compareDate(parseDate: any) {
@@ -703,15 +665,31 @@ function displayError(msg: string) {
   document.body.appendChild(msgDiv);
 }
 
-const createSlider = (vizData: ObjectFormat) => {
+const createSlider = (
+  vizData: ObjectFormat,
+  colorValueCross: string,
+  colorValueInfoBack: string,
+  fontFamily: string,
+  colorInfoBoxText: string,
+  topPositionButton: number,
+  colorValueBack: string
+) => {
   let TitleText = styleVal(vizData, "TitleText") || "Add a title in style";
   let DescText = styleVal(vizData, "DescText") || "Add a description in style";
-  const BlockInfo = d3.select("body").append("div").attr("class", "info");
+  const BlockInfo = d3
+    .select("body")
+    .append("div")
+    .attr("class", "info")
+    .attr(
+      "style",
+      `top: ${topPositionButton}rem;background-color: ${colorValueBack};`
+    );
   let clicked = false;
   const BlockContent = d3
     .select("body")
     .append("div")
-    .attr("id", "infoContent");
+    .attr("id", "infoContent")
+    .attr("style", `font-family: ${fontFamily};color:${colorInfoBoxText};`);
   const Button = BlockInfo.append("div")
     .attr("id", "line-wrapper")
     .on("click", function () {
@@ -728,12 +706,32 @@ const createSlider = (vizData: ObjectFormat) => {
         clicked = false;
       }
     });
-  Button.append("div").attr("class", "horizontal");
-  Button.append("div").attr("class", "vertical");
+
+  Button.append("div")
+    .attr("class", "horizontal")
+    .attr(
+      "style",
+      `width: 50%;height: 2px;background-color: ${colorValueCross}`
+    );
+  Button.append("div")
+    .attr("class", "vertical")
+    .attr(
+      "style",
+      `width: 50%;height: 2px;background-color: ${colorValueCross}`
+    );
+
   BlockContent.append("div")
     .attr("id", "content")
     .append("div")
-    .attr("id", "contentInside");
+    .attr("id", "contentInside")
+    .attr(
+      "style",
+      `height:100%;
+      width:100%;
+      background: ${colorValueInfoBack};
+      opacity:0.5;
+      padding: 2em;`
+    );
   document.querySelector("#contentInside").innerHTML = [
     `<h3>${TitleText}</h3>`,
     `<p>${DescText}</p>`,

@@ -39,7 +39,15 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head />
+        <Head>
+          <link
+            rel="icon"
+            href="/logo/logo.ico"
+            type="image/x-icon"
+            sizes="any"
+          />
+          <link rel="icon" href="/logo/logo.svg" type="image/svg-xml" />
+        </Head>
         <body>
           <SVG />
           <Main />

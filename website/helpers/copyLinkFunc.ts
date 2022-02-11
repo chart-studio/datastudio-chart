@@ -10,7 +10,7 @@ export const copyLinkFunc = (id_node: string) => {
     // use old commandExec() way
   } else {
     navigator.clipboard
-      .writeText(document.getElementById(id_node)?.innerHTML!)
+      .writeText((document.getElementById(id_node) as HTMLInputElement)?.value!)
       .then(function () {
         //alert("yeah!") // success
         console.log("copy done")

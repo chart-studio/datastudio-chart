@@ -5,6 +5,7 @@ $line-height: 1.5;
 
 :root {
   color-scheme: dark light;
+
   /*============= HUE ======================*/
   --speed: 250ms;
   --hue-brand: 301;
@@ -280,15 +281,19 @@ html[contrast="less"] {
   --saturation-bias: -0.05;
 }
 
-* {
+*,
+*::after,
+*::before {
   box-sizing: border-box;
   margin: 0;
+  padding: 0;
 }
 
 html {
   block-size: 100%;
   background-color: var(--surface2);
   color: var(--text1);
+  overflow-y: auto;
   & ::-webkit-scrollbar {
     width: 0.25rem;
   }

@@ -1,11 +1,10 @@
 body {
-  font-family: Roboto;
-  /*font-size: 14px;
-  overflow: hidden;*/
+  /*font-family: Roboto;
+  font-size: 14px;*/
+  overflow: hidden;
 }
-
 code {
-  background-color: #fdf6e3;
+  background-color: red;
   color: #586e75;
 }
 
@@ -34,4 +33,56 @@ code {
   align-content: center;
   justify-content: center;
   align-items: center;
+}
+
+svg {
+  position: relative;
+  user-select: none;
+}
+
+.info {
+  position: fixed;
+  backdrop-filter: blur(4px);
+  z-index: 1;
+  cursor: pointer;
+  right: 1rem;
+  width: 2rem;
+  border-radius: 50%;
+  height: 2rem;
+}
+
+#infoContent {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(100%);
+  transition: transform 300ms ease-in;
+}
+
+#content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  transform: translateX(100%);
+  transition: transform 300ms ease-out;
+  backdrop-filter: blur(10px);
+  width: 100%;
+}
+#line-wrapper {
+  position: relative;
+  transition: transform 300ms ease-out;
+  transform: rotate(0deg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.vertical {
+  position: relative;
+  bottom: 2px;
+  transform: rotate(90deg);
 }

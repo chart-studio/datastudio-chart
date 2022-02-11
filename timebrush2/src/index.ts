@@ -11,7 +11,7 @@ import {
 } from "@google/dscc";
 import * as local from "./localMessage";
 import * as d3 from "d3v4";
-export const LOCAL = false;
+export const LOCAL = true;
 
 //Global constiables
 let startDate: string = "";

@@ -19,7 +19,7 @@
           "type": "METRIC",
           "options": {
             "min": 1,
-            "max": 1
+            "max": 2
           }
         }
       ]
@@ -30,6 +30,12 @@
       "id": "kpi",
       "label": "KPI",
       "elements": [
+        {
+          "type": "FILL_COLOR",
+          "id": "colorTitleDim",
+          "label": "Header title color",
+          "defaultValue": { "color": "#ffffff" }
+        },
         {
           "type": "CHECKBOX",
           "id": "compactNumber",
@@ -43,8 +49,8 @@
           "defaultValue": 1,
           "options": [
             {
-              "max": 0,
-              "min": 4
+              "min": 1,
+              "max": 4
             }
           ]
         },
@@ -55,8 +61,8 @@
           "defaultValue": 1,
           "options": [
             {
-              "max": 0,
-              "min": 4
+              "min": 1,
+              "max": 4
             }
           ]
         },
@@ -89,6 +95,24 @@
               "value": ""
             }
           ]
+        },
+        {
+          "type": "FILL_COLOR",
+          "id": "colorSumRecap",
+          "label": "Color number",
+          "defaultValue": { "color": "#D3D3D3" }
+        },
+        {
+          "type": "FONT_SIZE",
+          "id": "fontSizeSumRecap",
+          "label": "Font size number",
+          "defaultValue": 24
+        },
+        {
+          "type": "CHECKBOX",
+          "id": "boldNumber",
+          "label": "Bold number",
+          "defaultValue": true
         }
       ]
     },
@@ -133,12 +157,6 @@
           "defaultValue": "Open Sans"
         },
         {
-          "type": "FONT_COLOR",
-          "id": "colorText",
-          "label": "color labels",
-          "defaultValue": { "color": "#808080" }
-        },
-        {
           "type": "FONT_SIZE",
           "id": "fontSize",
           "label": "Metric number size",
@@ -178,6 +196,48 @@
       ]
     },
     {
+      "id": "compareVals",
+      "label": "Comparison values",
+      "elements": [
+        {
+          "type": "FONT_COLOR",
+          "id": "fillSvgNeg",
+          "label": "Color negative values",
+          "defaultValue": { "color": "#b30000" }
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "fillSvgPositiv",
+          "label": "Color positiv values",
+          "defaultValue": { "color": "#00b300" }
+        },
+        {
+          "type": "TEXTINPUT",
+          "id": "textToIllustrate",
+          "label": "Comaparison text",
+          "defaultValue": "Last period 30days"
+        },
+        {
+          "type": "CHECKBOX",
+          "id": "positionTextStartToIllustrate",
+          "label": "Comparison Text position on left",
+          "defaultValue": false
+        },
+        {
+          "type": "FONT_SIZE",
+          "id": "fontSizeTextToIllustrate",
+          "label": "Font size comparison text",
+          "defaultValue": 20
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorTextToIllustrate",
+          "label": "Color comparison text",
+          "defaultValue": { "color": "#222222" }
+        }
+      ]
+    },
+    {
       "id": "infos",
       "label": "Informations",
       "elements": [
@@ -192,6 +252,12 @@
           "id": "DescText",
           "label": "Description Text",
           "defaultValue": "Add a description in style 212"
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorInfoBoxText",
+          "label": "Color text",
+          "defaultValue": { "color": "#808080" }
         }
       ]
     },

@@ -17,7 +17,7 @@ export const getAllDocs = (locale: "fr" | "en" = "fr") => {
       return 0
     })
 
-  console.log(posts, "posts")
+  //console.log(posts, "posts")
   return posts
 }
 

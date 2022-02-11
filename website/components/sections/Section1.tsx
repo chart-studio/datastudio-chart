@@ -3,7 +3,7 @@ import fr from "../../locales/fr"
 import CheckMark_icon from "../icon/CheckMark_icon"
 
 const Section = styled.section`
-  height: 72vh;
+  height: 48vh;
   display: flex;
   text-align: center;
   align-items: center;
@@ -21,6 +21,7 @@ const Section = styled.section`
     margin: 0.5rem 0;
   }
   ul {
+    padding-left: 2rem;
     @media (max-width: 48rem) {
       & {
         padding: 0;
@@ -47,6 +48,10 @@ const Section1 = ({ t }: { t: typeof fr }) => {
             <CheckMark_icon />
             <span>{t.hero_section.option3}</span>
           </li>
+          {/* <li>
+            <CheckMark_icon />
+            <span>{t.hero_section.option4}</span>
+          </li> */}
         </ul>
       </div>
     </Section>

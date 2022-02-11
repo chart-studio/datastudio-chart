@@ -37,6 +37,7 @@
       font-family: $font;
       font-style: normal;
       font-weight: $listWeight;
+      font-display: swap;
       @if $listWeight == 400 {
         src: url($url + "/" + $name + "-" + "regular" + ".eot"); /* IE9 Compat Modes */
         src: url($url + "/" + $name + "-" + "regular" + ".eot?#iefix")

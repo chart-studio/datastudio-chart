@@ -16,9 +16,6 @@ window.onresize = function () {
 };
 //Global constiables
 var dateFormat = "%Y%m%d";
-var minCardHeight = 40;
-var minCardWidth = 62;
-var maxNumberCards = 8;
 var borderRadius = 8;
 var drawViz = function (vizData) {
     //check size of the visualisation
@@ -30,9 +27,12 @@ var drawViz = function (vizData) {
     //kpi
     var compactNumber = styleVal(vizData, "compactNumber");
     var decimalPrecisionMetric = styleVal(vizData, "decimalPrecisionMetric") || 1;
-    var decimalPrecisionChangePercent = styleVal(vizData, "decimalPrecisionChangePercent") || 1;
+    var decimalPrecisionChangePercent = styleVal(vizData, "decimalPrecisionChangePercent") || 2;
     var currency = styleVal(vizData, "currency") || "€";
     var missingData = styleVal(vizData, "missingData") || "-";
+    var colorSumRecap = styleVal(vizData, "colorSumRecap") || "#222222";
+    var fontSizeSumRecap = styleVal(vizData, "fontSizeSumRecap") || 25;
+    var boldNumber = styleVal(vizData, "boldNumber");
     //colorBars
     var colorHeader = styleVal(vizData, "colorHeader") || "#4682b4";
     var colorBackg = styleVal(vizData, "colorBackg") || "#D3D3D3";
@@ -40,82 +40,127 @@ var drawViz = function (vizData) {
     var horizontalGap = styleVal(vizData, "horizontalGap") || 15;
     var verticalGap = styleVal(vizData, "verticalGap") || 10;
     var borderSize = styleVal(vizData, "addBorder") ? 1 : 0;
-    var fontSize = styleVal(vizData, "fontSize") || 12;
-    //list of variables
-    var listVarsMetric = Object.keys(vizData.tables.DEFAULT[0]).filter(function (x) { return x !== "date"; });
-    //const listVarsMetric = ["effectif", "effectif", "effectif", "effectif"];
-    var nbCardToCreate = listVarsMetric.length;
-    var widthCard = evalLength((0, dscc_1.getWidth)(), horizontalGap, maxNumberCards, minCardWidth, nbCardToCreate);
-    var heightCard = evalLength((0, dscc_1.getHeight)(), verticalGap, maxNumberCards, minCardHeight, nbCardToCreate);
-    var stopCardLine = evalLength((0, dscc_1.getWidth)(), horizontalGap, maxNumberCards, minCardWidth, nbCardToCreate, true);
-    console.log(listVarsMetric, nbCardToCreate, stopCardLine, "stopCardLine listVarsMetric");
+    var colorTitleDim = styleVal(vizData, "colorTitleDim") || "#ffffff";
+    //others
+    var fontFamily = styleVal(vizData, "fontFamily") || "Arial";
+    var colorInfoBoxText = styleVal(vizData, "colorInfoBoxText") || "#808080"; //#00838F
+    var colorBar = styleVal(vizData, "colorBar") || "#D3D3D3"; //#E64A19
+    var colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
+    var colorValueCross = styleVal(vizData, "colorValueCross") || "#fff";
+    var colorValueInfoBack = styleVal(vizData, "colorValueInfoBack") || "#fff";
+    var topPositionButton = styleVal(vizData, "topPositionButton") || 2;
+    //comparison val
+    var fillSvgNeg = styleVal(vizData, "fillSvgNeg") || "#b30000";
+    var fillSvgPositiv = styleVal(vizData, "fillSvgPositiv") || "#00b300";
+    var textToIllustrate = styleVal(vizData, "textToIllustrate") || "Last period 30days";
+    var positionTextStartToIllustrate = styleVal(vizData, "positionTextStartToIllustrate");
+    var fontSizeTextToIllustrate = styleVal(vizData, "fontSizeTextToIllustrate") || 20;
+    var colorTextToIllustrate = styleVal(vizData, "colorTextToIllustrate") || "#222222";
+    var gap = {
+        h: horizontalGap,
+        v: verticalGap
+    };
+    var listVarsMetric = vizData.fields.effectif;
+    var nbDims = listVarsMetric.length;
     //check if comparison table exists
     var hasCompareTables = vizData.tables.hasOwnProperty("COMPARISON");
+    var allDatasetCompare = hasCompareTables
+        ? vizData.tables.COMPARISON.length === 0
+            ? null
+            : transformData(vizData.tables.COMPARISON, nbDims)
+        : null;
     //Get data and check and sort
-    var dataset = transformData(vizData.tables.DEFAULT, verifData);
+    var allDataset = transformData(vizData.tables.DEFAULT, nbDims, verifData);
     // Reset all elements of the page
-    resetAllElements(vizData);
-    //Define style
-    var styles = getStyle(vizData);
-    var styleSheet = document.createElement("style");
-    styleSheet.innerText = styles;
-    document.head.appendChild(styleSheet);
+    resetAllElements();
+    //insert svg icon sprite
+    d3.select("body").node().innerHTML = "\n  <svg style=\"display:none\">\n    <symbol id=\"trending_up\" viewBox=\"0 0 256 256\">\n      <path d=\"M240.00244,56.00513V120a8,8,0,0,1-16,0V75.314l-82.34277,82.34278a8.00122,8.00122,0,0,1-11.31446,0L96.00244,123.314,29.65967,189.65674a8.00018,8.00018,0,0,1-11.31446-11.31348l72-72a8.00122,8.00122,0,0,1,11.31446,0L136.00244,140.686,212.68848,64h-44.686a8,8,0,0,1,0-16h64c.02979,0,.0586.00415.08838.00439.2334.00269.46631.01246.69824.0354.12891.01246.25391.03638.38086.05494.13135.01928.26319.03418.39356.06006.14013.02783.27685.06591.41455.10107.11474.0293.23047.0542.34424.08862.13427.04053.26367.09058.395.13794.11523.04151.231.07935.34472.12647.1211.05.23682.10864.35449.16455.11914.05615.23926.10888.356.17138.11133.05957.21729.12745.3252.19214.11621.06934.23388.135.34668.2107.11718.07812.227.16552.33984.24951.09668.07226.1958.13965.28955.21679.18652.15284.36426.31519.53565.48389.01611.01611.03417.0293.05029.04541.02051.02051.0376.04321.05762.064.16357.167.32177.33935.47021.52026.083.10059.15527.20654.23193.31006.07862.10571.16065.20874.23438.31836.08057.1206.15088.24585.22461.36987.05957.1001.12207.19751.17724.30029.06788.126.125.25538.18506.384.05078.1084.10547.2146.15137.32568.05127.12476.09326.252.13867.37842.04248.11987.08887.238.126.36059.03857.12769.06738.25757.09912.38672.03125.124.06592.2461.09131.37256.02978.15088.04785.30322.06933.45532.01465.10645.03516.21094.0459.31861Q240.002,55.60571,240.00244,56.00513Z\"/>\n    </symbol>  \n    <symbol id=\"trending_down\" viewBox=\"0 0 256 256\">\n        <path d=\"M233.14111,207.90967c-.1167.01672-.231.03882-.34912.05041-.2622.02588-.52588.03992-.78955.03992h-64a8,8,0,1,1,0-16h44.686l-76.686-76.686-34.34277,34.34278a8.00122,8.00122,0,0,1-11.31446,0l-72-72A8.00018,8.00018,0,1,1,29.65967,66.34326L96.00244,132.686l34.34277-34.34278a8.00122,8.00122,0,0,1,11.31446,0L224.00244,180.686V136a8,8,0,0,1,16,0v63.99487q0,.39918-.04.79712c-.01074.10767-.03125.21216-.0459.31861-.02148.1521-.03955.30456-.06933.45544-.02539.12622-.06006.24841-.09131.37244-.03174.12915-.06055.259-.09912.38672-.03711.12255-.0835.24072-.126.36059-.04541.12647-.0874.25379-.13867.37842-.0459.11108-.10059.21728-.15137.32568-.06006.12866-.11718.25806-.18506.384-.05517.10278-.11767.20019-.17724.30029-.07373.124-.144.24927-.22461.36987-.07373.10974-.15576.21265-.23438.31836-.07666.10352-.14892.20947-.23193.31006-.14844.18091-.30664.35327-.47021.52026-.02.02076-.03711.04346-.05762.064-.01612.01611-.03418.0293-.05029.04529-.17139.16882-.34913.33117-.53565.48413-.09424.07751-.19385.145-.291.21765-.11181.08374-.22167.17053-.33789.24853-.11474.07679-.23388.14331-.35156.21363-.10644.06347-.21045.13012-.31933.18872-.12012.06421-.24366.11865-.36622.17627-.11425.05395-.22656.11084-.34375.15942-.11816.04907-.23876.0885-.35888.13147-.12647.04553-.25147.09387-.38037.13318-.12012.03613-.2417.06262-.36231.093-.13183.03332-.2622.07031-.39648.09692C233.42529,207.8728,233.28271,207.8894,233.14111,207.90967Z\"/>\n    </symbol>\n  </svg>\n  ";
     //create wrapper div
     var wrapper = d3
         .select("body")
+        .attr("id", "body")
         .append("div")
         .attr("class", "wrapper")
-        .attr("style", "width:".concat((0, dscc_1.getWidth)(), "px; height: ").concat((0, dscc_1.getHeight)(), "px; gap: ").concat(verticalGap, "px ").concat(horizontalGap, "px; border-radius:").concat(borderRadius, "px "));
+        .attr("style", "width:".concat((0, dscc_1.getWidth)(), "px; height: ").concat((0, dscc_1.getHeight)(), "px; border-radius:").concat(borderRadius, "px "));
+    //Get some params
+    var maxDimensions = getMaxDimensions("body");
+    var grid = calculGrid(maxDimensions, nbDims, 1, maxDimensions.direction === "vertical" ? 3 : 4, maxDimensions.direction === "vertical" ? 4 : 3);
+    var cardSize = calculObjectSize(maxDimensions, grid, {
+        x: maxDimensions.direction === "vertical" ? 3 : 4,
+        y: maxDimensions.direction === "vertical" ? 4 : 3
+    }, gap);
+    var gapBreak = getGapBreak(cardSize.w, cardSize.h, maxDimensions, gap);
     //create cards
-    listVarsMetric.map(function (metric) {
-        var metricName = vizData.fields[metric][0].name;
+    listVarsMetric.map(function (metric, i) {
+        var metricName = metric.name;
+        var dataset = allDataset[i];
         var sumTotalEffectifs = dataset.reduce(function (prev, curr) {
-            return prev + curr[metric];
+            return prev + curr["effectif" + (i === 0 ? "" : i)];
         }, 0);
-        //console.log(sumTotalEffectifs, "sumTotalEffectifs");
         var card = wrapper
             .append("div")
             .attr("class", "cardWrapper")
-            .attr("style", "position: relative; width:".concat(widthCard < minCardWidth ? minCardWidth : widthCard, "px; height: ").concat(heightCard < minCardHeight ? minCardHeight : heightCard, "px;border-radius:").concat(borderRadius, "px ;"));
+            .attr("style", "font-family: ".concat(fontFamily, ", sans-serif; position: relative; width:").concat(cardSize.w, "px; height: ").concat(cardSize.h, "px;border-radius:").concat(borderRadius, "px; ").concat(i !== 0 && i % gapBreak.col !== 0 ? "margin-left:".concat(gap.h, "px") : "", ";").concat(i >= gapBreak.col ? "margin-top:".concat(gap.v, "px") : ""));
         var header = card
             .append("div")
             .attr("class", "cardHeader")
-            .attr("style", "border-radius:".concat(borderRadius, "px ").concat(borderRadius, "px 0 0; height: 20%; font-size:").concat(widthCard / 20, "px; background-color:").concat(colorHeader, "; border-right:solid ").concat(borderSize, "px ").concat(colorHeader, "; border-left:solid ").concat(borderSize, "px ").concat(colorHeader, " "));
-        header.node().innerHTML = metricName;
+            .attr("style", "border-radius:".concat(borderRadius, "px ").concat(borderRadius, "px 0 0; height: ").concat((cardSize.h * 3) / 5, "px; font-size:").concat(cardSize.h / 12, "px; background-color:").concat(colorHeader, "; border-right:solid ").concat(borderSize, "px ").concat(colorHeader, "; border-left:solid ").concat(borderSize, "px ").concat(colorHeader, " "));
+        var marginDiv = cardSize.w / 30;
+        var titleDiv = header
+            .append("div")
+            .attr("class", "title")
+            .attr("style", "height:".concat((cardSize.h * 1) / 5, "px; width:100%; margin-left:").concat(marginDiv, "px; display: flex;\n        align-items: center;color : ").concat(colorTitleDim))
+            .append("span");
+        titleDiv.node().innerHTML = metricName;
+        var contentHeight = (cardSize.h * 2) / 5;
         var contentCard = card
             .append("div")
             .attr("class", "cardContent")
-            .attr("style", "border-radius: 0 0 ".concat(borderRadius, "px ").concat(borderRadius, "px; background-color:").concat(colorBackg, "; padding: 5px 0; border-left:solid ").concat(borderSize, "px ").concat(colorHeader, "; border-right:solid ").concat(borderSize, "px ").concat(colorHeader, "; border-bottom:solid ").concat(borderSize, "px ").concat(colorHeader));
-        var margin = { top: 1.5, right: 5, bottom: 3, left: 7 };
-        var svgWidth = +widthCard - margin.left - margin.right;
-        var svgHeight = +(widthCard * 2) / 5 - margin.top - margin.bottom;
-        var svg = contentCard
-            .append("svg")
-            .attr("width", svgWidth)
-            .attr("height", svgHeight)
-            .append("g");
-        var textSvgSum = svg
-            .append("text")
-            .attr("text-anchor", "middle")
-            .attr("font-size", fontSize);
-        textSvgSum.attr("dx", svgWidth / 3).attr("dy", svgHeight - 20);
-        textSvgSum.node().innerHTML =
+            .attr("style", "border-radius: 0 0 ".concat(borderRadius, "px ").concat(borderRadius, "px; \n        background-color:").concat(colorBackg, ";\n        border-left:solid ").concat(borderSize, "px ").concat(colorHeader, "; \n        border-right:solid ").concat(borderSize, "px ").concat(colorHeader, "; \n        border-bottom:solid ").concat(borderSize, "px ").concat(colorHeader, ";\n        height:").concat(contentHeight, "px;\n        "));
+        var textSum = contentCard
+            .append("div")
+            .attr("class", "textSum")
+            .attr("style", "height: ".concat((cardSize.h * 1.5) / 5, "px; display: flex;\n        align-items: center; justify-content: ").concat(positionTextStartToIllustrate ? "space-between" : "flex-end", "; margin: 0 ").concat(marginDiv, "px"));
+        if (hasCompareTables) {
+            if (vizData.tables.COMPARISON.length !== 0) {
+                textSum
+                    .append("span")
+                    .attr("style", "align-self: end;margin-right: ".concat(marginDiv, "px; font-size:").concat(fontSizeTextToIllustrate, "px; color: ").concat(colorTextToIllustrate, " "))
+                    .node().innerHTML = "".concat(textToIllustrate);
+            }
+        }
+        var textSumSpan = textSum.append("span");
+        textSumSpan.attr("style", "".concat(boldNumber ? "font-weight: bold" : "", ";font-size:").concat(fontSizeSumRecap, "px; color:").concat(colorSumRecap));
+        textSumSpan.node().innerHTML =
             (isNaN(sumTotalEffectifs) || sumTotalEffectifs === 0
                 ? missingData
                 : compactNumber === true
                     ? (0, millify_1["default"])(sumTotalEffectifs, { precision: decimalPrecisionMetric })
                     : sumTotalEffectifs) + " ".concat(currency);
-        var x = d3
-            .scaleBand()
-            .range([0, svgWidth / 2])
-            .padding(0.1), y = d3.scaleLinear().range([svgHeight, 0]);
+        var textVarChange = contentCard
+            .append("div")
+            .attr("class", "textChange")
+            .attr("style", "height: ".concat((cardSize.h * 0.5) / 5, "px; display:flex;justify-content: flex-end;align-items: center"));
+        if (allDatasetCompare) {
+            createBlockChange(allDatasetCompare[i], textVarChange, marginDiv, i, sumTotalEffectifs, decimalPrecisionChangePercent, (cardSize.h * 0.5) / 5, fillSvgNeg, fillSvgPositiv);
+        }
+        //create svg Graph
+        var margin = { top: 1.5, right: 5, bottom: 3, left: 7 };
+        var svgWidth = +cardSize.w - margin.left - margin.right;
+        var svgHeight = +contentHeight - margin.top - margin.bottom;
+        var svg = header
+            .append("svg")
+            .attr("width", svgWidth)
+            .attr("height", svgHeight)
+            .append("g");
+        var x = d3.scaleBand().range([0, svgWidth]).padding(0.1), y = d3.scaleLinear().range([svgHeight, 0]);
         x.domain(dataset.map(function (d) {
             return d.date;
         }));
         y.domain([
             0,
             d3.max(dataset, function (d) {
-                return d[metric];
+                return d["effectif" + (i === 0 ? "" : i)];
             }),
         ]);
         svg
@@ -124,26 +169,84 @@ var drawViz = function (vizData) {
             .enter()
             .append("rect")
             .attr("class", "bar")
+            .attr("style", "fill: ".concat(colorBar, ";"))
             .attr("x", function (d) {
-            return x(d.date) + svgWidth / 2;
+            return x(d.date);
         })
             .attr("width", x.bandwidth())
             .attr("y", function (d) {
-            return y(d[metric]);
+            return y(d["effectif" + (i === 0 ? "" : i)]);
         })
             .attr("height", function (d) {
-            return svgHeight - y(d[metric]);
+            return svgHeight - y(d["effectif" + (i === 0 ? "" : i)]);
         });
     });
-    createSlider(vizData);
+    createSlider(vizData, colorValueCross, colorValueInfoBack, fontFamily, colorInfoBoxText, topPositionButton, colorValueBack);
 };
+function createBlockChange(datasetCompare, textVarChange, marginDiv, i, sumTotal, decimalPrecisionChangePercent, heightSvg, fillSvgNeg, fillSvgPositiv) {
+    if (datasetCompare) {
+        var sumTotalCompare = datasetCompare.reduce(function (prev, curr) {
+            return prev + curr["effectif" + (i === 0 ? "" : i)];
+        }, 0);
+        var ecart = (100 * (sumTotal - sumTotalCompare)) / sumTotalCompare;
+        textVarChange
+            .append("svg")
+            .attr("style", "height: ".concat(heightSvg, "px; width: ").concat(heightSvg, "px; fill: ").concat(ecart < 0 ? fillSvgNeg : fillSvgPositiv))
+            .attr("class", "icon")
+            .append("use")
+            .attr("xlink:href", "".concat(ecart < 0 ? "#trending_down" : "#trending_up"));
+        var spanText = textVarChange
+            .append("span")
+            .attr("style", "margin: 0 ".concat(marginDiv, "px; color: ").concat(ecart < 0 ? fillSvgNeg : fillSvgPositiv));
+        spanText.node().innerHTML = "".concat(Number(ecart).toFixed(decimalPrecisionChangePercent), "%");
+    }
+}
+function getGapBreak(cardSizeW, cardSizeH, maxDimensions, gap) {
+    var breakp = {};
+    var ratioNbCardLines = maxDimensions.h / (cardSizeH + gap.h);
+    var ratioNbCardCols = maxDimensions.w / (cardSizeW + gap.v);
+    breakp.lines = ratioNbCardLines > 1 ? Math.trunc(ratioNbCardLines) : 1;
+    breakp.col = ratioNbCardCols > 1 ? Math.trunc(ratioNbCardCols) : 1;
+    return breakp;
+}
+function calculGrid(canvas, metricLength, dimensionLength, ratioX, ratioY) {
+    var a = {}, i = ratioY / ratioX;
+    if (metricLength > 1 || dimensionLength > 1) {
+        var n = (canvas.w / canvas.h) * i;
+        var o = dimensionLength > 1 ? dimensionLength : metricLength;
+        var s = o;
+        for (var e = 1; e <= o; e += 1) {
+            var r = o / e;
+            var t = o % e;
+            t >= 1 ? (r = Math.floor(r) + t / t) : (r += 0);
+            var i_1 = e / r, l = Math.abs(n - i_1);
+            l < s && (e / 2 <= t || 0 === t) && ((s = l), (a.col = e), (a.row = r));
+        }
+    }
+    else
+        (a.col = 1), (a.row = 1);
+    return a;
+}
+function calculObjectSize(canvas, grid, ratio, gap) {
+    var o = Math.floor((canvas.h - (grid.row - 1) * gap.v) / grid.row), a = Math.floor((canvas.w - (grid.col - 1) * gap.h) / grid.col), i = o / a, s = ratio.y / ratio.x, l = {};
+    return ((l.w = Math.round(i > s ? a : o / s)),
+        (l.h = Math.round(i > s ? a * s : o)),
+        l.w >= l.h ? (l.max = Math.floor(l.h)) : (l.max = Math.floor(l.w)),
+        l);
+}
+function getMaxDimensions(idElement) {
+    var r = {}, t = document.getElementById(idElement);
+    r.h = t.offsetHeight;
+    r.w = t.offsetWidth;
+    r.max = r.w >= r.h ? r.h : r.w;
+    r.direction = r.w >= r.h ? "horizontal" : "vertical";
+    return r;
+}
 function evalLength(maxLength, space, maxCards, minCardLength, nbVars, stop) {
-    console.log(maxLength, space, maxCards, minCardLength, nbVars);
     if (nbVars <= maxCards) {
         var length_1 = (maxLength - space * (nbVars - 1)) / nbVars;
         for (var i = nbVars; i > 0; i--) {
             /*+ space * (i === 1 ? 0 : 1)*/
-            console.log(length_1, "length");
             if (length_1 * i <= maxLength) {
                 // if (length <= minCardLength) {
                 //   throw new Error("Cards are too small");
@@ -159,9 +262,13 @@ function evalLength(maxLength, space, maxCards, minCardLength, nbVars, stop) {
         throw new Error("Too many metrics : Limit 8");
     }
 }
-function resetAllElements(vizData) {
+function resetAllElements() {
     if (document.querySelector(".error")) {
         var oldError = document.querySelector(".error");
+        oldError.parentNode.removeChild(oldError);
+    }
+    if (document.querySelector("svg")) {
+        var oldError = document.querySelector("svg");
         oldError.parentNode.removeChild(oldError);
     }
     if (document.querySelector(".wrapper")) {
@@ -247,9 +354,9 @@ function groupByAndSum(objectArray, date, effectif) {
     }, []);
     return result;
 }
-function transformData(datasetSource, checkDataFn) {
+function transformData(datasetSource, nbDims, checkDataFn) {
     var parseDate = d3.timeParse(dateFormat);
-    checkDataFn(datasetSource);
+    checkDataFn && checkDataFn(datasetSource);
     // const newData = datasetSource.map((e, i) => {
     //   return {
     //     date: e.date[0],
@@ -264,23 +371,18 @@ function transformData(datasetSource, checkDataFn) {
         var month = dayjs(e.date[0], "YYYYMMDD").month() + 1;
         var quarter = dayjs(e.date[0], "YYYYMMDD").quarter();
         var valTokeep = evalValToKeep(year, week, month, quarter, e.date[0], infos);
-        return {
-            date: valTokeep,
-            effectif: e.effectif[0] === "" ? 0 : e.effectif[0]
-        };
+        var res = {};
+        res.date = valTokeep;
+        e.effectif.map(function (v, i) {
+            res["effectif" + (i === 0 ? "" : i)] = e.effectif[i];
+        });
+        return res;
     });
-    var valGroupByAndSum = groupByAndSum(newData2, "date", "effectif");
-    return valGroupByAndSum;
-}
-function getStyle(vizData) {
-    var fontFamily = styleVal(vizData, "fontFamily") || "Open Sans";
-    var color = styleVal(vizData, "colorText") || "#808080"; //#00838F
-    var colorBar = styleVal(vizData, "colorBar") || "#4682b4"; //#E64A19
-    var colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
-    var colorValueCross = styleVal(vizData, "colorValueCross") || "#fff";
-    var colorValueInfoBack = styleVal(vizData, "colorValueInfoBack") || "#fff";
-    var topPositionButton = styleVal(vizData, "topPositionButton") || 2;
-    return "\n    body{\n      font-family: ".concat(fontFamily, ", sans-serif;\n      overflow: hidden;\n    }\n    .bar { \n      fill: ").concat(colorBar, ";\n      opacity: 0.5;\n    }\n    svg {\n      position: relative;\n      user-select: none\n    }\n\n\n    .info {\n      position: fixed;\n      top: ").concat(topPositionButton, "rem;\n      right:1rem;\n      width: 2rem;\n      border-radius: 50%;\n      height:2rem;\n      background-color: ").concat(colorValueBack, ";\n      color:").concat(color, ",\n      backdrop-filter: blur(4px);\n      z-index: 1;\n      cursor: pointer;\n    }\n\n    #infoContent {\n      font-family: ").concat(fontFamily, ";\n      position: fixed;\n      top: 0;\n      right:0;\n      width: 100%;\n      height:100%;\n      transform:translateX(100%);\n      transition: transform 300ms ease-in;\n      \n    }\n\n    #content {display: flex;\n      align-items: center;\n      justify-content: center;\n      height:100%;\n      transform:translateX(100%);\n      transition: transform 300ms ease-out;\n      backdrop-filter: blur(10px);\n      width:100%;\n    }\n\n    #contentInside {\n      height:100%;\n      width:100%;\n      background: ").concat(colorValueInfoBack, ";\n      opacity:0.5;\n      padding: 2em;\n    }\n\n    #line-wrapper {\n      position:relative;\n      transition: transform 300ms ease-out;\n      transform: rotate(0deg);\n      display: flex;\n      flex-direction: column;\n      height: 100%;\n      align-items: center;\n      justify-content: center;\n    }\n\n    .horizontal,\n    .vertical {\n      width: 50%;\n      height: 2px;\n      background-color: ").concat(colorValueCross, ";\n    }\n    .vertical {\n      position: relative;\n      bottom: 2px;\n      transform: rotate(90deg);\n    }\n  ");
+    var allData = Array.from({ length: nbDims }, function (v, k) {
+        var valGroupByAndSum = groupByAndSum(newData2, "date", "effectif" + (k === 0 ? "" : k));
+        return valGroupByAndSum;
+    });
+    return allData;
 }
 function compareDate(parseDate) {
     return function (a, b) {
@@ -310,15 +412,20 @@ function displayError(msg) {
     msgDiv.appendChild(msgDivContainer);
     document.body.appendChild(msgDiv);
 }
-var createSlider = function (vizData) {
+var createSlider = function (vizData, colorValueCross, colorValueInfoBack, fontFamily, colorInfoBoxText, topPositionButton, colorValueBack) {
     var TitleText = styleVal(vizData, "TitleText") || "Add a title in style";
     var DescText = styleVal(vizData, "DescText") || "Add a description in style";
-    var BlockInfo = d3.select("body").append("div").attr("class", "info");
+    var BlockInfo = d3
+        .select("body")
+        .append("div")
+        .attr("class", "info")
+        .attr("style", "top: ".concat(topPositionButton, "rem;background-color: ").concat(colorValueBack, ";"));
     var clicked = false;
     var BlockContent = d3
         .select("body")
         .append("div")
-        .attr("id", "infoContent");
+        .attr("id", "infoContent")
+        .attr("style", "font-family: ".concat(fontFamily, ";color:").concat(colorInfoBoxText, ";"));
     var Button = BlockInfo.append("div")
         .attr("id", "line-wrapper")
         .on("click", function () {
@@ -336,12 +443,17 @@ var createSlider = function (vizData) {
             clicked = false;
         }
     });
-    Button.append("div").attr("class", "horizontal");
-    Button.append("div").attr("class", "vertical");
+    Button.append("div")
+        .attr("class", "horizontal")
+        .attr("style", "width: 50%;height: 2px;background-color: ".concat(colorValueCross));
+    Button.append("div")
+        .attr("class", "vertical")
+        .attr("style", "width: 50%;height: 2px;background-color: ".concat(colorValueCross));
     BlockContent.append("div")
         .attr("id", "content")
         .append("div")
-        .attr("id", "contentInside");
+        .attr("id", "contentInside")
+        .attr("style", "height:100%;\n      width:100%;\n      background: ".concat(colorValueInfoBack, ";\n      opacity:0.5;\n      padding: 2em;"));
     document.querySelector("#contentInside").innerHTML = [
         "<h3>".concat(TitleText, "</h3>"),
         "<p>".concat(DescText, "</p>"),

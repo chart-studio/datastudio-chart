@@ -37,7 +37,6 @@ export function AuthProvider({ children }: any) {
         if (docSnap.exists()) {
           let userInfos = docSnap.data()
           userInfos.uid = user.uid
-          console.log("Document data:", userInfos)
           setUser(userInfos as any)
         } else {
           console.log("No such document!")

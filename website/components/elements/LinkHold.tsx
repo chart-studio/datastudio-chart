@@ -2,11 +2,15 @@ import { useState } from "react"
 import styled from "styled-components"
 import { copyLinkFunc } from "../../helpers/copyLinkFunc"
 import { useAuth } from "../../hooks/useAuth"
+import fr from "../../locales/fr"
+import LinkIco from "../icon/Link"
 import ToolTipWrapper from "./ToolTipWrapper"
 
 const DivHold = styled.div`
   display: flex;
-  input[type="email"] {
+  justify-content: center;
+  margin-bottom: 1rem;
+  input[type="text"] {
     background-color: var(--surface4);
     height: 2.5rem;
     min-width: 80%;
@@ -15,7 +19,8 @@ const DivHold = styled.div`
     padding-left: 1rem;
     border-radius: 8px 0 0 8px;
   }
-  input[type="button"] {
+  .divSvg {
+    display: flex;
     cursor: pointer;
     position: relative;
     border-radius: 0 8px 8px 0;
@@ -23,12 +28,15 @@ const DivHold = styled.div`
     min-width: 30%;
     border: none;
     outline: none;
-    background-color: var(--success);
+    background-color: var(--brand);
     transition: background-color var(--speed) ease-in-out;
     padding: 0 0.5rem;
     &:hover {
       opacity: 0.5;
     }
+  }
+  .copied {
+    background-color: var(--success);
   }
 
   input[type="submit"]:hover {
@@ -36,34 +44,39 @@ const DivHold = styled.div`
   }
 `
 
-const LinkHold = ({ testLink }: { testLink: string }) => {
+const LinkHold = ({ testLink, t }: { testLink: string; t: typeof fr }) => {
   const [copy, setCopy] = useState(false)
   return (
     <>
       <DivHold>
         <input
-          type="email"
-          name="subscribe"
-          id="email"
-          autoComplete="email"
+          type="text"
+          name="linkGoogleStorage"
+          id="linkGoogleStorage"
           required
           value={testLink}
           placeholder="gs://..."
+          disabled
+          onChange={() => {}}
         />
         {!copy ? (
           <ToolTipWrapper
-            tooltiptext="Vous pouvez copier"
+            tooltiptext={t.modalText.button.copy}
             id="testCopy"
             onClick={() => {
-              copyLinkFunc("testCopy")
+              copyLinkFunc("linkGoogleStorage")
               setCopy(true)
             }}
           >
-            <input type="button" value="copy" tabIndex={0} />
+            <div className="divSvg">
+              <LinkIco />
+            </div>
           </ToolTipWrapper>
         ) : (
-          <ToolTipWrapper tooltiptext="Text copié">
-            <input type="button" value="ok" tabIndex={0} />
+          <ToolTipWrapper tooltiptext={t.modalText.button.copied}>
+            <div className="divSvg copied">
+              <LinkIco />
+            </div>
           </ToolTipWrapper>
         )}
       </DivHold>

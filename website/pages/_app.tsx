@@ -6,6 +6,7 @@ import GlobalStyle from "../styles/GlobalStyle"
 import "../styles/style.scss"
 import { useEffect, useState } from "react"
 import { AuthProvider } from "../Context/Auth"
+import Footer from "../components/elements/Footer"
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -15,6 +16,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           <GlobalStyle />
           <Navbar />
           <Component {...pageProps} />
+          <Footer />
         </AuthProvider>
       </ThemeProvider>
     </>

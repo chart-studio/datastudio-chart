@@ -1,11 +1,9 @@
-import { User } from "firebase/auth"
 import { useRouter } from "next/router"
-import React from "react"
+import React, { useEffect } from "react"
 import styled from "styled-components"
-import { UserData } from "../../@types/interface"
-import { routerDir } from "../../helpers/routerDir"
 import { signIn } from "../../helpers/signIn"
 import { useAuth } from "../../hooks/useAuth"
+import en from "../../locales/en"
 import fr from "../../locales/fr"
 import Google from "../icon/Google"
 
@@ -16,7 +14,8 @@ const BlockRecap = styled.div`
   //background-color: var(--surface2);
   padding: 1rem;
   z-index: 1;
-  margin: 0 0 2rem 0;
+  margin: ${props => (props.theme.onHomePage ? "0 0 11rem 0" : "0 0 3rem 0")};
+  //margin: 0 0 3rem 0;
   display: flex;
   justify-content: center;
 `
@@ -64,26 +63,20 @@ const Text = styled.div`
     color: var(--text2);
   }
 `
-const RecapAccount = ({
-  t,
-  connected,
-  user,
-}: {
-  t: typeof fr
-  connected: boolean
-  user: (UserData & User) | null
-}) => {
+const RecapAccount = ({ onHomePage }: { onHomePage?: boolean }) => {
   const router = useRouter()
   const { locale } = router
-  const { setUser } = useAuth()
+  const t = locale === "fr" ? fr : en
+  const { user, setUser } = useAuth()
+  useEffect(() => {}, [user])
   return (
-    <BlockRecap>
-      {connected ? (
+    <BlockRecap theme={{ onHomePage }}>
+      {user ? (
         <ConnectContainer>
           <EssayWrapper>
             <Boule theme={{ val: "essay" }} />
             <Text>
-              {user && user.trygraph.length !== 0
+              {user && user.trygraph?.length !== 0
                 ? user.trygraph.length * 10
                 : "00"}{" "}
               <span>/ 30 {t.recap.credit}</span>

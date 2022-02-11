@@ -7,8 +7,12 @@ import fr from "../../locales/fr"
 import Share from "../icon/Share"
 import { subscribe } from "../../helpers/subscribe"
 import { tryGraph } from "../../helpers/tryGraph"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useEffect } from "react"
 import { Card } from "../../@types/interface"
+import { useAuth } from "../../hooks/useAuth"
+import shareLink from "../../helpers/shareLink"
+import { useRouter } from "next/router"
+import translatedWords from "../../helpers/translatedWords"
 
 const VizContainer = styled.div`
   width: 100%;
@@ -66,7 +70,7 @@ const ButtonContainerInfo = styled.div`
   align-items: center;
   width: 30%;
   border: solid 1px var(--surface4);
-  background-color: var(--warning);
+  //background-color: var(--warning);
   border-radius: 5px;
   justify-content: center;
   cursor: pointer;
@@ -122,27 +126,35 @@ const VizCard = ({
   title,
   desc,
   addDate,
-  t,
   tool,
   stripePrice,
   cloudName,
-  id,
   setOpenModal,
   connected,
   setSelectedModal,
   setSelectedGraph,
   setSelectedDoc,
-  user,
   setSelectedGrapPrice,
 }: Card) => {
+  const { locale } = useRouter() as { locale: "fr" | "en" }
+  const t = translatedWords(locale)
+  const { user } = useAuth()
+  useEffect(() => {}, [user])
   return (
     <VizContainer>
       <Tool>{tool}</Tool>
-      <Img src={link_image} />
+      <Img src={link_image} alt={`image ${title}`} />
       <Date>
         <ToolTipWrapper
           classNameTooltip="ShareTooltip"
           tooltiptext={t.button.share}
+          onClick={shareLink(
+            setOpenModal,
+            setSelectedModal,
+            locale,
+            link,
+            setSelectedDoc
+          )}
         >
           <Share />
         </ToolTipWrapper>
@@ -151,7 +163,9 @@ const VizCard = ({
           <time dateTime={addDate}>{addDate}</time>
         </div>
       </Date>
-      <h6>{title}</h6>
+      <p>
+        <b>{title}</b>
+      </p>
       <DescText className="">
         <p>{desc}</p>
       </DescText>
@@ -180,7 +194,8 @@ const VizCard = ({
             } else if (
               user &&
               (user.trygraph.findIndex(x => x.graphname == cloudName) > -1 ||
-                user.subsc.findIndex(x => x.graphname == cloudName) > -1)
+                user.subsc.findIndex(x => x.graphname == cloudName) > -1 ||
+                user.status_subsc === true)
             ) {
               //do nothing
             } else if (user && user.trygraph.length >= 3) {
@@ -202,7 +217,8 @@ const VizCard = ({
                   user &&
                   (user.trygraph.findIndex(x => x.graphname == cloudName) >
                     -1 ||
-                    user.subsc.findIndex(x => x.graphname == cloudName) > -1),
+                    user.subsc.findIndex(x => x.graphname == cloudName) > -1 ||
+                    user.status_subsc === true),
               }}
             >
               {t.button.essai}
@@ -218,12 +234,17 @@ const VizCard = ({
               user &&
               user.subsc.findIndex(x => x.graphname == cloudName) > -1
             ) {
-            } else {
+            } else if (user && !user.status_subsc) {
               setOpenModal(true)
               setSelectedModal("subsc")
               setSelectedGraph(cloudName)
               setSelectedDoc(link)
               setSelectedGrapPrice(stripePrice)
+            } else {
+              setOpenModal(true)
+              setSelectedModal("add")
+              setSelectedGraph(cloudName)
+              console.log("ajouter")
             }
           }}
         >
@@ -234,7 +255,11 @@ const VizCard = ({
                 user.subsc.findIndex(x => x.graphname == cloudName) > -1,
             }}
           >
-            {t.button.sousc}
+            {!user
+              ? t.button.sousc
+              : user && !user.status_subsc
+              ? t.button.sousc
+              : t.button.add}
           </Span>
         </ButtonContainerSub>
       </BlockButton>

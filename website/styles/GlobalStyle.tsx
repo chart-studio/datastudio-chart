@@ -175,6 +175,14 @@ const GlobalStyle = createGlobalStyle`
   margin-right: auto;
   margin-left: auto;
 }
+.container-checkout {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 3rem;
+  min-height: 75vh;
+}
 .containerPage {
   width: 100%;
   min-height: 80vh;
@@ -209,6 +217,7 @@ const GlobalStyle = createGlobalStyle`
   height: 100%; position: relative;
 }
 @media (min-width: 24rem) {
+  .container-checkout,
   .container, .containerPage,
   .container-nav, .container-navMob {
     max-width: 24em;
@@ -218,7 +227,7 @@ const GlobalStyle = createGlobalStyle`
 .btn-search-nav {
   display: none;
 }
-@media (min-width: 36rem) {
+@media (min-width: 36rem) {.container-checkout,
   .container,.containerPage,
   .container-nav, .container-navMob {
     max-width: 36rem;

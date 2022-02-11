@@ -19,7 +19,7 @@ export const tryGraph = async (
     const dataToSave = {
       graphname,
       createdDate,
-      link: `gs://${graphTestData.destBucketName}`,
+      link: `gs://vizdata_test/${graphTestData.destBucketName}`,
     }
     await updateDoc(doc(dbStore, "user", id), {
       trygraph: arrayUnion(dataToSave),

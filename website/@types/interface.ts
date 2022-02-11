@@ -35,6 +35,9 @@ export interface UserData {
   phoneNumber: string
   token: string
   timestamp: FieldValue
+  stripeId: string
+  status_subsc: boolean
+  subscriptionId: string
   subsc: {
     graphname: string
     createdDate: string
@@ -56,15 +59,12 @@ export type Card = {
   desc: string
   addDate: string
   tool: string
-  t: typeof fr
   stripePrice: string
   cloudName: string
-  id: string
   setOpenModal: Dispatch<SetStateAction<boolean>>
   connected: boolean
   setSelectedModal: Dispatch<SetStateAction<string>>
   setSelectedGraph: Dispatch<SetStateAction<string>>
   setSelectedDoc: Dispatch<SetStateAction<string>>
-  user: UserData | null
   setSelectedGrapPrice: Dispatch<SetStateAction<string>>
 }

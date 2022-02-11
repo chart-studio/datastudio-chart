@@ -1,157 +1,84 @@
-import React from "react"
+import { FC, InputHTMLAttributes } from "react"
 import styled from "styled-components"
 
-const Svg = styled.svg`
-  .cls-1 {
-    font-size: 66.72px;
-    fill: none;
-    font-family: MyriadPro-Regular, Myriad Pro;
+interface DivProps extends InputHTMLAttributes<HTMLDivElement> {
+  width?: string
+  height?: string
+}
+
+const Div = styled.div`
+  margin: 0.5rem;
+  &:hover {
+    cursor: pointer;
   }
-  .cls-2 {
-    letter-spacing: -0.01em;
-  }
-  .cls-3 {
-    letter-spacing: 0em;
-  }
-  .cls-4 {
-    letter-spacing: 0.02em;
-  }
-  .cls-5 {
-    isolation: isolate;
-  }
-  .cls-6 {
-    clip-path: url(#clip-path);
-  }
-  .cls-7 {
-    mix-blend-mode: multiply;
-  }
-  .cls-8 {
-    fill: #70c3e2;
-  }
-  .cls-9 {
-    fill: #e2bb6f;
-  }
-  .cls-10 {
-    fill: #e36f8a;
-  }
-  .cls-11 {
-    fill: #80be69;
-  }
-  .cls-12 {
-    fill: #7086c2;
-  }
-  width: 36;
-  height: 32;
 `
-export const Logo = () => {
+
+const Svg = styled.svg`
+  #path1 {
+    fill: hsl(195, 69%, 48%);
+  }
+  #path2 {
+    fill: hsl(169, 49%, 47%);
+  }
+  #path3 {
+    fill: hsl(4, 72%, 59%);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #path1 {
+      fill: hsl(195, 69%, 28%);
+    }
+    #path2 {
+      fill: hsl(169, 49%, 27%);
+    }
+    #path3 {
+      fill: hsl(4, 72%, 39%);
+    }
+  }
+`
+
+const Logo: FC<DivProps> = ({ width, height, ...props }) => {
   return (
-    <Svg
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      viewBox="31 25 250.13 130.8"
-      width="93"
-      height="43"
-    >
-      <defs>
-        <clipPath id="clip-path">
-          <text
-            className="cls-1"
-            transform="translate(33.07 115.2) scale(0.95 1)"
-          >
-            <tspan className="cls-2">L</tspan>
-            <tspan className="cls-3" x="30.56" y="0">
-              o
-            </tspan>
-            <tspan className="cls-4" x="67.19" y="0">
-              k
-            </tspan>
-            <tspan x="99.68" y="0">
-              alistic
-            </tspan>
-          </text>
-        </clipPath>
-      </defs>
-      <title>Fichier 1</title>
-      <g className="cls-5">
-        <g id="Calque_2" data-name="Calque 2">
-          <g id="Calque_1-2" data-name="Calque 1">
-            <g className="cls-6">
-              <g className="cls-7">
-                <ellipse
-                  className="cls-8"
-                  cx="54.2"
-                  cy="57.6"
-                  rx="54.2"
-                  ry="57.6"
-                />
-              </g>
-              <g className="cls-7">
-                <ellipse
-                  className="cls-9"
-                  cx="122.46"
-                  cy="57.6"
-                  rx="54.2"
-                  ry="57.6"
-                />
-              </g>
-              <g className="cls-7">
-                <ellipse
-                  className="cls-10"
-                  cx="190.21"
-                  cy="57.6"
-                  rx="54.2"
-                  ry="57.6"
-                />
-              </g>
-              <g className="cls-7">
-                <ellipse
-                  className="cls-11"
-                  cx="258.92"
-                  cy="57.6"
-                  rx="54.2"
-                  ry="57.6"
-                />
-              </g>
-              <g className="cls-7">
-                <ellipse
-                  className="cls-12"
-                  cx="258.92"
-                  cy="144.2"
-                  rx="54.2"
-                  ry="57.6"
-                />
-              </g>
-              <g className="cls-7">
-                <ellipse
-                  className="cls-9"
-                  cx="190.67"
-                  cy="144.2"
-                  rx="54.2"
-                  ry="57.6"
-                />
-              </g>
-              <g className="cls-7">
-                <ellipse
-                  className="cls-10"
-                  cx="122.91"
-                  cy="144.2"
-                  rx="54.2"
-                  ry="57.6"
-                />
-              </g>
-              <g className="cls-7">
-                <ellipse
-                  className="cls-11"
-                  cx="54.2"
-                  cy="144.2"
-                  rx="54.2"
-                  ry="57.6"
-                />
-              </g>
-            </g>
-          </g>
+    <Div {...props}>
+      <Svg
+        width={width}
+        height={height}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        viewBox="0 0 280.027 280.027"
+        xmlSpace="preserve"
+      >
+        <g>
+          <path
+            id="path1"
+            d="M17.502,105.009h35.003c9.661,0,17.502,7.832,17.502,17.502v113.761
+		c0,9.67-7.841,17.502-17.502,17.502H17.502C7.841,253.774,0,245.942,0,236.272V122.511C0,112.841,7.841,105.009,17.502,105.009z"
+          />
+          <path
+            id="path2"
+            d="M122.512,26.252h35.003c9.661,0,17.502,7.841,17.502,17.502v192.519
+		c0,9.67-7.841,17.502-17.502,17.502h-35.003c-9.661,0-17.502-7.832-17.502-17.502V43.753
+		C105.01,34.092,112.851,26.252,122.512,26.252z"
+          />
+          <path
+            id="path3"
+            d="M227.522,70.006h35.003c9.661,0,17.502,7.841,17.502,17.502v148.765
+		c0,9.67-7.841,17.502-17.502,17.502h-35.003c-9.661,0-17.502-7.832-17.502-17.502V87.508
+		C210.021,77.847,217.861,70.006,227.522,70.006z"
+          />
         </g>
-      </g>
-    </Svg>
+      </Svg>
+    </Div>
   )
 }
+
+Logo.defaultProps = {
+  width: "1.2rem",
+  height: "1.2rem",
+}
+
+export default Logo

@@ -1,3 +1,4 @@
+import axios from "axios"
 import {
   getAuth,
   signInWithPopup,
@@ -22,6 +23,13 @@ export const signIn = (locale: string = "en", setUser: any) => {
           const docSnap = await getDoc(docRef)
 
           if (!docSnap.exists()) {
+            //create stripe account
+            const {
+              data: { stripeId },
+            } = await axios.post(
+              `/api/stripeCreateCustomer?email=${userCredentials.email}`
+            )
+            //Save infos in database
             await setDoc(doc(dbStore, "user", userCredentials.uid), {
               email: userCredentials.email!,
               name: userCredentials.displayName!,
@@ -31,6 +39,9 @@ export const signIn = (locale: string = "en", setUser: any) => {
               token: token!,
               trygraph: [],
               subsc: [],
+              status_subsc: false,
+              stripeId,
+              subscriptionId: "",
               timestamp: serverTimestamp(),
             })
             setUser({
@@ -43,6 +54,9 @@ export const signIn = (locale: string = "en", setUser: any) => {
               token: token!,
               trygraph: [],
               subsc: [],
+              stripeId,
+              subscriptionId: "",
+              status_subsc: false,
             })
           } else {
             let userInfos = docSnap.data()
@@ -56,6 +70,9 @@ export const signIn = (locale: string = "en", setUser: any) => {
               phoneNumber: userInfos.phoneNumber!,
               trygraph: userInfos.trygraph,
               subsc: userInfos.subsc,
+              stripeId: userInfos.stripeId,
+              subscriptionId: userInfos.subscriptionId,
+              status_subsc: userInfos.status_subsc,
             })
           }
 

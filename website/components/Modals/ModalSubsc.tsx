@@ -3,7 +3,6 @@ import { Dispatch, SetStateAction, useState } from "react"
 import styled from "styled-components"
 import { routerDir } from "../../helpers/routerDir"
 import { subscribe } from "../../helpers/subscribe"
-import { tryGraph } from "../../helpers/tryGraph"
 import { useAuth } from "../../hooks/useAuth"
 import en from "../../locales/en"
 import fr from "../../locales/fr"
@@ -68,9 +67,7 @@ const ModalSubsc = ({
     <Wrapper {...props}>
       <p style={{ textAlign: "center" }}></p>
       <h6 style={{ textAlign: "center" }}>
-        {!openDocPage
-          ? `${t.modalText.subsc}? ${selectedGrapPrice}`
-          : `${t.modalText.subscConfirm}-${selectedGrapPrice}`}
+        {!openDocPage ? `${t.modalText.subsc}?` : `${t.modalText.subscConfirm}`}
       </h6>
       <LigneButton>
         <ButtonCancel
@@ -88,12 +85,7 @@ const ModalSubsc = ({
             onClick={async () => {
               try {
                 //await tryGraph(user.uid, selectedGraph, setUser)
-                await subscribe(
-                  user.uid,
-                  selectedGrapPrice,
-                  selectedGraph,
-                  setUser
-                )
+                await subscribe(user.uid, setUser, user.stripeId, router)
                 setOpenDocPage(true)
               } catch (error) {
                 console.log(error, "button try graph")

@@ -1,6 +1,8 @@
 import React, { Dispatch, SetStateAction } from "react"
+import ModalAdd from "./ModalAdd"
 import ModalConnect from "./ModalConnect"
 import ModalCreditUsed from "./ModalCreditUsed"
+import ModalShareDialog from "./ModalShareDialog"
 import ModalSubsc from "./ModalSubsc"
 import ModalTry from "./ModalTry"
 
@@ -12,10 +14,10 @@ const Modals = ({
   selectedGrapPrice,
 }: {
   selectedModal: string
-  selectedGraph: string
-  selectedDoc: string
+  selectedGraph?: string
+  selectedDoc?: string
   setOpenModal: Dispatch<SetStateAction<boolean>>
-  selectedGrapPrice: string
+  selectedGrapPrice?: string
 }) => {
   if (selectedModal === "connect") {
     return <ModalConnect />
@@ -23,7 +25,12 @@ const Modals = ({
   if (selectedModal === "allCreditUsed") {
     return <ModalCreditUsed />
   }
-  if (selectedModal === "subsc") {
+  if (
+    selectedModal === "subsc" &&
+    selectedGrapPrice &&
+    selectedDoc &&
+    selectedGraph
+  ) {
     return (
       <ModalSubsc
         selectedGraph={selectedGraph}
@@ -33,7 +40,16 @@ const Modals = ({
       />
     )
   }
-  if (selectedModal === "try") {
+  if (selectedModal === "add" && selectedDoc && selectedGraph) {
+    return (
+      <ModalAdd
+        selectedGraph={selectedGraph}
+        setOpenModal={setOpenModal}
+        selectedDoc={selectedDoc}
+      />
+    )
+  }
+  if (selectedModal === "try" && selectedDoc && selectedGraph) {
     return (
       <ModalTry
         selectedGraph={selectedGraph}
@@ -42,6 +58,10 @@ const Modals = ({
       />
     )
   }
+  if (selectedModal === "share") {
+    return <ModalShareDialog selectedDoc={selectedDoc!} />
+  }
+
   return null
 }
 
