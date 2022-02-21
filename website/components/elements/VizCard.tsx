@@ -3,16 +3,25 @@ import Link from "next/link"
 import Info_icon from "../icon/Info_icon"
 import Book_icon from "../icon/Book_icon"
 import ToolTipWrapper from "./ToolTipWrapper"
-import fr from "../../locales/fr"
+import { IntlContext } from "react-intl"
 import Share from "../icon/Share"
 import { subscribe } from "../../helpers/subscribe"
 import { tryGraph } from "../../helpers/tryGraph"
-import { Dispatch, SetStateAction, useEffect } from "react"
+import { Dispatch, SetStateAction, useContext, useEffect } from "react"
 import { Card } from "../../@types/interface"
 import { useAuth } from "../../hooks/useAuth"
 import shareLink from "../../helpers/shareLink"
 import { useRouter } from "next/router"
 import translatedWords from "../../helpers/translatedWords"
+import {
+  WORD_CardButtonAdded,
+  WORD_FooterNewsletterSubscribe,
+  WORD_LibButtonDoc,
+  WORD_LibButtonEssai,
+  WORD_LibButtonShare,
+  WORD_TooltipEssai,
+  WORD_TooltipReadDoc,
+} from "../../Dictionary"
 
 const VizContainer = styled.div`
   width: 100%;
@@ -136,6 +145,7 @@ const VizCard = ({
   setSelectedDoc,
   setSelectedGrapPrice,
 }: Card) => {
+  const { formatMessage } = useContext(IntlContext)
   const { locale } = useRouter() as { locale: "fr" | "en" }
   const t = translatedWords(locale)
   const { user } = useAuth()
@@ -147,7 +157,7 @@ const VizCard = ({
       <Date>
         <ToolTipWrapper
           classNameTooltip="ShareTooltip"
-          tooltiptext={t.button.share}
+          tooltiptext={formatMessage(WORD_LibButtonShare)}
           onClick={shareLink(
             setOpenModal,
             setSelectedModal,
@@ -159,8 +169,7 @@ const VizCard = ({
           <Share />
         </ToolTipWrapper>
         <div>
-          <span>{t.autreText.add}</span>
-          <time dateTime={addDate}>{addDate}</time>
+          <span>{formatMessage(WORD_CardButtonAdded, { date: addDate })}</span>
         </div>
       </Date>
       <p>
@@ -178,9 +187,10 @@ const VizCard = ({
               <ToolTipWrapper
                 classNameTooltip="DocTootip"
                 posRelativLeftPixel="-66px"
-                tooltiptext={t.tooltip.doc}
+                tooltiptext={formatMessage(WORD_TooltipReadDoc)}
               >
-                <Book_icon width="0.8rem" /> <span>{t.button.doc}</span>
+                <Book_icon width="0.8rem" />{" "}
+                <span>{formatMessage(WORD_LibButtonDoc)}</span>
               </ToolTipWrapper>
             </a>
           </ButtonContainer>
@@ -209,7 +219,7 @@ const VizCard = ({
             }
           }}
         >
-          <ToolTipWrapper tooltiptext={t.tooltip.essai}>
+          <ToolTipWrapper tooltiptext={formatMessage(WORD_TooltipEssai)}>
             <Info_icon width="0.8rem" />{" "}
             <Span
               theme={{
@@ -221,7 +231,7 @@ const VizCard = ({
                     user.status_subsc === true),
               }}
             >
-              {t.button.essai}
+              {formatMessage(WORD_LibButtonEssai)}
             </Span>
           </ToolTipWrapper>
         </ButtonContainerInfo>
@@ -256,9 +266,9 @@ const VizCard = ({
             }}
           >
             {!user
-              ? t.button.sousc
+              ? formatMessage(WORD_FooterNewsletterSubscribe)
               : user && !user.status_subsc
-              ? t.button.sousc
+              ? formatMessage(WORD_FooterNewsletterSubscribe)
               : t.button.add}
           </Span>
         </ButtonContainerSub>

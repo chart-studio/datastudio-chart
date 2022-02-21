@@ -1,21 +1,25 @@
-import Image from "next/image"
 import Link from "next/link"
 import styled from "styled-components"
-
 import { animated, useTransition, config } from "react-spring"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
-
-import fr from "../../locales/fr"
-import en from "../../locales/en"
+import { useEffect, useContext } from "react"
+import { IntlContext } from "react-intl"
 import { useDarkMode } from "../../hooks/useDarkMode"
 import { useClickAway } from "../../hooks/useClickAway"
 import ButtonLang from "./ButtonLang"
 import ButtonLight from "./ButtonLight"
 import ButtonMobMenu from "./ButtonMobMenu"
 import ButtonAccount from "./ButtonAccount"
+import Headroom from "react-headroom"
 import { useAuth } from "../../hooks/useAuth"
 import Logo from "../icon/Logo"
+import {
+  WORD_NavbarLink1,
+  WORD_NavbarLink2,
+  WORD_NavbarLink3,
+  WORD_NavbarLink4,
+  WORD_NavbarLink5,
+} from "../../Dictionary"
 
 const Header = styled.header`
   //min-height: 4rem;
@@ -117,9 +121,8 @@ const ContainerLogo = styled.div`
 `
 
 const NavBar = () => {
+  const { formatMessage } = useContext(IntlContext)
   const router = useRouter()
-  const { locale } = router
-  const t = locale === "fr" ? fr : en
   const { user } = useAuth()
   let [statusDark, setStatusDark] = useDarkMode("", "statusDark")
   let { refControler, open, setOpen, refObject } = useClickAway(false)
@@ -169,7 +172,7 @@ const NavBar = () => {
                       rel="noopener noreferrer"
                       style={{ width: "100%" }}
                     >
-                      {t.navbar.link1}
+                      {formatMessage(WORD_NavbarLink1)}
                     </a>
                   </LinkPage>
                 </Link>
@@ -186,7 +189,7 @@ const NavBar = () => {
                       rel="noopener noreferrer"
                       style={{ width: "100%" }}
                     >
-                      {t.navbar.link2}
+                      {formatMessage(WORD_NavbarLink2)}
                     </a>
                   </LinkPage>
                 </Link>
@@ -203,7 +206,7 @@ const NavBar = () => {
                       rel="noopener noreferrer"
                       style={{ width: "100%" }}
                     >
-                      {t.navbar.link3}
+                      {formatMessage(WORD_NavbarLink3)}
                     </a>
                   </LinkPage>
                 </Link>
@@ -220,11 +223,11 @@ const NavBar = () => {
                       rel="noopener noreferrer"
                       style={{ width: "100%" }}
                     >
-                      {t.navbar.link4}
+                      {formatMessage(WORD_NavbarLink4)}
                     </a>
                   </LinkPage>
                 </Link>
-                <Link href="/contact">
+                {/* <Link href="/contact">
                   <LinkPage
                     className="pt-2 pb-2 navLink"
                     theme={{
@@ -237,10 +240,10 @@ const NavBar = () => {
                       rel="noopener noreferrer"
                       style={{ width: "100%" }}
                     >
-                      {t.navbar.link5}
+                      {formatMessage(WORD_NavbarLink5)}
                     </a>
                   </LinkPage>
-                </Link>
+                </Link> */}
               </Menu>
             </nav>
           </div>
@@ -276,7 +279,7 @@ const NavBar = () => {
                         }}
                       >
                         <a className="m-3" rel="noopener noreferrer">
-                          {t.navbar.link1}
+                          {formatMessage(WORD_NavbarLink1)}
                         </a>
                       </LinkPage>
                     </Link>
@@ -289,7 +292,7 @@ const NavBar = () => {
                         }}
                       >
                         <a className="m-3" rel="noopener noreferrer">
-                          {t.navbar.link2}
+                          {formatMessage(WORD_NavbarLink2)}
                         </a>
                       </LinkPage>
                     </Link>
@@ -302,7 +305,7 @@ const NavBar = () => {
                         }}
                       >
                         <a className="m-3" rel="noopener noreferrer">
-                          {t.navbar.link3}
+                          {formatMessage(WORD_NavbarLink3)}
                         </a>
                       </LinkPage>
                     </Link>
@@ -315,11 +318,11 @@ const NavBar = () => {
                         }}
                       >
                         <a className="m-3" rel="noopener noreferrer">
-                          {t.navbar.link4}
+                          {formatMessage(WORD_NavbarLink4)}
                         </a>
                       </LinkPage>
                     </Link>
-                    <Link href="/contact">
+                    {/* <Link href="/contact">
                       <LinkPage
                         className="pt-2 pb-2 navLink"
                         onClick={() => setOpen(false)}
@@ -328,10 +331,10 @@ const NavBar = () => {
                         }}
                       >
                         <a className="m-3" rel="noopener noreferrer">
-                          {t.navbar.link5}
+                          {formatMessage(WORD_NavbarLink5)}
                         </a>
                       </LinkPage>
-                    </Link>
+                    </Link> */}
                   </MenuMobNav>
                 </MenuMob>
               </MenuMobWrapper>

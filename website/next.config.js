@@ -8,4 +8,7 @@ module.exports = {
     locales: ["en", "fr"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["https://chart-studio.com", "deau-dash-website.vercel.app"],
+  },
 }

@@ -1,6 +1,6 @@
 import { locale } from "../@types/interface"
-import en from "../locales/en"
-import fr from "../locales/fr"
+import en from "../locales/en/index"
+import fr from "../locales/fr/index"
 
 const translatedWords = (locale: locale) => {
   if (locale === "fr") {

@@ -1,16 +1,29 @@
 import styled from "styled-components"
 import Link from "next/link"
-import Image from "next/image"
-//import publicLogo from "../public/logo/Logo-Krakendata.png"
-import { useRouter } from "next/router"
-
 import getCurrentYear from "../../helpers/getCurrentYear"
-import en from "../../locales/en"
-import fr from "../../locales/fr"
 import Facebook from "../icon/Facebook"
 import Linkedin from "./Linkedin"
 import ButtonSubscribe from "./ButtonSubscribe"
 import Logo from "../icon/Logo"
+import { useContext } from "react"
+import { IntlContext } from "react-intl"
+import {
+  WORD_FooterAccessibity,
+  WORD_FooterConfidentialityCookies,
+  WORD_FooterCopyRight,
+  WORD_FooterGeneralCondi,
+  WORD_FooterNewsletterNoSpams,
+  WORD_FooterNewsletterSubscribe,
+  WORD_FooterNewsletterSubscribeOk,
+  WORD_FooterNewsletterTitle,
+  WORD_FooterNewsletterTitle2,
+  WORD_FooterNewsletterWebsite,
+  WORD_NavbarLink1,
+  WORD_NavbarLink2,
+  WORD_NavbarLink3,
+  WORD_NavbarLink4,
+} from "../../Dictionary"
+import Slack from "../icon/Slack"
 
 const ContainerWrapper = styled.div`
   background-color: var(--surface3);
@@ -82,8 +95,7 @@ const ContainerLogo = styled.div`
 `
 
 const Footer = () => {
-  const { locale } = useRouter()
-  const t = locale === "fr" ? fr : en
+  const { formatMessage } = useContext(IntlContext)
   return (
     <>
       <ContainerWrapper>
@@ -99,34 +111,36 @@ const Footer = () => {
                 </ContainerLogo>
 
                 <div>
-                  <strong>{t.footer.BlocLogo.title}</strong>
-                  <div className="mb-3">{t.footer.BlocLogo.desc}</div>
+                  <strong>{formatMessage(WORD_FooterNewsletterTitle)}</strong>
+                  <div className="mb-3">
+                    {formatMessage(WORD_FooterNewsletterTitle2)}
+                  </div>
                   <div>
-                    <small>{t.footer.BlocLogo.spamsDesc}</small>
+                    <small>{formatMessage(WORD_FooterNewsletterNoSpams)}</small>
                   </div>
                   <div>
                     <ButtonSubscribe
-                      titleName={t.footer.BlocLogo.buttonSubsc}
-                      titleOk={t.footer.BlocLogo.buttonOk}
+                      titleName={formatMessage(WORD_FooterNewsletterSubscribe)}
+                      titleOk={formatMessage(WORD_FooterNewsletterSubscribeOk)}
                     />
                   </div>
                 </div>
               </Newsletter>
               <Company>
                 <div className="company">
-                  <strong>{t.footer.BlocLinks.titleGroup1}</strong>
+                  <strong>{formatMessage(WORD_FooterNewsletterWebsite)}</strong>
                   <Block>
                     <Link href="/">
-                      <a className="mt-2">{t.footer.BlocLinks.link1}</a>
+                      <a className="mt-2">{formatMessage(WORD_NavbarLink1)}</a>
                     </Link>
                     <Link href="/faq">
-                      <a href="#">{t.footer.BlocLinks.link2}</a>
+                      <a href="#">{formatMessage(WORD_NavbarLink2)}</a>
                     </Link>
                     <Link href="/library">
-                      <a href="#">{t.footer.BlocLinks.link3}</a>
+                      <a href="#">{formatMessage(WORD_NavbarLink3)}</a>
                     </Link>
                     <Link href="/pricing">
-                      <a href="#">{t.footer.BlocLinks.link4}</a>
+                      <a href="#">{formatMessage(WORD_NavbarLink4)}</a>
                     </Link>
                   </Block>
                 </div>
@@ -134,35 +148,37 @@ const Footer = () => {
             </Newsletter_company>
             <Copyright_socialLinks>
               <Copyright>
-                Copyright © 2022{getCurrentYear(2022)} -{" "}
-                {`${t.footer.copyright.liaison} `}
-                <span>
-                  {/* {<a
-                    href="https://lokalistic.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Lokalistic
-                  </a>} */}
-                  <a href="/" target="" rel="noopener noreferrer">
-                    Lokalistic
-                  </a>
-                </span>
+                <a href="/" target="_blank" rel="noopener noreferrer">
+                  {formatMessage(WORD_FooterCopyRight, {
+                    year: `2022${getCurrentYear(2022)}`,
+                  })}
+                </a>
               </Copyright>
               <SocialLinks>
-                <Facebook link="" width="1.5rem" height="1.5rem" />
-                <Linkedin link="" width="1.5rem" height="1.5rem" />
+                {/* <Facebook link="/" width="1.5rem" height="1.5rem" /> */}
+                {/* <Linkedin link="/" width="1.5rem" height="1.5rem" /> */}
+                <a
+                  href="https://join.slack.com/t/chartstudio/shared_invite/zt-13z6rsc39-5OZWm~YDUU37GZb6Kl_klA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="mt-2 ml-2">
+                    <Slack width="1.5rem" height="1.5rem" />
+                  </div>
+                </a>
               </SocialLinks>
             </Copyright_socialLinks>
             <Legal>
               <Link href="/">
-                <a>{t.footer.endline.link1}</a>
+                <a>{formatMessage(WORD_FooterConfidentialityCookies)}</a>
               </Link>
               <Link href="/">
-                <a className="cond_gene">{t.footer.endline.link2}</a>
+                <a className="cond_gene">
+                  {formatMessage(WORD_FooterGeneralCondi)}
+                </a>
               </Link>
               <Link href="/">
-                <a>{t.footer.endline.link3}</a>
+                <a>{formatMessage(WORD_FooterAccessibity)}</a>
               </Link>
             </Legal>
           </FooterDiv>

@@ -1,11 +1,19 @@
 import { useRouter } from "next/router"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, useContext, useState } from "react"
+import { IntlContext } from "react-intl"
 import styled from "styled-components"
+import {
+  WORD_ModalButtonCancel,
+  WORD_ModalError,
+  WORD_ModalSubsc,
+  WORD_ModalSubscConfirm,
+  WORD_ModalTryNext,
+  WORD_ModalTryNextDoc,
+} from "../../Dictionary"
 import { routerDir } from "../../helpers/routerDir"
 import { subscribe } from "../../helpers/subscribe"
 import { useAuth } from "../../hooks/useAuth"
-import en from "../../locales/en"
-import fr from "../../locales/fr"
+
 const Wrapper = styled.div`
   position: relative;
 `
@@ -61,13 +69,14 @@ const ModalSubsc = ({
   const [openDocPage, setOpenDocPage] = useState(false)
   const { user, setUser } = useAuth()
   const router = useRouter()
-  const { locale } = router
-  const t = locale === "fr" ? fr : en
+  const { formatMessage } = useContext(IntlContext)
   return (
     <Wrapper {...props}>
       <p style={{ textAlign: "center" }}></p>
       <h6 style={{ textAlign: "center" }}>
-        {!openDocPage ? `${t.modalText.subsc}?` : `${t.modalText.subscConfirm}`}
+        {!openDocPage
+          ? `${formatMessage(WORD_ModalSubsc)}?`
+          : `${formatMessage(WORD_ModalSubscConfirm)}`}
       </h6>
       <LigneButton>
         <ButtonCancel
@@ -77,7 +86,7 @@ const ModalSubsc = ({
             cancelFunc()
           }}
         >
-          {t.modalText.button.cancel}
+          {formatMessage(WORD_ModalButtonCancel)}
         </ButtonCancel>
         {user && selectedGraph !== "" && !openDocPage ? (
           <ButtonStart
@@ -92,7 +101,7 @@ const ModalSubsc = ({
               }
             }}
           >
-            {t.modalText.button.tryNext}
+            {formatMessage(WORD_ModalTryNext)}
           </ButtonStart>
         ) : user && selectedGraph !== "" && openDocPage ? (
           <ButtonStart
@@ -102,7 +111,7 @@ const ModalSubsc = ({
               routerDir(router, selectedDoc)
             }}
           >
-            {t.modalText.button.tryNextDocs}
+            {formatMessage(WORD_ModalTryNextDoc)}
           </ButtonStart>
         ) : (
           <ButtonWarn
@@ -111,7 +120,7 @@ const ModalSubsc = ({
               router.reload()
             }}
           >
-            {t.modalText.button.error}
+            {formatMessage(WORD_ModalError)}
           </ButtonWarn>
         )}
       </LigneButton>

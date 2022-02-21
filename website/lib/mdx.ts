@@ -4,8 +4,8 @@ import path from "path"
 import readingTime from "reading-time"
 import { sync } from "glob"
 import { InterDocs } from "../@types/interface"
-import fr from "../locales/fr"
-import en from "../locales/en"
+import fr from "../locales/fr/index"
+import en from "../locales/en/index"
 
 const postDir = path.join(process.cwd(), "/Data/Docs")
 export const getAllDocs = (locale: "fr" | "en" = "fr") => {

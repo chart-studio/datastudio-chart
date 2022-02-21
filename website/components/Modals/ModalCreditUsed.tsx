@@ -1,21 +1,19 @@
-import { useRouter } from "next/router"
+import { useContext } from "react"
+import { IntlContext } from "react-intl"
 import styled from "styled-components"
-import en from "../../locales/en"
-import fr from "../../locales/fr"
+import { WORD_ModalAllcreditused } from "../../Dictionary"
 const Wrapper = styled.div`
   position: relative;
   margin-bottom: 1rem;
 `
-const ModalCreditUsed = ({ ...props }: { props?: { [x: string]: any } }) => {
-  const router = useRouter()
-  const { locale } = router
-  const t = locale === "fr" ? fr : en
+const ModalCreditUsed = () => {
+  const { formatMessage } = useContext(IntlContext)
   return (
     <Wrapper>
       <div style={{ position: "relative" }}>
         <strong>
           <p style={{ textAlign: "center", color: "var(--failure)" }}>
-            {t.modalText.allcreditused}
+            {formatMessage(WORD_ModalAllcreditused)}
           </p>
         </strong>
       </div>

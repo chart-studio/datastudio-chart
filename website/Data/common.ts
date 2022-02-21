@@ -201,7 +201,7 @@ export const modalText = {
   },
   allcreditused: {
     fr: "Désolé, vos crédits sont épuisés",
-    en: "Sorry, You don't have crédits anymore",
+    en: "Sorry, You used all your credits",
   },
   add: {
     fr: "Souhaitez-vous ajouter ce graphique?",

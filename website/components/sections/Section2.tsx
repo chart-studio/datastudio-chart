@@ -1,11 +1,32 @@
 import styled from "styled-components"
-import fr from "../../locales/fr"
 import Container from "../layout/Container"
 import Google from "../icon/Google"
 import BarChart from "../icon/BarChart"
-import LinkIco from "../icon/Link"
+import { IntlContext } from "react-intl"
+import Link from "next/link"
 import LinkHome from "../icon/LinkHome"
 import DataStudioIcon from "../icon/DataStudio"
+import { useContext } from "react"
+import {
+  WORD_homeExplainButton2,
+  WORD_homeExplainButton3,
+  WORD_homeExplainButton4,
+  WORD_homeExplainSubTitle1,
+  WORD_homeExplainSubTitle2,
+  WORD_homeExplainSubTitle3,
+  WORD_homeExplainSubTitle4,
+  WORD_homeExplainText1,
+  WORD_homeExplainText2,
+  WORD_homeExplainText3,
+  WORD_homeExplainText4,
+  WORD_homeExplainText4KnowMore,
+  WORD_homeExplainTitle,
+} from "../../Dictionary"
+import ButtonConnectGoogle from "../elements/ButtonConnectGoogle"
+import { useAuth } from "../../hooks/useAuth"
+import { signIn } from "../../helpers/signIn"
+import { useRouter } from "next/router"
+import ButtonHomeWrapper from "../elements/ButtonHomeWrapper"
 
 const Section = styled.section`
   --gap: 2rem;
@@ -42,6 +63,8 @@ const CardHow = styled.div`
   border: solid 1px var(--surface3);
   border-radius: 0.5rem;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
 `
 
 const LogoDiv = styled.div`
@@ -55,11 +78,18 @@ const LogoDiv = styled.div`
   }
 `
 
-const Section2 = ({ t }: { t: typeof fr }) => {
+const Space = styled.div`
+  margin-top: auto;
+`
+
+const Section2 = () => {
+  const { formatMessage } = useContext(IntlContext)
+  const { locale } = useRouter()
+  const { user, setUser } = useAuth()
   return (
     <Container>
       <Section>
-        <h2>{t.how_section.title}</h2>
+        <h2>{formatMessage(WORD_homeExplainTitle)}</h2>
         <CardHowContainer>
           <CardHow>
             <LogoDiv>
@@ -67,19 +97,30 @@ const Section2 = ({ t }: { t: typeof fr }) => {
             </LogoDiv>
 
             <header>
-              <h6>{t.how_section.block1.title}</h6>
+              <h6>{formatMessage(WORD_homeExplainSubTitle1)}</h6>
             </header>
-            <p>{t.how_section.block1.content}</p>
+            <p>{formatMessage(WORD_homeExplainText1)}</p>
+            <Space />
+            <ButtonConnectGoogle
+              connected={user ? true : false}
+              disabled={user ? true : false}
+              onClick={() => signIn(locale, setUser)}
+            />
           </CardHow>
           <CardHow>
             <LogoDiv>
               <BarChart width="1.6rem" height="1.6rem" />
             </LogoDiv>
-
             <header>
-              <h6>{t.how_section.block2.title}</h6>
+              <h6>{formatMessage(WORD_homeExplainSubTitle2)}</h6>
             </header>
-            <p>{t.how_section.block2.content}</p>
+            <p>{formatMessage(WORD_homeExplainText2)}</p>
+            <Space />
+            <Link href="/library">
+              <ButtonHomeWrapper>
+                {formatMessage(WORD_homeExplainButton2)}
+              </ButtonHomeWrapper>
+            </Link>
           </CardHow>
           <CardHow>
             <LogoDiv>
@@ -87,28 +128,34 @@ const Section2 = ({ t }: { t: typeof fr }) => {
             </LogoDiv>
 
             <header>
-              <h6>{t.how_section.block3.title}</h6>
+              <h6>{formatMessage(WORD_homeExplainSubTitle3)}</h6>
             </header>
-            <p>{t.how_section.block3.content}</p>
+            <p>{formatMessage(WORD_homeExplainText3)}</p>
+            <Space />
+            <Link href="/library">
+              <ButtonHomeWrapper>
+                {formatMessage(WORD_homeExplainButton3)}
+              </ButtonHomeWrapper>
+            </Link>
           </CardHow>
           <CardHow>
             <LogoDiv>
               <DataStudioIcon width="1.6rem" height="1.6rem" />
             </LogoDiv>
             <header>
-              <h6>{t.how_section.block4.title}</h6>
+              <h6>{formatMessage(WORD_homeExplainSubTitle4)}</h6>
             </header>
-            <p>{t.how_section.block4.content}</p>
-            <b>
-              {"==>> "}
-              <a
-                href="https://developers.google.com/datastudio/visualization/load-viz"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t.how_section.block4.linkName}
-              </a>
-            </b>
+            <p>{formatMessage(WORD_homeExplainText4)}</p>
+            <Space />
+            <a
+              href="https://developers.google.com/datastudio/visualization/load-viz"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ButtonHomeWrapper>
+                {formatMessage(WORD_homeExplainButton4)}
+              </ButtonHomeWrapper>
+            </a>
           </CardHow>
         </CardHowContainer>
       </Section>

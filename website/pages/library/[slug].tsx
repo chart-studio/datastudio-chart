@@ -12,11 +12,15 @@ import "highlight.js/styles/atom-one-dark.css"
 import styled from "styled-components"
 import GraphsComponent from "../../components/GraphsComponents"
 import { useRouter } from "next/router"
-import en from "../../locales/en"
-import fr from "../../locales/fr"
+import en from "../../locales/en/index"
+import fr from "../../locales/fr/index"
 import { useAuth } from "../../hooks/useAuth"
 import LinkHold from "../../components/elements/LinkHold"
 import SeoHome from "../../components/SEO/seoHome"
+import ImageMdx from "../../components/elements/imageMdx"
+import rehypeImgSize from "rehype-img-size"
+import type { Plugin } from "unified"
+
 const GridDocs = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.5fr 1fr;
@@ -69,7 +73,15 @@ const DocContent = styled.div`
   margin: 1rem;
 `
 const DataContent = styled.div`
+  height: calc(100vh - 4rem);
   margin: 1rem 2rem 1rem 1rem;
+  position: sticky;
+  top: 4rem;
+  @media (max-width: 48rem) {
+    height: auto;
+    position: initial;
+    //margin-bottom: 1rem;
+  }
   @media (max-width: 48rem) {
     margin: 1rem;
   }
@@ -174,7 +186,7 @@ const Doc = ({ doc, locale }: { doc: MDXDoc; locale: locale }) => {
         </GraphContent>
 
         <DocContent>
-          <MDXRemote {...doc.source} components={{}} />
+          <MDXRemote {...doc.source} components={{ img: ImageMdx }} />
         </DocContent>
         <DataContent>
           <h4>{t.docPage.titreData}</h4>
@@ -251,6 +263,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
         rehypeSlug,
         [rehypeAutolinkHeadings, { behavior: "wrap" }],
         rehypeHighlight,
+        [rehypeImgSize as Plugin<any[], any, any>, { dir: "public" }],
       ],
     },
   })

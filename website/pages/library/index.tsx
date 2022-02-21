@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import styled from "styled-components"
 import { InterDocs, locale } from "../../@types/interface"
 import ModalContainer from "../../components/elements/ModalContainer"
@@ -10,6 +10,8 @@ import translatedWords from "../../helpers/translatedWords"
 import { useAuth } from "../../hooks/useAuth"
 import { useClickAway } from "../../hooks/useClickAway"
 import { getAllDocs } from "../../lib/mdx"
+import { IntlContext } from "react-intl"
+import { WORD_NavbarLink3 } from "../../Dictionary"
 
 const Grid = styled.div`
   margin-top: 3rem;
@@ -23,7 +25,8 @@ const Grid = styled.div`
   padding: 0 0 0.5rem 0;
 `
 
-const index = ({ docs, locale }: { docs: InterDocs[]; locale: locale }) => {
+const index = ({ docs }: { docs: InterDocs[] }) => {
+  const { formatMessage } = useContext(IntlContext)
   const { open, setOpen, refControler, refObject } = useClickAway(false)
   const [selectedModal, setSelectedModal] = useState("")
   const [selectedGraph, setSelectedGraph] = useState("")
@@ -31,7 +34,6 @@ const index = ({ docs, locale }: { docs: InterDocs[]; locale: locale }) => {
   const [selectedGrapPrice, setSelectedGrapPrice] = useState("")
   const [connected, setConnected] = useState(false)
   const { user } = useAuth()
-  const t = translatedWords(locale)
   useEffect(() => {
     if (user) {
       setConnected(true)
@@ -42,7 +44,7 @@ const index = ({ docs, locale }: { docs: InterDocs[]; locale: locale }) => {
 
   return (
     <>
-      <SeoHome title={t.navbar.link3} />
+      <SeoHome title={formatMessage(WORD_NavbarLink3)} />
       <Container>
         <Grid>
           {docs.map((val, i) => (
@@ -91,6 +93,6 @@ export default index
 export async function getStaticProps({ locale }: { locale: locale }) {
   const docs = getAllDocs(locale)
   return {
-    props: { docs, locale },
+    props: { docs },
   }
 }

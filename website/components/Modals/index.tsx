@@ -20,7 +20,7 @@ const Modals = ({
   selectedGrapPrice?: string
 }) => {
   if (selectedModal === "connect") {
-    return <ModalConnect />
+    return <ModalConnect setOpenModal={setOpenModal} />
   }
   if (selectedModal === "allCreditUsed") {
     return <ModalCreditUsed />

@@ -1,58 +1,41 @@
 import { useRouter } from "next/router"
+import { Dispatch, SetStateAction, useContext } from "react"
+import { IntlContext } from "react-intl"
 import styled from "styled-components"
 import { locale } from "../../@types/interface"
+import { WORD_ModalConnectTitle } from "../../Dictionary"
 import { signIn } from "../../helpers/signIn"
-import translatedWords from "../../helpers/translatedWords"
 import { useAuth } from "../../hooks/useAuth"
-import en from "../../locales/en"
-import fr from "../../locales/fr"
-import Google from "../icon/Google"
+import ButtonConnectGoogle from "../elements/ButtonConnectGoogle"
 const Wrapper = styled.div`
   position: relative;
   margin-bottom: 1rem;
 `
-const Button = styled.button`
-  background-color: var(--brand);
-  border: none;
-  border-radius: 0.25rem;
-  width: 15rem;
-  outline: none;
-  &:hover {
-    opacity: 0.8;
-  }
-  padding: 0.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 0.9px;
-`
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-`
-
-const ModalConnect = ({ ...props }: { props?: { [x: string]: any } }) => {
-  const { setUser } = useAuth()
-  const router = useRouter()
-  const { locale } = router as { locale: locale }
-  const t = translatedWords(locale)
+const ModalConnect = ({
+  setOpenModal,
+}: {
+  setOpenModal: Dispatch<SetStateAction<boolean>>
+}) => {
+  const { setUser, user } = useAuth()
+  const { locale } = useRouter() as { locale: locale }
+  const { formatMessage } = useContext(IntlContext)
   return (
     <Wrapper>
       <div style={{ position: "relative" }}>
         <strong>
           <p style={{ textAlign: "center", color: "var(--failure)" }}>
-            {t.modalText.connect}
+            {formatMessage(WORD_ModalConnectTitle)}
           </p>
         </strong>
       </div>
-      <ButtonWrapper>
-        <Button onClick={() => signIn(locale, setUser)}>
-          <Google />
-          {t.button.account}
-        </Button>
-      </ButtonWrapper>
+      <ButtonConnectGoogle
+        connected={user ? true : false}
+        disabled={user ? true : false}
+        onClick={() => {
+          setOpenModal(false)
+          signIn(locale, setUser)
+        }}
+      />
     </Wrapper>
   )
 }

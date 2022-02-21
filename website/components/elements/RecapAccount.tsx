@@ -1,15 +1,19 @@
 import { useRouter } from "next/router"
-import React, { useEffect } from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { signIn } from "../../helpers/signIn"
 import { useAuth } from "../../hooks/useAuth"
-import en from "../../locales/en"
-import fr from "../../locales/fr"
 import Google from "../icon/Google"
+import { IntlContext } from "react-intl"
+import {
+  WORD_RecapAccButtonConnectGoogle,
+  WORD_RecapAccCredits,
+  WORD_Subscriptions,
+} from "../../Dictionary"
 
 const BlockRecap = styled.div`
-  position: sticky;
-  top: 4rem;
+  //position: sticky;
+  //top: 4rem;
   backdrop-filter: blur(20px);
   //background-color: var(--surface2);
   padding: 1rem;
@@ -64,11 +68,11 @@ const Text = styled.div`
   }
 `
 const RecapAccount = ({ onHomePage }: { onHomePage?: boolean }) => {
+  const { formatMessage } = useContext(IntlContext)
   const router = useRouter()
   const { locale } = router
-  const t = locale === "fr" ? fr : en
   const { user, setUser } = useAuth()
-  useEffect(() => {}, [user])
+  //useEffect(() => {}, [user])
   return (
     <BlockRecap theme={{ onHomePage }}>
       {user ? (
@@ -79,20 +83,21 @@ const RecapAccount = ({ onHomePage }: { onHomePage?: boolean }) => {
               {user && user.trygraph?.length !== 0
                 ? user.trygraph.length * 10
                 : "00"}{" "}
-              <span>/ 30 {t.recap.credit}</span>
+              <span>/ 30 {formatMessage(WORD_RecapAccCredits)}</span>
             </Text>
           </EssayWrapper>
           <SubsWrapper>
             <Boule theme={{ val: "subsc" }} />
             <Text>
-              {user ? user.subsc.length : 0} <span>{t.recap.subsc}</span>
+              {user ? user.subsc.length : 0}{" "}
+              <span>{formatMessage(WORD_Subscriptions)}</span>
             </Text>
           </SubsWrapper>
         </ConnectContainer>
       ) : (
         <Button onClick={() => signIn(locale, setUser)}>
           <Google />
-          {t.button.account}
+          {formatMessage(WORD_RecapAccButtonConnectGoogle)}
         </Button>
       )}
     </BlockRecap>

@@ -1,12 +1,17 @@
 import { useRouter } from "next/router"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, useContext, useState } from "react"
+import { IntlContext } from "react-intl"
 import styled from "styled-components"
-import { date_YYYY_MM_DD } from "../../helpers/date_YYYY_MM_DD"
+import {
+  WORD_ModalButtonCancel,
+  WORD_ModalError,
+  WORD_ModalTryConfirm,
+  WORD_ModalTryNext,
+  WORD_ModalTryNextDoc,
+} from "../../Dictionary"
 import { routerDir } from "../../helpers/routerDir"
 import { tryGraph } from "../../helpers/tryGraph"
 import { useAuth } from "../../hooks/useAuth"
-import en from "../../locales/en"
-import fr from "../../locales/fr"
 const Wrapper = styled.div`
   position: relative;
 `
@@ -60,15 +65,14 @@ const ModalTry = ({
   const [openDocPage, setOpenDocPage] = useState(false)
   const { user, setUser } = useAuth()
   const router = useRouter()
-  const { locale } = router
-  const t = locale === "fr" ? fr : en
+  const { formatMessage } = useContext(IntlContext)
   return (
     <Wrapper {...props}>
       <p style={{ textAlign: "center" }}></p>
       <h6 style={{ textAlign: "center" }}>
         {!openDocPage
-          ? `${t.modalText.try}? ${selectedGraph}`
-          : `${t.modalText.tryConfirm}-${selectedGraph}`}
+          ? `${formatMessage(WORD_ModalTryNext)} ${selectedGraph} ?`
+          : `${formatMessage(WORD_ModalTryConfirm)}`}
       </h6>
       <LigneButton>
         <ButtonCancel
@@ -78,7 +82,7 @@ const ModalTry = ({
             cancelFunc()
           }}
         >
-          {t.modalText.button.cancel}
+          {formatMessage(WORD_ModalButtonCancel)}
         </ButtonCancel>
         {user && selectedGraph !== "" && !openDocPage ? (
           <ButtonStart
@@ -92,7 +96,7 @@ const ModalTry = ({
               }
             }}
           >
-            {t.modalText.button.tryNext}
+            {formatMessage(WORD_ModalTryNext)}
           </ButtonStart>
         ) : user && selectedGraph !== "" && openDocPage ? (
           <ButtonStart
@@ -102,7 +106,7 @@ const ModalTry = ({
               routerDir(router, selectedDoc)
             }}
           >
-            {t.modalText.button.tryNextDocs}
+            {formatMessage(WORD_ModalTryNextDoc)}
           </ButtonStart>
         ) : (
           <ButtonWarn
@@ -111,7 +115,7 @@ const ModalTry = ({
               router.reload()
             }}
           >
-            {t.modalText.button.error}
+            {formatMessage(WORD_ModalError)}
           </ButtonWarn>
         )}
       </LigneButton>

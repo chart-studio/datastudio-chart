@@ -1,9 +1,17 @@
+import { useContext } from "react"
 import styled from "styled-components"
-import { locale } from "../../@types/interface"
 import FAQ from "../../components/FAQ"
 import Container from "../../components/layout/Container"
 import SeoHome from "../../components/SEO/seoHome"
-import translatedWords from "../../helpers/translatedWords"
+import { IntlContext } from "react-intl"
+import {
+  WORD_NavbarLink4,
+  WORD_PricingExpert,
+  WORD_PricingExpertText,
+  WORD_PricingFreeText2,
+  WORD_PricingFreeTitle,
+  WORD_RecapAccCredits,
+} from "../../Dictionary"
 
 const ContainerDiv = styled.div`
   min-height: 80vh;
@@ -45,47 +53,41 @@ const Text = styled.p`
 const FaqContainer = styled.div`
   margin-top: 3rem;
 `
-const index = ({ locale }: { locale: locale }) => {
-  const t = translatedWords(locale)
+const index = () => {
+  const { formatMessage } = useContext(IntlContext)
   return (
     <>
-      <SeoHome title={t.navbar.link4} />
+      <SeoHome title={formatMessage(WORD_NavbarLink4)} />
       <ContainerDiv>
         <Container>
           <CardContainer>
             <Card>
               <Title>
-                <b>{t.pricing.blockPrice1.title}</b>
+                <b>{formatMessage(WORD_PricingFreeTitle)}</b>
               </Title>
-              <Price>{`${t.pricing.blockPrice1.price}${t.pricing.blockPrice2.currency} / mo`}</Price>
+              <Price>{`${"0"}${"€"} / mo`}</Price>
               <div>
-                <Text>{t.pricing.blockPrice1.text1}</Text>
-                <Text>{t.pricing.blockPrice1.text2}</Text>
+                <Text>{`30 ${formatMessage(WORD_RecapAccCredits)}`}</Text>
+                <Text>{formatMessage(WORD_PricingFreeText2)}</Text>
               </div>
             </Card>
             <Card>
               <Title style={{ color: "var(--brand)" }}>
-                <b>{t.pricing.blockPrice2.title}</b>
+                <b>{formatMessage(WORD_PricingExpert)}</b>
               </Title>
               <Price
                 style={{ color: "var(--brand)" }}
-              >{`${t.pricing.blockPrice2.price}${t.pricing.blockPrice2.currency} /mo`}</Price>
+              >{`${"15"}${"€"} /mo`}</Price>
               <div>
-                <Text>{t.pricing.blockPrice2.text1}</Text>
+                <Text>{formatMessage(WORD_PricingExpertText)}</Text>
               </div>
             </Card>
           </CardContainer>
           <FaqContainer></FaqContainer>
-          <FAQ locale={locale} />
+          <FAQ />
         </Container>
       </ContainerDiv>
     </>
   )
 }
 export default index
-
-export async function getStaticProps({ locale }: { locale: locale }) {
-  return {
-    props: { locale },
-  }
-}

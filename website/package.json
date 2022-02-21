@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "extract:pot": "node bin/extract-strings",
+    "extract:toJson": "node bin/build-strings",
     "predev": "rimraf .next",
     "dev": "next dev",
     "build": "next build",
@@ -18,10 +20,12 @@
     "@stripe/stripe-js": "^1.22.0",
     "@types/glob": "^7.2.0",
     "@types/react-dom": "^17.0.11",
+    "@types/react-headroom": "^2.2.2",
     "@types/styled-components": "^5.1.15",
     "axios": "^0.25.0",
     "firebase": "^9.6.4",
     "gettext-extractor": "^3.5.3",
+    "gettext-parser": "^5.0.0",
     "glob": "^7.2.0",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.4.0",
@@ -32,11 +36,14 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-firebase-hooks": "^5.0.0",
+    "react-headroom": "^3.2.0",
+    "react-intl": "^5.24.6",
     "react-social-login-buttons": "^3.6.0",
     "react-spring": "^9.4.2",
     "reading-time": "^1.5.0",
     "rehype-autolink-headings": "^6.1.1",
     "rehype-highlight": "^5.0.2",
+    "rehype-img-size": "^1.0.1",
     "rehype-slug": "^5.0.1",
     "stripe": "^8.200.0",
     "ts-node": "^10.5.0"
@@ -54,7 +61,8 @@
     "prettier": "^2.4.1",
     "sass": "^1.43.3",
     "styled-components": "^5.3.3",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "typescript-react-intl": "^0.4.1"
   },
   "resolutions": {
     "styled-components": "^5"

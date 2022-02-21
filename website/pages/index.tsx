@@ -1,20 +1,18 @@
 import Container from "../components/layout/Container"
 import Section1 from "../components/sections/Section1"
-import styled from "styled-components"
-import RecapAccount from "../components/elements/RecapAccount"
-import { InterDocs, locale } from "../@types/interface"
 import { useAuth } from "../hooks/useAuth"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import SeoHome from "../components/SEO/seoHome"
-import translatedWords from "../helpers/translatedWords"
 import Section2 from "../components/sections/Section2"
 import FAQ from "../components/FAQ"
 import Sponsors from "../components/sections/Sponsors"
+import { IntlContext } from "react-intl"
+import { WORD_NavbarLink1 } from "../Dictionary"
 
-const HomePage = ({ locale }: { locale: locale }) => {
+const HomePage = () => {
   const [connected, setConnected] = useState(false)
+  const { formatMessage } = useContext(IntlContext)
   const { user } = useAuth()
-  const t = translatedWords(locale)
   useEffect(() => {
     if (user) {
       //console.log(user)
@@ -25,22 +23,16 @@ const HomePage = ({ locale }: { locale: locale }) => {
   }, [user])
   return (
     <>
-      <SeoHome title={t.navbar.link1} />
-      <Section1 t={t} />
-      <RecapAccount onHomePage />
-      <Section2 t={t} />
-      <Sponsors />
+      <SeoHome title={formatMessage(WORD_NavbarLink1)} />
+      <Section1 />
+      {/* <RecapAccount onHomePage /> */}
+      <Section2 />
+      {/* <Sponsors /> */}
       <Container>
-        <FAQ locale={locale} />
+        <FAQ />
       </Container>
     </>
   )
 }
 
 export default HomePage
-
-export async function getStaticProps({ locale }: { locale: locale }) {
-  return {
-    props: { locale },
-  }
-}

@@ -1,22 +1,24 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { locale } from "../../@types/interface"
 import FAQ from "../../components/FAQ"
 import Container from "../../components/layout/Container"
 import SeoHome from "../../components/SEO/seoHome"
+import { WORD_NavbarLink2 } from "../../Dictionary"
 import translatedWords from "../../helpers/translatedWords"
+import { IntlContext } from "react-intl"
 
 const ContainerDiv = styled.div`
   min-height: 80vh;
 `
-const index = ({ locale }: { locale: locale }) => {
-  const t = translatedWords(locale)
+const index = () => {
+  const { formatMessage } = useContext(IntlContext)
   return (
     <>
-      <SeoHome title={t.navbar.link2} />
+      <SeoHome title={formatMessage(WORD_NavbarLink2)} />
       <ContainerDiv>
         <Container>
-          <FAQ locale={locale} all />
+          <FAQ all />
         </Container>
       </ContainerDiv>
     </>
@@ -24,9 +26,3 @@ const index = ({ locale }: { locale: locale }) => {
 }
 
 export default index
-
-export async function getStaticProps({ locale }: { locale: locale }) {
-  return {
-    props: { locale },
-  }
-}

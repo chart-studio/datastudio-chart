@@ -1,13 +1,21 @@
 import Head from "next/head"
 import { useRouter } from "next/router"
-import React from "react"
+import React, { useContext } from "react"
 import { locale } from "../../../@types/interface"
 import translatedWords from "../../../helpers/translatedWords"
 import infoSite from "../../../infos/infoSite"
+import { IntlContext } from "react-intl"
+import {
+  WORD_NavbarLink2,
+  WORD_NavbarLink3,
+  WORD_NavbarLink4,
+  WORD_NavbarLink5,
+} from "../../../Dictionary"
 
 // inspecter ce site pour plus : https://www.seowerkz.com/
 // https://prerender.io/structured-data-for-seo/
 const SeoHome = ({ title, noIndex }: { title: string; noIndex?: boolean }) => {
+  const { formatMessage } = useContext(IntlContext)
   const router = useRouter()
   const { locale } = router as { locale: locale }
   const t = translatedWords(locale)
@@ -62,7 +70,7 @@ const SeoHome = ({ title, noIndex }: { title: string; noIndex?: boolean }) => {
                   {
                     "@type": "ListItem",
                     position: 2,
-                    name: t.navbar.link2,
+                    name: formatMessage(WORD_NavbarLink2),
                     item: `${infoSite(locale).url}/faq`,
                   },
                 ],
@@ -79,7 +87,7 @@ const SeoHome = ({ title, noIndex }: { title: string; noIndex?: boolean }) => {
                   {
                     "@type": "ListItem",
                     position: 2,
-                    name: t.navbar.link3,
+                    name: formatMessage(WORD_NavbarLink3),
                     item: `${infoSite(locale).url}/library`,
                   },
                 ],
@@ -96,7 +104,7 @@ const SeoHome = ({ title, noIndex }: { title: string; noIndex?: boolean }) => {
                   {
                     "@type": "ListItem",
                     position: 2,
-                    name: t.navbar.link4,
+                    name: formatMessage(WORD_NavbarLink4),
                     item: `${infoSite(locale).url}/pricing`,
                   },
                 ],
@@ -113,7 +121,7 @@ const SeoHome = ({ title, noIndex }: { title: string; noIndex?: boolean }) => {
                   {
                     "@type": "ListItem",
                     position: 2,
-                    name: t.navbar.link5,
+                    name: formatMessage(WORD_NavbarLink5),
                     item: `${infoSite(locale).url}/contact`,
                   },
                 ],

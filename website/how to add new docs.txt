@@ -1,0 +1,8 @@
+1. modifier le Data/common.ts en rajoutant le nouveau graphId
+2. create a new Mdx file  (en et fr)
+- modifier le front Matter
+==> date
+==> title
+==> id du graph (graphId de common.ts)
+3. créer l'élement image en copier le lien dans common.ts
+4. l'id donné devra correspondre à celui dans Data/common.ts dans la partie Graph
