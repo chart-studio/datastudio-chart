@@ -13,7 +13,6 @@ If you want to improve yourself and learn with other, join our [slack community]
 ### Attention
 
 Before sending file to your google cloud storage you have to change LOCAL = false to LOCAL = true.
-Note that nothing will append when you will receive the data.
 
 if you plan to make interaction with date or others, DONT FORGET TO ACTIVATE Chart INTERACTION = CrossFILTER in datastudio.
 
