@@ -1,98 +1,105 @@
-# Configurer google cloud platform
+# Create a graph and configurer google cloud platform
 
-## refresh git
+## Attention
 
-      git rm -rf --cached .
+Before sending file to your google cloud storage you have to change LOCAL = false to LOCAL = true.
+Note that nothing will append when you will receive the data.
 
-## POint d'attention
+if you plan to make interaction with date or others, DONT FORGET TO ACTIVATE Chart INTERACTION = CrossFILTER in datastudio.
 
-Lorsqu'on envoie des fichier avec LOCAL = true, aucune interaction ne s'éffectue et le dataset recu n'est pas de la même forme que celui renvoyé par data studio.
-Ensuite NE PAS OUBLIER d'ACTIVER Chart INTERACTION = CrossFILTER dans datastudio. 
-sinon ca ne marchera pas.
+## Create your own graph
 
-## Se connecter à google cloud
+### Install dependency (npx - node)
 
-      gcloud auth login
-
-## Change project
-
-      gcloud config set project project_name_id
-
-## Annuler le project
-
-      gcloud config unset project
-
-## Copier un fichier dans GCP
-
-      gsutil cp "directory/file" "gs://directory"
-
-## Créer un espace de stockage avec
-
-      gsutil mb -b on us-east1 gs://name
-
-## Rendre un bucket public
-
-      gsutil acl ch -u AllUsers:R gs://name
-
-## Installer les dépendances
-
-      //ne fonctionne pas
+      //dont use this one - not easy to handle and some bugs
       npx @google/dscc-gen viz --yarn
       npx @google/dscc-gen viz
 
-      //Fonctionne
+      //Instead use this one
       npx @google/dscc-gen@2.0.30 viz --yarn
       npx @google/dscc-gen@2.0.30 viz
 
-## Verifier la structure des données
+## Check your data
 
-Pour vérifier la structure des données, il faut:
+To check your data and use it later as localMessage.js, you need to:
 
-- importer un jet de données au format CSV
-- dans son répertoire de travail (vscode), lancer:
+- import an exemple or use one in data studio
+- in your local editor, execute:
 
             yarn update_message
             ou 
             npm run update_message
 
-Si ca ne fonctionne pas: taper la commande de copy directement:
+## Create your graph
 
-            gsutil cp -a public-read build/* gs://hamis_test/viz-test
+You can use whatever javascript library you want.
 
-Les différents inputs qui existent sont:
+## Create the files and the manifest
 
-- TEXT
-- NUMBER
-- YEAR_MONTH_DATE
+      yarn build:dev or yarn build:prod
 
-## Mettre à jour le manifest
+## Copy the result in your cloud storage
+
+      yarn push:dev
+
+      and if it does not work do it manually
+
+      gsutil cp -a public-read build/* gs://public_directory/myviz
+
+## Google cloud tips
+
+### Connect to google cloud
+
+      gcloud auth login
+
+### Change project
+
+      gcloud config set project project_name_id
+
+### Cancel a project
+
+      gcloud config unset project
+
+### Copy file to GCP
+
+      gsutil cp "directory/file" "gs://directory"
+
+### Create a storage
+
+      gsutil mb -b on us-east1 gs://name
+
+### Make a bucket public
+
+      gsutil acl ch -u AllUsers:R gs://name
+
+## Usefull link
+
+### update a manifest
 
 [Update a manifest](https://codelabs.developers.google.com/codelabs/community-visualization-dscc-gen/#9)
 
 devMode allow to use cache to serve data quickly
 
-## Construire son programme d3js
+### Buil a d3js graph by example
 
 [Create custom javascript vizualisation in datastudio](https://codelabs.developers.google.com/codelabs/community-visualization#13)
 
 [Create Data Studio Community Visualizations with dscc-gen](https://codelabs.developers.google.com/codelabs/community-visualization-dscc-gen/#9)
 
-## Configurer les paramètres pour datastudio
+## Configure editor
 
 [npm link package](https://www.npmjs.com/package/@google/dscc-gen)
 
-[Vidéo youtube : Create a Data Studio community visualization using D3](https://www.youtube.com/watch?v=7axX1R_ttOI)
+[Create a Data Studio community visualization using D3 (video)](https://www.youtube.com/watch?v=7axX1R_ttOI)
 
 [Apply filter in data visualisation](https://www.youtube.com/watch?v=kuUSNzd0ISg&t=2s)
 
 [Manifest Doc](https://developers.google.com/datastudio/visualization/manifest-reference)
 [Index.json Doc](https://developers.google.com/datastudio/visualization/config-reference)
-[1. Explication sur les interactions data de google](https://developers.google.com/datastudio/visualization/library-reference)
-ou [2. interactions data de google](https://developers.google.com/datastudio/visualization/interactions-guide)
+[Explanation about data interactions (link1)](https://developers.google.com/datastudio/visualization/library-reference)
+[Explanation about data interactions (link2)](https://developers.google.com/datastudio/visualization/interactions-guide)
 
-Cette vidéo explique comment configurer index.json pour paramétrer datastudio.
-
-Exemple cools de d3.js
+### D3.js great chart
 
 [brush with numeric labels](https://bl.ocks.org/timelyportfolio/50ffbfe3268466e316003997b6231f62)
 [D3 - Labels on circular barplot](https://www.d3-graph-gallery.com/graph/circular_barplot_label.html)
