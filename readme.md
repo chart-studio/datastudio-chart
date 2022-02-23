@@ -8,7 +8,7 @@ I share all the code for those who want to learn. You can pull request and help 
 
 If you want to learn how to create a chart for data studio, i put some links at the end of the document for you.
 
-If you want to improve yourself and learn with others, join our [slack community](https://join.slack.com/t/chartstudio/shared_invite/zt-13z6rsc39-5OZWm~YDUU37GZb6Kl_klA)
+If you want to improve yourself and learn with others, join the [slack community](https://join.slack.com/t/chartstudio/shared_invite/zt-13z6rsc39-5OZWm~YDUU37GZb6Kl_klA).
 
 ## Create a graph and configurer google cloud platform
 
