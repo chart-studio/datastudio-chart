@@ -1,15 +1,25 @@
-# Create a graph and configurer google cloud platform
+# 🔥 Welcome to Chart studio 🔥
 
-## Attention
+## Presentation
+
+I share all the code for those who want to learn. You can pull request and help me improve the code or just use it as it is.
+
+If you want to learn who to create a chart for data studio, i put some link at the end of the document for you.
+
+If you want to improve yourself and learn with other, join our [slack community](https://join.slack.com/t/chartstudio/shared_invite/zt-13z6rsc39-5OZWm~YDUU37GZb6Kl_klA)
+
+## Create a graph and configurer google cloud platform
+
+### Attention
 
 Before sending file to your google cloud storage you have to change LOCAL = false to LOCAL = true.
 Note that nothing will append when you will receive the data.
 
 if you plan to make interaction with date or others, DONT FORGET TO ACTIVATE Chart INTERACTION = CrossFILTER in datastudio.
 
-## Create your own graph
+### Create your own graph
 
-### Install dependency (npx - node)
+#### Install dependency (npx - node)
 
       //dont use this one - not easy to handle and some bugs
       npx @google/dscc-gen viz --yarn
@@ -19,7 +29,7 @@ if you plan to make interaction with date or others, DONT FORGET TO ACTIVATE Cha
       npx @google/dscc-gen@2.0.30 viz --yarn
       npx @google/dscc-gen@2.0.30 viz
 
-## Check your data
+### Check your data
 
 To check your data and use it later as localMessage.js, you need to:
 
@@ -30,15 +40,15 @@ To check your data and use it later as localMessage.js, you need to:
             or
             npm run update_message
 
-## Create your graph
+### Create your graph
 
 You can use whatever javascript library you want.
 
-## Create the files and the manifest
+### Create the files and the manifest
 
       yarn build:dev or yarn build:prod
 
-## Copy the result in your cloud storage
+### Copy the result in your cloud storage
 
       yarn push:dev
 
@@ -46,47 +56,47 @@ You can use whatever javascript library you want.
 
       gsutil cp -a public-read build/* gs://public_directory/myviz
 
-## Google cloud tips
+### Google cloud tips
 
-### Connect to google cloud
+#### Connect to google cloud
 
       gcloud auth login
 
-### Change project
+#### Change project
 
       gcloud config set project project_name_id
 
-### Cancel a project
+#### Cancel a project
 
       gcloud config unset project
 
-### Copy file to GCP
+#### Copy file to GCP
 
       gsutil cp "directory/file" "gs://directory"
 
-### Create a storage
+#### Create a storage
 
       gsutil mb -b on us-east1 gs://name
 
-### Make a bucket public
+#### Make a bucket public
 
       gsutil acl ch -u AllUsers:R gs://name
 
-## Usefull link
+### Usefull link
 
-### update a manifest
+#### update a manifest
 
 [Update a manifest](https://codelabs.developers.google.com/codelabs/community-visualization-dscc-gen/#9)
 
 devMode allow to use cache to serve data quickly
 
-### Buil a d3js graph by example
+#### Buil a d3js graph by example
 
 [Create custom javascript vizualisation in datastudio](https://codelabs.developers.google.com/codelabs/community-visualization#13)
 
 [Create Data Studio Community Visualizations with dscc-gen](https://codelabs.developers.google.com/codelabs/community-visualization-dscc-gen/#9)
 
-## Configure editor
+### Configure editor
 
 [npm link package](https://www.npmjs.com/package/@google/dscc-gen)
 
@@ -99,7 +109,7 @@ devMode allow to use cache to serve data quickly
 [Explanation about data interactions (link1)](https://developers.google.com/datastudio/visualization/library-reference)
 [Explanation about data interactions (link2)](https://developers.google.com/datastudio/visualization/interactions-guide)
 
-### D3.js great chart
+#### D3.js great chart
 
 [brush with numeric labels](https://bl.ocks.org/timelyportfolio/50ffbfe3268466e316003997b6231f62)
 [D3 - Labels on circular barplot](https://www.d3-graph-gallery.com/graph/circular_barplot_label.html)
