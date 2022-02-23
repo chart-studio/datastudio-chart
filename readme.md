@@ -27,7 +27,7 @@ To check your data and use it later as localMessage.js, you need to:
 - in your local editor, execute:
 
             yarn update_message
-            ou 
+            or
             npm run update_message
 
 ## Create your graph
@@ -42,7 +42,7 @@ You can use whatever javascript library you want.
 
       yarn push:dev
 
-      and if it does not work do it manually
+      // and if it does not work do it manually
 
       gsutil cp -a public-read build/* gs://public_directory/myviz
 
