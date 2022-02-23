@@ -1,5 +1,9 @@
 # Configurer google cloud platform
 
+## refresh git
+
+      git rm -rf --cached .
+
 ## POint d'attention
 
 Lorsqu'on envoie des fichier avec LOCAL = true, aucune interaction ne s'éffectue et le dataset recu n'est pas de la même forme que celui renvoyé par data studio.
