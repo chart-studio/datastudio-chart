@@ -1,9 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+server
 # dependencies
 /website2
 /website
-/server
+
 /website/node_modules
 /timebrush/node_modules
 /timebrush/data

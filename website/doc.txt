@@ -1,4 +1,0 @@
-https://www.elian.codes/blog/writing-your-own-components-with-tailwind-sass/
-
-//css-trick subheading
-https://css-tricks.com/html-for-subheadings-and-headings/
