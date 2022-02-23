@@ -13,86 +13,132 @@ exports.LOCAL = void 0;
 var dscc_1 = require("@google/dscc");
 var local = require("./localMessage");
 var d3 = require("d3v4");
+// change this to 'true' for local development
+// change this to 'false' before deploying
 exports.LOCAL = false;
-//Global constiables
+//Global variables
 var startDate = "";
 var endDate = "";
+var dateFormat = "%Y%m%d";
+var positionAnchor = 10;
+var positionText = 5;
+var parseDate = d3.timeParse(dateFormat);
 window.onresize = function () {
     location.reload();
 };
+// write viz code here
 var drawViz = function (vizData) {
-    var _a, _b, _c, _d;
-    //constants
-    var positionAnchor = 50;
-    var positionText = 5;
-    var dateFormat = "%Y%m%d";
-    var parseDate = d3.timeParse(dateFormat);
-    var formatDate = d3.timeFormat("%Y-%m-%d");
-    var formatDate2 = d3.timeFormat("%Y%m%d");
-    // iniialize date
-    if (startDate === "" && endDate === "") {
-        startDate = ((_b = (_a = vizData.dateRanges) === null || _a === void 0 ? void 0 : _a.DEFAULT) === null || _b === void 0 ? void 0 : _b.start) || "";
-        endDate = ((_d = (_c = vizData.dateRanges) === null || _c === void 0 ? void 0 : _c.DEFAULT) === null || _d === void 0 ? void 0 : _d.end) || "";
-    }
-    // Reset all elements of the page
     resetAllElements(vizData);
-    //Define style
-    var styles = getStyle(vizData);
-    var styleSheet = document.createElement("style");
-    styleSheet.innerText = styles;
-    document.head.appendChild(styleSheet);
-    //Get data and check
-    var dataset = transformData(vizData.tables.DEFAULT, verifData);
-    dataset.sort(compareDate(parseDate));
-    var periode = alldays(dataset, parseDate).day;
-    //Create SVG
+    var fontFamily = styleVal(vizData, "fontFamily") || "Open Sans";
+    var color = styleVal(vizData, "colorText") || "#808080"; //#00838F
+    var colorBar = styleVal(vizData, "colorBar") || "#4682b4"; //#E64A19
+    var colorSubBar = styleVal(vizData, "colorSubBar") || "#808080"; //#E64A19
+    var body = document.querySelector("body");
+    body.setAttribute("style", "font-family: ".concat(fontFamily, ", sans-serif;"));
+    //https://www.w3schools.com/colors/colors_converter.asp
+    var datasetSource = vizData.tables.DEFAULT;
+    var dataset = datasetSource.map(function (e, i) {
+        return {
+            date: e.date[0],
+            effectif: e.effectif[0]
+        };
+    });
     var svgWidth = (0, dscc_1.getWidth)();
     var svgHeight = (0, dscc_1.getHeight)();
-    var margin2 = { top: 15, right: 50, bottom: 30, left: 70 };
-    var width = +svgWidth - margin2.left - margin2.right;
-    var height2 = +svgHeight - margin2.top - margin2.bottom;
-    var x2 = d3.scaleTime().range([0, width]), y2 = d3.scaleLinear().range([height2, 0]);
+    var margin = {
+        top: (svgHeight * 6) / 100,
+        right: 50,
+        left: 70
+    };
+    var margin2 = {
+        top: (svgHeight * 82) / 100,
+        right: 50,
+        left: 70
+    };
+    var width = +svgWidth - margin.left - margin.right;
+    //const height = +svgHeight - margin.top - margin.bottom;
+    var height = (+svgHeight * 70) / 100;
+    //const height2 = +svgHeight - margin2.top - margin2.bottom;
+    var height2 = (+svgHeight * 10) / 100;
+    var formatDate = d3.timeFormat("%Y-%m-%d");
+    var formatDate2 = d3.timeFormat("%Y%m%d");
+    dataset.sort(compareDate);
+    var periode = alldays(dataset).day;
+    var x = d3.scaleTime().range([0, width]), x2 = d3.scaleTime().range([0, width]), y = d3.scaleLinear().range([height, 0]), y2 = d3.scaleLinear().range([height2, 0]);
     var factorBand = 0.7;
     var xBand = d3
         .scaleBand()
+        //.domain(d3.range(-2, dataset.length + 2))
         .domain(d3.range(-2, periode + 2))
         .range([0, width])
         .padding(0.2);
-    var yAxis = d3.axisLeft(y2);
-    var xAxis2 = d3.axisBottom(x2);
-    //.tickFormat(formatDate);
-    var extent = d3.extent(dataset, function (d) {
+    var xAxis = d3.axisBottom(x), yAxis = d3.axisLeft(y);
+    x.domain(d3.extent(dataset, function (d) {
         return parseDate(d.date);
-    });
-    //use an offset to include the first and last date
-    x2.domain([
-        d3.timeDay.offset(extent[0], -1),
-        d3.timeDay.offset(extent[1], 1),
-    ]);
-    y2.domain([
+    }));
+    y.domain([
         0,
         d3.max(dataset, function (d) {
             return d.effectif;
         }),
     ]);
+    x2.domain(x.domain());
+    y2.domain(y.domain());
     var brush = d3
         .brushX()
-        .handleSize(8)
         .extent([
         [0, 0],
         [width, height2],
     ])
         .on("start brush end", brushed);
+    //d3.select("body").selectAll("svg").remove();
     var svg = d3
         .select("body")
         .append("svg")
         .attr("width", svgWidth)
         .attr("height", svgHeight)
         .attr("viewBox", [0, 0, svgWidth, svgHeight]);
+    var focus = svg
+        .append("g")
+        .attr("class", "focus")
+        .attr("transform", "translate(".concat(margin.left, ", ").concat(margin.top, ")"));
     var context = svg
         .append("g")
         .attr("class", "context")
         .attr("transform", "translate(".concat(margin2.left, ", ").concat(margin2.top, ")"));
+    focus
+        .append("g")
+        .attr("clip-path", "url(#my-clip-path)")
+        .selectAll(".bar")
+        .data(dataset)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d, i) {
+        return x(parseDate(d.date));
+    })
+        .attr("y", function (d, i) {
+        return y(d.effectif);
+    })
+        .attr("width", function (d) {
+        return xBand.bandwidth() * factorBand;
+    })
+        .attr("height", function (d) {
+        return y(0) - y(d.effectif);
+    });
+    focus
+        .append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0,".concat(height, ")"))
+        .call(xAxis);
+    focus.append("g").attr("class", "axis axis--y").call(yAxis);
+    var defs = focus.append("defs");
+    defs
+        .append("clipPath")
+        .attr("id", "my-clip-path")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height);
     context
         .selectAll(".subBar")
         .data(dataset)
@@ -100,7 +146,7 @@ var drawViz = function (vizData) {
         .append("rect")
         .attr("class", "subBar")
         .attr("x", function (d, i) {
-        return x2(parseDate(d.date)); // (pour centrer)- (xBand.bandwidth() * factorBand) / 2;
+        return x(parseDate(d.date));
     })
         .attr("y", function (d, i) { return y2(d.effectif); })
         .attr("width", xBand.bandwidth() * factorBand)
@@ -111,8 +157,7 @@ var drawViz = function (vizData) {
         .append("g")
         .attr("class", "axis2")
         .attr("transform", "translate(0,".concat(height2, ")"))
-        .call(xAxis2);
-    context.append("g").attr("class", "axis axis--y").call(yAxis);
+        .call(xAxis);
     var gBrush = context.append("g").attr("class", "brush").call(brush);
     var brushResizePath = createBrushResize(height2);
     var handle = gBrush
@@ -134,39 +179,30 @@ var drawViz = function (vizData) {
         .attr("stroke-width", 0.9)
         .attr("cursor", "ew-resize")
         .attr("d", brushResizePath);
-    gBrush.call(brush.move, x2.range());
+    gBrush.call(brush.move, x.range());
     function brushed() {
-        if (!d3.event.selection && !d3.event.sourceEvent)
-            return;
-        var s0 = d3.event.selection
-            ? d3.event.selection
-            : [1, 2].fill(d3.event.sourceEvent.offsetX);
-        var s1 = s0;
-        var d0 = filteredDomain.apply(void 0, __spreadArray([xBand], s0, false));
+        var s = (d3.event.selection || x2.range());
+        var s1 = s;
+        x.domain(s.map(x2.invert, x2));
+        focus.select(".axis").call(xAxis);
+        focus.selectAll(".bar").attr("x", function (d, i) {
+            return x(parseDate(d.date));
+        });
         //Positionner les ancres pour slider
-        if (s0 == null) {
+        if (s == null) {
             handle.attr("display", "none");
         }
         else {
             handle.attr("display", null).attr("transform", function (d, i) {
-                return "translate(" + s0[i] + "," + -positionAnchor + ")";
+                return "translate(" + s[i] + "," + -positionAnchor + ")";
             });
         }
-        if (d3.event.sourceEvent && d3.event.type === "end") {
-            //interactions
-            var bornesNodes = document.querySelectorAll(".textDate");
-            var bornes = Array.prototype.map.call(bornesNodes, function (d) {
-                return d.innerHTML.replaceAll("-", "");
-            });
-            handleInteraction("filterZones", generateSelectedDate(bornes[0], bornes[1], parseDate, formatDate2), vizData);
-            s1 = snappedSelection(xBand, d0);
-            d3.select(this).transition().call(d3.event.target.move, s1);
-        }
+        var d0 = filteredDomain.apply(void 0, __spreadArray([xBand], s, false));
         d3.selectAll("g.handles")
             .selectAll("text")
             .attr("dx", d0.length > 1 ? 0 : 6)
             .text(function (d, i) {
-            var min = new Date(parseDate(alldays(dataset, parseDate).min));
+            var min = new Date(parseDate(alldays(dataset).min));
             var year;
             if (d0.length > 1) {
                 year =
@@ -182,66 +218,71 @@ var drawViz = function (vizData) {
             }
             return year;
         });
+        if (d3.event.sourceEvent && d3.event.type === "end") {
+            //interactions
+            var bornesNodes = document.querySelectorAll(".textDate");
+            var bornes = Array.prototype.map.call(bornesNodes, function (d) {
+                return d.innerHTML.replaceAll("-", "");
+            });
+            handleInteraction("filterZones", generateSelectedDate(bornes[0], bornes[1], parseDate, formatDate2), vizData);
+            s1 = snappedSelection(xBand, d0);
+            d3.select(this).transition().call(d3.event.target.move, s1);
+        }
+    }
+    function alldays(array) {
+        var end = array.reduce(function (prev, current) {
+            return parseDate(prev.date) > parseDate(current.date) ? prev : current;
+        });
+        var begin = array.reduce(function (prev, current) {
+            return parseDate(prev.date) < parseDate(current.date) ? prev : current;
+        });
+        return {
+            day: dateDiff(parseDate(begin.date), parseDate(end.date)).day,
+            min: begin.date,
+            max: end.date
+        };
+    }
+    function snappedSelection(bandScale, domain) {
+        var min = d3.min(domain), max = d3.max(domain);
+        return [bandScale(min), bandScale(max) + bandScale.bandwidth()];
+    }
+    function filteredDomain(scale, min, max) {
+        var dif = scale(d3.min(scale.domain())) - scale.range()[0], iMin = min - dif < 0 ? 0 : Math.round((min - dif) / xBand.step()), iMax = Math.round((max - dif) / xBand.step());
+        if (iMax == iMin)
+            --iMin;
+        return scale.domain().slice(iMin, iMax);
+    }
+    var allBars = document.getElementsByClassName("bar");
+    for (var i = 0; i < allBars.length; i++) {
+        var element = allBars[i];
+        element.style.fill = colorBar;
+    }
+    var subBars = document.getElementsByClassName("subBar");
+    for (var i = 0; i < subBars.length; i++) {
+        var element = subBars[i];
+        element.style.fill = colorSubBar;
+    }
+    var allSVGText = document.querySelectorAll("text");
+    var allSVGTextArr = Array.from(allSVGText);
+    for (var i = 0; i < allSVGTextArr.length; i++) {
+        var element = allSVGTextArr[i];
+        element.style.fill = color;
+        element.style.fontFamily = fontFamily;
+    }
+    var allPathText = document.querySelectorAll("path");
+    var allPathTextArr = Array.from(allPathText);
+    for (var i = 0; i < allPathTextArr.length; i++) {
+        var element = allPathTextArr[i];
+        element.style.stroke = color;
+    }
+    var allSVGLine = document.querySelectorAll("line");
+    var allSVGLineArr = Array.from(allSVGLine);
+    for (var i = 0; i < allSVGLineArr.length; i++) {
+        var element = allSVGLineArr[i];
+        element.style.stroke = color;
     }
     createSlider(vizData);
 };
-function resetAllElements(vizData) {
-    if (document.querySelector(".error")) {
-        var oldError = document.querySelector(".error");
-        oldError.parentNode.removeChild(oldError);
-    }
-    if (document.querySelector("svg")) {
-        //Reset svg when the date range change
-        if (startDate !== vizData.dateRanges.DEFAULT.start ||
-            endDate !== vizData.dateRanges.DEFAULT.end) {
-            var FILTER = dscc_1.InteractionType.FILTER;
-            (0, dscc_1.clearInteraction)("filterZones", FILTER, undefined);
-            var oldSvg = document.querySelector("svg");
-            oldSvg.parentNode.removeChild(oldSvg);
-            d3.select("body").selectAll("svg").remove();
-            startDate = vizData.dateRanges.DEFAULT.start;
-            endDate = vizData.dateRanges.DEFAULT.end;
-        }
-        //Reset Info Box
-        if (document.querySelector(".info")) {
-            var oldInfo = document.querySelector(".info");
-            oldInfo.parentNode.removeChild(oldInfo);
-        }
-        if (document.querySelector("#infoContent")) {
-            var oldContent = document.querySelector("#infoContent");
-            oldContent.parentNode.removeChild(oldContent);
-        }
-    }
-}
-function verifData(datasetSource) {
-    var hasData = datasetSource.length > 0;
-    if (!hasData) {
-        throw new Error("No Data");
-    }
-    datasetSource.map(function (lineData, lineNumber) {
-        if (lineData.date.length === 0 || lineData.effectif.length === 0) {
-            throw new Error("Dimension or Metric should not be empty: line ".concat(lineNumber));
-        }
-        if (lineData.date[0].length !== 8 ||
-            (lineData.date[0].slice(0, 1) !== "1" &&
-                lineData.date[0].slice(0, 1) !== "2")) {
-            throw new Error("Dimension should be a date : line ".concat(lineNumber, " does not have the correct format (yyyymmdd)"));
-        }
-        if (isNaN(lineData.effectif[0])) {
-            throw new Error("Metric should be a number : line ".concat(lineNumber, " does not have a number"));
-        }
-    });
-}
-function transformData(datasetSource, checkDataFn) {
-    checkDataFn(datasetSource);
-    var newData = datasetSource.map(function (e, i) {
-        return {
-            date: e.date[0],
-            effectif: e.effectif[0] === "" ? 0 : e.effectif[0]
-        };
-    });
-    return newData;
-}
 function createBrushResize(height) {
     return function brushResizePath(d) {
         var e = +(d.type == "e"), x = e ? 1 : -1, y = height / 2;
@@ -278,20 +319,59 @@ function createBrushResize(height) {
             (2 * y - 8));
     };
 }
-function getStyle(vizData) {
-    var fontFamily = styleVal(vizData, "fontFamily") || "Open Sans";
-    var color = styleVal(vizData, "colorText") || "#808080"; //#00838F
-    var colorBar = styleVal(vizData, "colorBar") || "#4682b4"; //#E64A19
-    var colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
+var createSlider = function (vizData) {
+    var TitleText = styleVal(vizData, "TitleText") || "Add a title in style";
+    var DescText = styleVal(vizData, "DescText") || "Add a description in style";
     var colorValueCross = styleVal(vizData, "colorValueCross") || "#fff";
     var colorValueInfoBack = styleVal(vizData, "colorValueInfoBack") || "#fff";
-    return "\n    body{\n      overflow: hidden;\n      font-family: ".concat(fontFamily, ", sans-serif;\n    }\n    .subBar { \n      fill: ").concat(colorBar, ";\n      opacity: 0.5;\n    }\n    svg {\n      position: relative;\n      user-select: none\n    }\n    text {\n      fill : ").concat(color, ";\n    }\n    \n    path, line {\n      stroke: ").concat(color, ";\n    }\n\n    .info {\n      position: fixed;\n      top: 2rem;\n      right:1rem;\n      width: 2rem;\n      border-radius: 50%;\n      height:2rem;\n      background-color: ").concat(colorValueBack, ";\n      color:").concat(color, ",\n      backdrop-filter: blur(4px);\n      z-index: 1;\n      cursor: pointer;\n    }\n\n    #infoContent {\n      font-family: ").concat(fontFamily, ";\n      position: fixed;\n      top: 0;\n      right:0;\n      width: 100%;\n      height:100%;\n      transform:translateX(100%);\n      transition: transform 300ms ease-in;\n      \n    }\n\n    #content {display: flex;\n      align-items: center;\n      justify-content: center;\n      height:100%;\n      transform:translateX(100%);\n      transition: transform 300ms ease-out;\n      backdrop-filter: blur(10px);\n      width:100%;\n    }\n\n    #contentInside {\n      height:100%;\n      width:100%;\n      background: ").concat(colorValueInfoBack, ";\n      opacity:0.5;\n      padding: 2em;\n    }\n\n    #line-wrapper {\n      position:relative;\n      transition: transform 300ms ease-out;\n      transform: rotate(0deg);\n      display: flex;\n      flex-direction: column;\n      height: 100%;\n      align-items: center;\n      justify-content: center;\n    }\n\n    .horizontal,\n    .vertical {\n      width: 50%;\n      height: 2px;\n      background-color: ").concat(colorValueCross, ";\n    }\n    .vertical {\n      position: relative;\n      bottom: 2px;\n      transform: rotate(90deg);\n    }\n\n    svg text {\n      font-size: 12px;\n      font-family: ").concat(fontFamily, ", sans-serif;\n    }\n  ");
-}
-function compareDate(parseDate) {
-    return function (a, b) {
-        return parseDate(a.date) - parseDate(b.date);
-    };
-}
+    var color = styleVal(vizData, "colorText") || "#808080"; //#00838F
+    var colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
+    var info = document.createElement("div");
+    info.setAttribute("class", "info");
+    info.style.backgroundColor = colorValueBack;
+    info.style.color = color;
+    var infoContent = document.createElement("div");
+    infoContent.setAttribute("id", "infoContent");
+    var BlockInfo = document.querySelector("body").appendChild(info);
+    var BlockContent = document.querySelector("body").appendChild(infoContent);
+    var clicked = false;
+    var lineWrapper = document.createElement("div");
+    lineWrapper.setAttribute("id", "line-wrapper");
+    var horizontal = document.createElement("div");
+    horizontal.setAttribute("class", "horizontal");
+    horizontal.setAttribute("style", "background-color: ".concat(colorValueCross, ";"));
+    var vertical = document.createElement("div");
+    vertical.setAttribute("class", "vertical");
+    vertical.setAttribute("style", "background-color: ".concat(colorValueCross, ";"));
+    var Button = BlockInfo.appendChild(lineWrapper);
+    Button.appendChild(horizontal);
+    Button.appendChild(vertical);
+    var content = document.createElement("div");
+    content.setAttribute("id", "content");
+    var contentInside = document.createElement("div");
+    contentInside.setAttribute("id", "contentInside");
+    contentInside.style.background = colorValueInfoBack;
+    var BlockContentAdd = BlockContent.appendChild(content);
+    BlockContentAdd.appendChild(contentInside);
+    document.querySelector("#contentInside").innerHTML = [
+        "<h3>".concat(TitleText, "</h3>"),
+        "<p>".concat(DescText, "</p>"),
+    ].join("\n");
+    lineWrapper.addEventListener("click", function (ev) {
+        if (!clicked) {
+            this.style.transform = "rotate(135deg)";
+            document.getElementById("content").style.transform = "translateX(0%)";
+            document.getElementById("infoContent").style.transform = "translateX(0%)";
+            clicked = true;
+        }
+        else {
+            this.style.transform = "rotate(0deg)";
+            document.getElementById("content").style.transform = null;
+            document.getElementById("infoContent").style.transform = null;
+            clicked = false;
+        }
+    });
+};
 var generateSelectedDate = function (min, max, parseDate, formatDate2) {
     var val = [];
     var nbjours = dateDiff(parseDate(min), parseDate(max)).day;
@@ -302,19 +382,6 @@ var generateSelectedDate = function (min, max, parseDate, formatDate2) {
     }
     return val;
 };
-function alldays(array, parseDate) {
-    var end = array.reduce(function (prev, current) {
-        return parseDate(prev.date) > parseDate(current.date) ? prev : current;
-    });
-    var begin = array.reduce(function (prev, current) {
-        return parseDate(prev.date) < parseDate(current.date) ? prev : current;
-    });
-    return {
-        day: dateDiff(parseDate(begin.date), parseDate(end.date)).day,
-        min: begin.date,
-        max: end.date
-    };
-}
 function dateDiff(start, end) {
     var diff = {}; // Initialisation du retour
     var tmp = end - start;
@@ -328,15 +395,36 @@ function dateDiff(start, end) {
     diff.day = tmp;
     return diff;
 }
-function snappedSelection(bandScale, domain) {
-    var min = d3.min(domain), max = d3.max(domain);
-    return [bandScale(min), bandScale(max) + bandScale.bandwidth()];
+function resetAllElements(vizData) {
+    if (document.querySelector(".error")) {
+        var oldError = document.querySelector(".error");
+        oldError.parentNode.removeChild(oldError);
+    }
+    if (document.querySelector("svg")) {
+        //Reset svg when the date range change
+        if (startDate !== vizData.dateRanges.DEFAULT.start ||
+            endDate !== vizData.dateRanges.DEFAULT.end) {
+            var FILTER = dscc_1.InteractionType.FILTER;
+            (0, dscc_1.clearInteraction)("filterZones", FILTER, undefined);
+            var oldSvg = document.querySelector("svg");
+            oldSvg.parentNode.removeChild(oldSvg);
+            d3.select("body").selectAll("svg").remove();
+            startDate = vizData.dateRanges.DEFAULT.start;
+            endDate = vizData.dateRanges.DEFAULT.end;
+        }
+        //Reset Info Box
+        if (document.querySelector(".info")) {
+            var oldInfo = document.querySelector(".info");
+            oldInfo.parentNode.removeChild(oldInfo);
+        }
+        if (document.querySelector("#infoContent")) {
+            var oldContent = document.querySelector("#infoContent");
+            oldContent.parentNode.removeChild(oldContent);
+        }
+    }
 }
-function filteredDomain(scale, min, max) {
-    var dif = scale(d3.min(scale.domain())) - scale.range()[0], iMin = min - dif < 0 ? 0 : Math.round((min - dif) / scale.step()), iMax = Math.round((max - dif) / scale.step());
-    if (iMax == iMin)
-        --iMin;
-    return scale.domain().slice(iMin, iMax);
+function compareDate(a, b) {
+    return parseDate(a.date) - parseDate(b.date);
 }
 var styleVal = function (message, styleId) {
     var _a;
@@ -369,43 +457,6 @@ function displayError(msg) {
     msgDiv.appendChild(msgDivContainer);
     document.body.appendChild(msgDiv);
 }
-var createSlider = function (vizData) {
-    var TitleText = styleVal(vizData, "TitleText") || "Add a title in style";
-    var DescText = styleVal(vizData, "DescText") || "Add a description in style";
-    var BlockInfo = d3.select("body").append("div").attr("class", "info");
-    var clicked = false;
-    var BlockContent = d3
-        .select("body")
-        .append("div")
-        .attr("id", "infoContent");
-    var Button = BlockInfo.append("div")
-        .attr("id", "line-wrapper")
-        .on("click", function () {
-        if (!clicked) {
-            this.style.transform = "rotate(135deg)";
-            document.getElementById("content").style.transform = "translateX(0%)";
-            document.getElementById("infoContent").style.transform =
-                "translateX(0%)";
-            clicked = true;
-        }
-        else {
-            this.style.transform = "rotate(0deg)";
-            document.getElementById("content").style.transform = null;
-            document.getElementById("infoContent").style.transform = null;
-            clicked = false;
-        }
-    });
-    Button.append("div").attr("class", "horizontal");
-    Button.append("div").attr("class", "vertical");
-    BlockContent.append("div")
-        .attr("id", "content")
-        .append("div")
-        .attr("id", "contentInside");
-    document.querySelector("#contentInside").innerHTML = [
-        "<h3>".concat(TitleText, "</h3>"),
-        "<p>".concat(DescText, "</p>"),
-    ].join("\n");
-};
 var handleDrawViz = function (vizData) {
     try {
         drawViz(vizData);
@@ -414,6 +465,7 @@ var handleDrawViz = function (vizData) {
         displayError("<h3>".concat(error.message, "</h3>"));
     }
 };
+// renders locally
 if (exports.LOCAL) {
     handleDrawViz(local.message);
 }

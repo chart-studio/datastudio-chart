@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Router, useRouter, withRouter } from "next/router"
 import { useAuth } from "../../hooks/useAuth"
 import styled from "styled-components"
@@ -8,6 +8,11 @@ import en from "../../locales/en"
 import { routerDir } from "../../helpers/routerDir"
 import { useClickAway } from "../../hooks/useClickAway"
 import ModalContainer from "../../components/elements/ModalContainer"
+import { IntlContext } from "react-intl"
+import {
+  WORD_ModalAccountUnsubsc,
+  WORD_ModalAccountUnsubscNext,
+} from "../../Dictionary"
 
 const ButtonDes = styled.button`
   cursor: pointer;
@@ -28,11 +33,10 @@ const ButtonDes = styled.button`
 `
 const index = () => {
   const { open, setOpen, refControler, refObject } = useClickAway(false)
+  const { formatMessage } = useContext(IntlContext)
   const { user, setUser } = useAuth()
   const [desab, setDesab] = useState(false)
   const router = useRouter()
-  const { locale } = router
-  const t = locale === "fr" ? fr : en
   useEffect(() => {
     if (!user) {
       router.push(`/`, undefined, {
@@ -66,7 +70,7 @@ const index = () => {
             setDesab(false)
           }}
         >
-          {t.modalText.button.unsubscribe}
+          {formatMessage(WORD_ModalAccountUnsubsc)}
         </ButtonDes>
       ) : (
         <ButtonDes
@@ -74,7 +78,7 @@ const index = () => {
             routerDir(router, "/")
           }}
         >
-          {t.modalText.button.unsubscribeNext}
+          {formatMessage(WORD_ModalAccountUnsubscNext)}
         </ButtonDes>
       )}
     </div>

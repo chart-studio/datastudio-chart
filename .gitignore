@@ -2,13 +2,14 @@
 
 # dependencies
 /website2
+/website
+/server
 /website/node_modules
 /timebrush/node_modules
 /timebrush/data
 /timebrush/build
 
 /timebrush2/node_modules
-/server/node_modules
 /funnel_one/node_modules
 /scorecard/node_modules
 /funnel_one/build
@@ -16,7 +17,6 @@
 /scorecard/data
 
 /timebrush2/build
-/server/build
 /funnel_one/data
 
 

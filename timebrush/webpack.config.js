@@ -1,16 +1,16 @@
-const path = require('path');
-const fs = require('fs');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require("path");
+const fs = require("fs");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const CSS_FILE_NAME = process.env.npm_package_dsccViz_cssFile;
-const cssFilePath = path.join('src', CSS_FILE_NAME);
+const cssFilePath = path.join("src", CSS_FILE_NAME);
 
 const plugins = [];
 
 let body = '<script src="main.js"></script>';
 if (fs.existsSync(cssFilePath)) {
   body = body + '\n<link rel="stylesheet" href="index.css">';
-  plugins.push(new CopyWebpackPlugin([{from: cssFilePath, to: '.'}]));
+  plugins.push(new CopyWebpackPlugin([{ from: cssFilePath, to: "." }]));
 }
 const iframeHTML = `
 <!doctype html>
@@ -19,19 +19,45 @@ ${body}
 </body></html>
 `;
 
-fs.writeFileSync(path.resolve(__dirname, 'dist', 'vizframe.html'), iframeHTML);
+fs.writeFileSync(path.resolve(__dirname, "dist", "vizframe.html"), iframeHTML);
 
+// module.exports = [
+//   {
+//     mode: 'development',
+//     entry: './src/index.js',
+//     devServer: {
+//       contentBase: './dist',
+//     },
+//     output: {
+//       filename: 'main.js',
+//       path: path.resolve(__dirname, 'dist'),
+//     },
+//     plugins: plugins,
+//   },
+// ];
 module.exports = [
   {
-    mode: 'development',
-    entry: './src/index.js',
+    mode: "development",
+    entry: "./src/index.ts",
     devServer: {
-      contentBase: './dist',
+      contentBase: "./dist",
     },
     output: {
-      filename: 'main.js',
-      path: path.resolve(__dirname, 'dist'),
+      filename: "main.js",
+      path: path.resolve(__dirname, "dist"),
     },
     plugins: plugins,
+    module: {
+      rules: [
+        {
+          test: /\.ts$/,
+          use: "ts-loader",
+          exclude: /node_modules/,
+        },
+      ],
+    },
+    resolve: {
+      extensions: [".ts", ".js"],
+    },
   },
 ];

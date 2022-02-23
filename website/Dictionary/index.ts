@@ -442,8 +442,21 @@ export const WORD_ModalTry = {
   description: "",
   defaultMessage: "Use 10 credits for",
 }
+
 export const WORD_ModalTryConfirm = {
   id: "9521bc55-0bff-4326-997e-7d4e1b512a82",
   description: "",
   defaultMessage: "You used 10 credits",
+}
+
+export const WORD_ModalAccountUnsubsc = {
+  id: "24ca71f5-3f83-4269-b90c-717bd31c9088",
+  description: "",
+  defaultMessage: "Unsubscribe",
+}
+
+export const WORD_ModalAccountUnsubscNext = {
+  id: "a163d7ef-30fc-42d1-b0d7-8a8448eb5279",
+  description: "",
+  defaultMessage: "Go to home page",
 }

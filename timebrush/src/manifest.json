@@ -8,16 +8,16 @@
   "privacyPolicyUrl": "https://url",
   "termsOfServiceUrl": "https://url",
   "packageUrl": "https://url",
-  "devMode": "DEVMODE_BOOL",
+  "devMode": true,
   "components": [
     {
-      "name": "Lokalistic-TimeBrush",
+      "name": "Lokalistic-Funnel_one",
       "description": "Time Brush",
       "iconUrl": "https://url",
       "resource": {
-        "js": "gs://vizdata/visualisations/test/timebrush_two/index.js",
-        "config": "gs://vizdata/visualisations/test/timebrush_two/index.json",
-        "css": "gs://vizdata/visualisations/test/timebrush_two/index.css"
+        "js": "YOUR_GCS_BUCKET/index.js",
+        "config": "YOUR_GCS_BUCKET/index.json",
+        "css": "YOUR_GCS_BUCKET/index.css"
       }
     }
   ]

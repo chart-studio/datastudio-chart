@@ -11,13 +11,13 @@
   "devMode": "DEVMODE_BOOL",
   "components": [
     {
-      "name": "Lokalistic-TimeBrush",
-      "description": "Time Brush",
+      "name": "Lokalistic-Funnel_one",
+      "description": "Funnel chart",
       "iconUrl": "https://url",
       "resource": {
-        "js": "gs://vizdata/visualisations/test/funnel_one/index.js",
-        "config": "gs://vizdata/visualisations/test/funnel_one/index.json",
-        "css": "gs://vizdata/visualisations/test/funnel_one/index.css"
+        "js": "YOUR_GCS_BUCKET/index.js",
+        "config": "YOUR_GCS_BUCKET/index.json",
+        "css": "YOUR_GCS_BUCKET/index.css"
       }
     }
   ]

@@ -14,6 +14,15 @@
           }
         },
         {
+          "id": "sublabels",
+          "label": "sublabels (string)",
+          "type": "DIMENSION",
+          "options": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
           "id": "effectif",
           "label": "effectif (number)",
           "type": "METRIC",
@@ -26,6 +35,36 @@
     }
   ],
   "style": [
+    {
+      "id": "funnel",
+      "label": "funnel color",
+      "elements": [
+        {
+          "type": "FILL_COLOR",
+          "id": "colorFunnel1",
+          "label": "Funnel color 1 or Global",
+          "defaultValue": { "color": "#FFB178" }
+        },
+        {
+          "type": "FILL_COLOR",
+          "id": "colorFunnel2",
+          "label": "Funnel color 2",
+          "defaultValue": { "color": "#FFA500" }
+        },
+        {
+          "type": "FILL_COLOR",
+          "id": "colorFunnel3",
+          "label": "Funnel color 3",
+          "defaultValue": { "color": "#FF0000" }
+        },
+        {
+          "type": "FILL_COLOR",
+          "id": "colorFunnel4",
+          "label": "Funnel color 4",
+          "defaultValue": { "color": "#A52A2A" }
+        }
+      ]
+    },
     {
       "id": "color",
       "label": "Colors",

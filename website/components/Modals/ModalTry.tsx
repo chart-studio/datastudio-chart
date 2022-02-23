@@ -5,6 +5,7 @@ import styled from "styled-components"
 import {
   WORD_ModalButtonCancel,
   WORD_ModalError,
+  WORD_ModalTry,
   WORD_ModalTryConfirm,
   WORD_ModalTryNext,
   WORD_ModalTryNextDoc,
@@ -71,7 +72,7 @@ const ModalTry = ({
       <p style={{ textAlign: "center" }}></p>
       <h6 style={{ textAlign: "center" }}>
         {!openDocPage
-          ? `${formatMessage(WORD_ModalTryNext)} ${selectedGraph} ?`
+          ? `${formatMessage(WORD_ModalTry)} ${selectedGraph} ?`
           : `${formatMessage(WORD_ModalTryConfirm)}`}
       </h6>
       <LigneButton>

@@ -8,103 +8,160 @@ import {
   ObjectFormat,
   clearInteraction,
   ObjectRow,
+  RowEntry,
 } from "@google/dscc";
 import * as local from "./localMessage";
 import * as d3 from "d3v4";
-export const LOCAL = true;
+// change this to 'true' for local development
+// change this to 'false' before deploying
+export const LOCAL = false;
 
-//Global constiables
+//Global variables
 let startDate: string = "";
 let endDate: string = "";
+const dateFormat = "%Y%m%d";
+let positionAnchor = 10;
+let positionText = 5;
+var parseDate = d3.timeParse(dateFormat);
 
 window.onresize = function () {
   location.reload();
 };
 
+// write viz code here
 const drawViz = (vizData: ObjectFormat) => {
-  //constants
-  const positionAnchor = 50;
-  const positionText = 5;
-  const dateFormat = "%Y%m%d";
-  const parseDate = d3.timeParse(dateFormat);
-  const formatDate = d3.timeFormat("%Y-%m-%d");
-  const formatDate2 = d3.timeFormat("%Y%m%d");
-  // iniialize date
-  if (startDate === "" && endDate === "") {
-    startDate = vizData.dateRanges?.DEFAULT?.start || "";
-    endDate = vizData.dateRanges?.DEFAULT?.end || "";
-  }
-  // Reset all elements of the page
   resetAllElements(vizData);
+  let fontFamily = styleVal(vizData, "fontFamily") || "Open Sans";
+  let color = styleVal(vizData, "colorText") || "#808080"; //#00838F
+  let colorBar = styleVal(vizData, "colorBar") || "#4682b4"; //#E64A19
+  let colorSubBar = styleVal(vizData, "colorSubBar") || "#808080"; //#E64A19
+  const body = document.querySelector("body");
+  body.setAttribute("style", `font-family: ${fontFamily}, sans-serif;`);
 
-  //Define style
-  const styles = getStyle(vizData);
-  const styleSheet = document.createElement("style");
-  styleSheet.innerText = styles;
-  document.head.appendChild(styleSheet);
+  //https://www.w3schools.com/colors/colors_converter.asp
+  const datasetSource = vizData.tables.DEFAULT;
 
-  //Get data and check
-  const dataset = transformData(vizData.tables.DEFAULT, verifData);
-  dataset.sort(compareDate(parseDate));
-  const periode = alldays(dataset, parseDate).day;
+  const dataset = datasetSource.map((e, i) => {
+    return {
+      date: e.date[0],
+      effectif: e.effectif[0],
+    };
+  });
 
-  //Create SVG
   const svgWidth = getWidth();
   const svgHeight = getHeight();
-  const margin2 = { top: 15, right: 50, bottom: 30, left: 70 };
-  const width = +svgWidth - margin2.left - margin2.right;
-  const height2 = +svgHeight - margin2.top - margin2.bottom;
+  const margin = {
+    top: (svgHeight * 6) / 100,
+    right: 50,
+    left: 70,
+  };
+  const margin2 = {
+    top: (svgHeight * 82) / 100,
+    right: 50,
+    left: 70,
+  };
+  const width = +svgWidth - margin.left - margin.right;
+  //const height = +svgHeight - margin.top - margin.bottom;
+  const height = (+svgHeight * 70) / 100;
+  //const height2 = +svgHeight - margin2.top - margin2.bottom;
+  const height2 = (+svgHeight * 10) / 100;
 
-  const x2 = d3.scaleTime().range([0, width]),
+  var formatDate = d3.timeFormat("%Y-%m-%d");
+  var formatDate2 = d3.timeFormat("%Y%m%d");
+  dataset.sort(compareDate);
+  const periode = alldays(dataset).day;
+
+  var x = d3.scaleTime().range([0, width]) as any,
+    x2 = d3.scaleTime().range([0, width]) as any,
+    y = d3.scaleLinear().range([height, 0]),
     y2 = d3.scaleLinear().range([height2, 0]);
 
   const factorBand = 0.7;
   let xBand = d3
     .scaleBand()
+    //.domain(d3.range(-2, dataset.length + 2))
     .domain(d3.range(-2, periode + 2))
     .range([0, width])
     .padding(0.2);
 
-  let yAxis = d3.axisLeft(y2);
+  var xAxis = d3.axisBottom(x),
+    yAxis = d3.axisLeft(y);
 
-  const xAxis2 = d3.axisBottom(x2);
-  //.tickFormat(formatDate);
-
-  const extent = d3.extent(dataset, function (d: any) {
-    return parseDate(d.date);
-  });
-  //use an offset to include the first and last date
-  x2.domain([
-    d3.timeDay.offset(extent[0], -1),
-    d3.timeDay.offset(extent[1], 1),
-  ]);
-  y2.domain([
+  x.domain(
+    d3.extent(dataset, function (d: { date: RowEntry; effectif: RowEntry }) {
+      return parseDate(d.date);
+    })
+  );
+  y.domain([
     0,
-    d3.max(dataset, function (d: any) {
+    d3.max(dataset, function (d: { date: RowEntry; effectif: RowEntry }) {
       return d.effectif;
     }),
   ]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
 
-  const brush = d3
+  var brush = d3
     .brushX()
-    .handleSize(8)
     .extent([
       [0, 0],
       [width, height2],
     ])
     .on("start brush end", brushed);
 
-  const svg = d3
+  //d3.select("body").selectAll("svg").remove();
+
+  var svg = d3
     .select("body")
     .append("svg")
     .attr("width", svgWidth)
     .attr("height", svgHeight)
     .attr("viewBox", [0, 0, svgWidth, svgHeight]);
 
-  const context = svg
+  var focus = svg
+    .append("g")
+    .attr("class", "focus")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+  var context = svg
     .append("g")
     .attr("class", "context")
     .attr("transform", `translate(${margin2.left}, ${margin2.top})`);
+
+  focus
+    .append("g")
+    .attr("clip-path", "url(#my-clip-path)")
+    .selectAll(".bar")
+    .data(dataset)
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", (d: any, i: any) => {
+      return x(parseDate(d.date));
+    })
+    .attr("y", (d: any, i: any) => {
+      return y(d.effectif);
+    })
+    .attr("width", function (d: any) {
+      return xBand.bandwidth() * factorBand;
+    })
+    .attr("height", (d: any) => {
+      return y(0) - y(d.effectif);
+    });
+
+  focus
+    .append("g")
+    .attr("class", "axis")
+    .attr("transform", `translate(0,${height})`)
+    .call(xAxis);
+  focus.append("g").attr("class", "axis axis--y").call(yAxis);
+  let defs = focus.append("defs");
+  defs
+    .append("clipPath")
+    .attr("id", "my-clip-path")
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height);
 
   context
     .selectAll(".subBar")
@@ -113,7 +170,7 @@ const drawViz = (vizData: ObjectFormat) => {
     .append("rect")
     .attr("class", "subBar")
     .attr("x", (d: any, i: any) => {
-      return x2(parseDate(d.date)); // (pour centrer)- (xBand.bandwidth() * factorBand) / 2;
+      return x(parseDate(d.date));
     })
     .attr("y", (d: any, i: any) => y2(d.effectif))
     .attr("width", xBand.bandwidth() * factorBand)
@@ -125,15 +182,13 @@ const drawViz = (vizData: ObjectFormat) => {
     .append("g")
     .attr("class", "axis2")
     .attr("transform", `translate(0,${height2})`)
-    .call(xAxis2);
+    .call(xAxis);
 
-  context.append("g").attr("class", "axis axis--y").call(yAxis);
-
-  const gBrush = context.append("g").attr("class", "brush").call(brush);
+  var gBrush = context.append("g").attr("class", "brush").call(brush);
 
   const brushResizePath = createBrushResize(height2);
 
-  const handle = gBrush
+  var handle = gBrush
     .selectAll(".handles")
     .data([{ type: "w" }, { type: "e" }])
     .enter()
@@ -154,46 +209,31 @@ const drawViz = (vizData: ObjectFormat) => {
     .attr("cursor", "ew-resize")
     .attr("d", brushResizePath);
 
-  gBrush.call(brush.move, x2.range());
+  gBrush.call(brush.move, x.range());
 
   function brushed() {
-    if (!d3.event.selection && !d3.event.sourceEvent) return;
-    const s0: [min: any, max: any] = d3.event.selection
-      ? d3.event.selection
-      : [1, 2].fill(d3.event.sourceEvent.offsetX);
-
-    let s1 = s0;
-
-    const d0 = filteredDomain(xBand, ...s0);
+    var s = (d3.event.selection || x2.range()) as [any, any];
+    let s1 = s as any;
+    x.domain(s.map(x2.invert, x2));
+    focus.select(".axis").call(xAxis);
+    focus.selectAll(".bar").attr("x", (d: any, i: any) => {
+      return x(parseDate(d.date));
+    });
 
     //Positionner les ancres pour slider
-    if (s0 == null) {
+    if (s == null) {
       handle.attr("display", "none");
     } else {
       handle.attr("display", null).attr("transform", function (d: any, i: any) {
-        return "translate(" + s0[i] + "," + -positionAnchor + ")";
+        return "translate(" + s[i] + "," + -positionAnchor + ")";
       });
     }
-
-    if (d3.event.sourceEvent && d3.event.type === "end") {
-      //interactions
-      const bornesNodes = document.querySelectorAll(".textDate");
-      const bornes = Array.prototype.map.call(bornesNodes, (d: any) =>
-        d.innerHTML.replaceAll("-", "")
-      );
-      handleInteraction(
-        "filterZones",
-        generateSelectedDate(bornes[0], bornes[1], parseDate, formatDate2),
-        vizData
-      );
-      s1 = snappedSelection(xBand, d0) as [min: any, max: any];
-      d3.select(this).transition().call(d3.event.target.move, s1);
-    }
+    const d0 = filteredDomain(xBand, ...s);
     d3.selectAll("g.handles")
       .selectAll("text")
       .attr("dx", d0.length > 1 ? 0 : 6)
       .text((d: any, i: any) => {
-        let min = new Date(parseDate(alldays(dataset, parseDate).min));
+        let min = new Date(parseDate(alldays(dataset).min));
         let year;
         if (d0.length > 1) {
           year =
@@ -212,77 +252,91 @@ const drawViz = (vizData: ObjectFormat) => {
         }
         return year;
       });
+
+    if (d3.event.sourceEvent && d3.event.type === "end") {
+      //interactions
+      const bornesNodes = document.querySelectorAll(".textDate");
+      const bornes = Array.prototype.map.call(bornesNodes, (d: any) =>
+        d.innerHTML.replaceAll("-", "")
+      );
+      handleInteraction(
+        "filterZones",
+        generateSelectedDate(bornes[0], bornes[1], parseDate, formatDate2),
+        vizData
+      );
+      s1 = snappedSelection(xBand, d0);
+      d3.select(this).transition().call(d3.event.target.move, s1);
+    }
   }
+
+  function alldays(array: any) {
+    let end = array.reduce(function (prev: any, current: any) {
+      return parseDate(prev.date) > parseDate(current.date) ? prev : current;
+    });
+    let begin = array.reduce(function (prev: any, current: any) {
+      return parseDate(prev.date) < parseDate(current.date) ? prev : current;
+    });
+    return {
+      day: dateDiff(parseDate(begin.date), parseDate(end.date)).day,
+      min: begin.date,
+      max: end.date,
+    };
+  }
+
+  function snappedSelection(bandScale: any, domain: any) {
+    const min = d3.min(domain),
+      max = d3.max(domain);
+    return [bandScale(min), bandScale(max) + bandScale.bandwidth()];
+  }
+
+  function filteredDomain(scale: any, min: any, max: any) {
+    let dif = scale(d3.min(scale.domain())) - scale.range()[0],
+      iMin = min - dif < 0 ? 0 : Math.round((min - dif) / xBand.step()),
+      iMax = Math.round((max - dif) / xBand.step());
+    if (iMax == iMin) --iMin;
+    return scale.domain().slice(iMin, iMax);
+  }
+
+  const allBars = document.getElementsByClassName(
+    "bar"
+  ) as HTMLCollectionOf<HTMLElement>;
+  for (let i = 0; i < allBars.length; i++) {
+    const element = allBars[i];
+    element.style.fill = colorBar;
+  }
+
+  const subBars = document.getElementsByClassName(
+    "subBar"
+  ) as HTMLCollectionOf<HTMLElement>;
+  for (let i = 0; i < subBars.length; i++) {
+    const element = subBars[i];
+    element.style.fill = colorSubBar;
+  }
+
+  const allSVGText = document.querySelectorAll("text");
+  const allSVGTextArr = Array.from(allSVGText);
+  for (let i = 0; i < allSVGTextArr.length; i++) {
+    const element = allSVGTextArr[i];
+    element.style.fill = color;
+    element.style.fontFamily = fontFamily;
+  }
+
+  const allPathText = document.querySelectorAll("path");
+  const allPathTextArr = Array.from(allPathText);
+  for (let i = 0; i < allPathTextArr.length; i++) {
+    const element = allPathTextArr[i];
+    element.style.stroke = color;
+  }
+
+  const allSVGLine = document.querySelectorAll("line");
+  const allSVGLineArr = Array.from(allSVGLine);
+  for (let i = 0; i < allSVGLineArr.length; i++) {
+    const element = allSVGLineArr[i];
+    element.style.stroke = color;
+  }
+
   createSlider(vizData);
 };
-function resetAllElements(vizData: ObjectFormat) {
-  if (document.querySelector(".error")) {
-    let oldError = document.querySelector(".error");
-    oldError.parentNode.removeChild(oldError);
-  }
-  if (document.querySelector("svg")) {
-    //Reset svg when the date range change
-    if (
-      startDate !== vizData.dateRanges.DEFAULT.start ||
-      endDate !== vizData.dateRanges.DEFAULT.end
-    ) {
-      const FILTER = InteractionType.FILTER;
-      clearInteraction("filterZones", FILTER, undefined);
-      let oldSvg = document.querySelector("svg");
-      oldSvg.parentNode.removeChild(oldSvg);
-      d3.select("body").selectAll("svg").remove();
-      startDate = vizData.dateRanges.DEFAULT.start;
-      endDate = vizData.dateRanges.DEFAULT.end;
-    }
-    //Reset Info Box
-    if (document.querySelector(".info")) {
-      let oldInfo = document.querySelector(".info");
-      oldInfo.parentNode.removeChild(oldInfo);
-    }
-    if (document.querySelector("#infoContent")) {
-      let oldContent = document.querySelector("#infoContent");
-      oldContent.parentNode.removeChild(oldContent);
-    }
-  }
-}
-function verifData(datasetSource: ObjectRow[]) {
-  const hasData: boolean = datasetSource.length > 0;
-  if (!hasData) {
-    throw new Error("No Data");
-  }
-  datasetSource.map((lineData, lineNumber) => {
-    if (lineData.date.length === 0 || lineData.effectif.length === 0) {
-      throw new Error(
-        `Dimension or Metric should not be empty: line ${lineNumber}`
-      );
-    }
-    if (
-      (lineData.date[0] as string).length !== 8 ||
-      ((lineData.date[0] as string).slice(0, 1) !== "1" &&
-        (lineData.date[0] as string).slice(0, 1) !== "2")
-    ) {
-      throw new Error(
-        `Dimension should be a date : line ${lineNumber} does not have the correct format (yyyymmdd)`
-      );
-    }
-    if (isNaN(lineData.effectif[0] as number)) {
-      throw new Error(
-        `Metric should be a number : line ${lineNumber} does not have a number`
-      );
-    }
-  });
-}
-
-function transformData(datasetSource: ObjectRow[], checkDataFn: Function) {
-  checkDataFn(datasetSource);
-  const newData = datasetSource.map((e, i) => {
-    return {
-      date: e.date[0],
-      effectif: e.effectif[0] === "" ? 0 : e.effectif[0],
-    };
-  });
-  return newData;
-}
 
 function createBrushResize(height: any) {
   return function brushResizePath(d: any) {
@@ -325,114 +379,65 @@ function createBrushResize(height: any) {
   };
 }
 
-function getStyle(vizData: ObjectFormat) {
-  let fontFamily = styleVal(vizData, "fontFamily") || "Open Sans";
-  let color = styleVal(vizData, "colorText") || "#808080"; //#00838F
-  let colorBar = styleVal(vizData, "colorBar") || "#4682b4"; //#E64A19
-  let colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
+const createSlider = (vizData: ObjectFormat) => {
+  let TitleText = styleVal(vizData, "TitleText") || "Add a title in style";
+  let DescText = styleVal(vizData, "DescText") || "Add a description in style";
   let colorValueCross = styleVal(vizData, "colorValueCross") || "#fff";
   let colorValueInfoBack = styleVal(vizData, "colorValueInfoBack") || "#fff";
+  let color = styleVal(vizData, "colorText") || "#808080"; //#00838F
+  let colorValueBack = styleVal(vizData, "colorValueBack") || "#999999";
 
-  return `
-    body{
-      overflow: hidden;
-      font-family: ${fontFamily}, sans-serif;
-    }
-    .subBar { 
-      fill: ${colorBar};
-      opacity: 0.5;
-    }
-    svg {
-      position: relative;
-      user-select: none
-    }
-    text {
-      fill : ${color};
-    }
-    
-    path, line {
-      stroke: ${color};
-    }
+  const info = document.createElement("div");
+  info.setAttribute("class", "info");
+  info.style.backgroundColor = colorValueBack;
+  info.style.color = color;
+  const infoContent = document.createElement("div");
+  infoContent.setAttribute("id", "infoContent");
 
-    .info {
-      position: fixed;
-      top: 2rem;
-      right:1rem;
-      width: 2rem;
-      border-radius: 50%;
-      height:2rem;
-      background-color: ${colorValueBack};
-      color:${color},
-      backdrop-filter: blur(4px);
-      z-index: 1;
-      cursor: pointer;
-    }
+  const BlockInfo = document.querySelector("body").appendChild(info);
+  const BlockContent = document.querySelector("body").appendChild(infoContent);
+  let clicked = false;
+  const lineWrapper = document.createElement("div");
+  lineWrapper.setAttribute("id", "line-wrapper");
 
-    #infoContent {
-      font-family: ${fontFamily};
-      position: fixed;
-      top: 0;
-      right:0;
-      width: 100%;
-      height:100%;
-      transform:translateX(100%);
-      transition: transform 300ms ease-in;
-      
-    }
+  const horizontal = document.createElement("div");
+  horizontal.setAttribute("class", "horizontal");
+  horizontal.setAttribute("style", `background-color: ${colorValueCross};`);
 
-    #content {display: flex;
-      align-items: center;
-      justify-content: center;
-      height:100%;
-      transform:translateX(100%);
-      transition: transform 300ms ease-out;
-      backdrop-filter: blur(10px);
-      width:100%;
-    }
+  const vertical = document.createElement("div");
+  vertical.setAttribute("class", "vertical");
+  vertical.setAttribute("style", `background-color: ${colorValueCross};`);
 
-    #contentInside {
-      height:100%;
-      width:100%;
-      background: ${colorValueInfoBack};
-      opacity:0.5;
-      padding: 2em;
-    }
+  const Button = BlockInfo.appendChild(lineWrapper);
+  Button.appendChild(horizontal);
+  Button.appendChild(vertical);
 
-    #line-wrapper {
-      position:relative;
-      transition: transform 300ms ease-out;
-      transform: rotate(0deg);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      align-items: center;
-      justify-content: center;
-    }
+  const content = document.createElement("div");
+  content.setAttribute("id", "content");
+  const contentInside = document.createElement("div");
+  contentInside.setAttribute("id", "contentInside");
+  contentInside.style.background = colorValueInfoBack;
+  const BlockContentAdd = BlockContent.appendChild(content);
+  BlockContentAdd.appendChild(contentInside);
 
-    .horizontal,
-    .vertical {
-      width: 50%;
-      height: 2px;
-      background-color: ${colorValueCross};
+  document.querySelector("#contentInside").innerHTML = [
+    `<h3>${TitleText}</h3>`,
+    `<p>${DescText}</p>`,
+  ].join("\n");
+  lineWrapper.addEventListener("click", function (this, ev) {
+    if (!clicked) {
+      this.style.transform = "rotate(135deg)";
+      document.getElementById("content").style.transform = "translateX(0%)";
+      document.getElementById("infoContent").style.transform = "translateX(0%)";
+      clicked = true;
+    } else {
+      this.style.transform = "rotate(0deg)";
+      document.getElementById("content").style.transform = null;
+      document.getElementById("infoContent").style.transform = null;
+      clicked = false;
     }
-    .vertical {
-      position: relative;
-      bottom: 2px;
-      transform: rotate(90deg);
-    }
-
-    svg text {
-      font-size: 12px;
-      font-family: ${fontFamily}, sans-serif;
-    }
-  `;
-}
-
-function compareDate(parseDate: any) {
-  return (a: any, b: any) => {
-    return parseDate(a.date) - parseDate(b.date);
-  };
-}
+  });
+};
 const generateSelectedDate = (
   min: any,
   max: any,
@@ -448,24 +453,9 @@ const generateSelectedDate = (
   }
   return val;
 };
-
-function alldays(array: any[], parseDate: any) {
-  let end = array.reduce(function (prev, current) {
-    return parseDate(prev.date) > parseDate(current.date) ? prev : current;
-  });
-  let begin = array.reduce(function (prev, current) {
-    return parseDate(prev.date) < parseDate(current.date) ? prev : current;
-  });
-  return {
-    day: dateDiff(parseDate(begin.date), parseDate(end.date)).day,
-    min: begin.date,
-    max: end.date,
-  };
-}
-
 function dateDiff(start: any, end: any) {
-  const diff: any = {}; // Initialisation du retour
-  let tmp = end - start;
+  var diff = {} as { sec: number; min: number; hour: number; day: number }; // Initialisation du retour
+  var tmp = end - start;
 
   tmp = Math.floor(tmp / 1000); // Nombre de secondes entre les 2 dates
   diff.sec = tmp % 60; // Extraction du nombre de secondes
@@ -481,19 +471,40 @@ function dateDiff(start: any, end: any) {
 
   return diff;
 }
-function snappedSelection(bandScale: any, domain: any) {
-  const min = d3.min(domain),
-    max = d3.max(domain);
-  return [bandScale(min), bandScale(max) + bandScale.bandwidth()];
+function resetAllElements(vizData: ObjectFormat) {
+  if (document.querySelector(".error")) {
+    let oldError = document.querySelector(".error");
+    oldError.parentNode.removeChild(oldError);
+  }
+  if (document.querySelector("svg")) {
+    //Reset svg when the date range change
+    if (
+      startDate !== vizData.dateRanges.DEFAULT.start ||
+      endDate !== vizData.dateRanges.DEFAULT.end
+    ) {
+      const FILTER = InteractionType.FILTER;
+      clearInteraction("filterZones", FILTER, undefined);
+      let oldSvg = document.querySelector("svg");
+      oldSvg.parentNode.removeChild(oldSvg);
+      d3.select("body").selectAll("svg").remove();
+      startDate = vizData.dateRanges.DEFAULT.start;
+      endDate = vizData.dateRanges.DEFAULT.end;
+    }
+    //Reset Info Box
+    if (document.querySelector(".info")) {
+      let oldInfo = document.querySelector(".info");
+      oldInfo.parentNode.removeChild(oldInfo);
+    }
+    if (document.querySelector("#infoContent")) {
+      let oldContent = document.querySelector("#infoContent");
+      oldContent.parentNode.removeChild(oldContent);
+    }
+  }
+}
+function compareDate(a: any, b: any) {
+  return parseDate(a.date) - parseDate(b.date);
 }
 
-function filteredDomain(scale: any, min: any, max: any) {
-  let dif = scale(d3.min(scale.domain())) - scale.range()[0],
-    iMin = min - dif < 0 ? 0 : Math.round((min - dif) / scale.step()),
-    iMax = Math.round((max - dif) / scale.step());
-  if (iMax == iMin) --iMin;
-  return scale.domain().slice(iMin, iMax);
-}
 const styleVal = (message: ObjectFormat, styleId: string) => {
   if (!message.style || !message.style[styleId]) return null;
   if (typeof message.style[styleId]?.defaultValue === "object") {
@@ -505,8 +516,11 @@ const styleVal = (message: ObjectFormat, styleId: string) => {
     ? message.style[styleId].value
     : message.style[styleId].defaultValue;
 };
-
-const handleInteraction = (interactionId: any, value: any, vizData: any) => {
+const handleInteraction = (
+  interactionId: string,
+  value: any,
+  vizData: ObjectFormat
+) => {
   const FILTER = InteractionType.FILTER;
   let interactionData = {
     concepts: [vizData.fields.date[0].id],
@@ -514,7 +528,6 @@ const handleInteraction = (interactionId: any, value: any, vizData: any) => {
   };
   sendInteraction(interactionId, FILTER, interactionData);
 };
-
 function displayError(msg: string) {
   document.body.innerHTML = "";
   let msgDiv = document.createElement("div");
@@ -526,43 +539,6 @@ function displayError(msg: string) {
   document.body.appendChild(msgDiv);
 }
 
-const createSlider = (vizData: ObjectFormat) => {
-  let TitleText = styleVal(vizData, "TitleText") || "Add a title in style";
-  let DescText = styleVal(vizData, "DescText") || "Add a description in style";
-  const BlockInfo = d3.select("body").append("div").attr("class", "info");
-  let clicked = false;
-  const BlockContent = d3
-    .select("body")
-    .append("div")
-    .attr("id", "infoContent");
-  const Button = BlockInfo.append("div")
-    .attr("id", "line-wrapper")
-    .on("click", function () {
-      if (!clicked) {
-        this.style.transform = "rotate(135deg)";
-        document.getElementById("content").style.transform = "translateX(0%)";
-        document.getElementById("infoContent").style.transform =
-          "translateX(0%)";
-        clicked = true;
-      } else {
-        this.style.transform = "rotate(0deg)";
-        document.getElementById("content").style.transform = null;
-        document.getElementById("infoContent").style.transform = null;
-        clicked = false;
-      }
-    });
-  Button.append("div").attr("class", "horizontal");
-  Button.append("div").attr("class", "vertical");
-  BlockContent.append("div")
-    .attr("id", "content")
-    .append("div")
-    .attr("id", "contentInside");
-  document.querySelector("#contentInside").innerHTML = [
-    `<h3>${TitleText}</h3>`,
-    `<p>${DescText}</p>`,
-  ].join("\n");
-};
-
 const handleDrawViz = (vizData: any) => {
   try {
     drawViz(vizData);
@@ -571,6 +547,7 @@ const handleDrawViz = (vizData: any) => {
   }
 };
 
+// renders locally
 if (LOCAL) {
   handleDrawViz(local.message);
 } else {

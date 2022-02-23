@@ -254,6 +254,7 @@ const VizCard = ({
               setOpenModal(true)
               setSelectedModal("add")
               setSelectedGraph(cloudName)
+              setSelectedDoc(link)
               console.log("ajouter")
             }
           }}

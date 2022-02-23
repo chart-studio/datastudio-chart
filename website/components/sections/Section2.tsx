@@ -117,9 +117,11 @@ const Section2 = () => {
             <p>{formatMessage(WORD_homeExplainText2)}</p>
             <Space />
             <Link href="/library">
-              <ButtonHomeWrapper>
-                {formatMessage(WORD_homeExplainButton2)}
-              </ButtonHomeWrapper>
+              <a>
+                <ButtonHomeWrapper>
+                  {formatMessage(WORD_homeExplainButton2)}
+                </ButtonHomeWrapper>
+              </a>
             </Link>
           </CardHow>
           <CardHow>
@@ -133,9 +135,11 @@ const Section2 = () => {
             <p>{formatMessage(WORD_homeExplainText3)}</p>
             <Space />
             <Link href="/library">
-              <ButtonHomeWrapper>
-                {formatMessage(WORD_homeExplainButton3)}
-              </ButtonHomeWrapper>
+              <a>
+                <ButtonHomeWrapper>
+                  {formatMessage(WORD_homeExplainButton3)}
+                </ButtonHomeWrapper>
+              </a>
             </Link>
           </CardHow>
           <CardHow>

@@ -28,7 +28,7 @@
   "style": [
     {
       "id": "text",
-      "label": "Text",
+      "label": "Text font",
       "elements": [
         {
           "type": "FONT_FAMILY",
@@ -40,19 +40,13 @@
     },
     {
       "id": "color",
-      "label": "Graph colors",
+      "label": "Bars colors",
       "elements": [
         {
           "type": "FONT_COLOR",
           "id": "colorBar",
           "label": "color bars",
-          "defaultValue": { "color": "#4682b4" }
-        },
-        {
-          "type": "FONT_COLOR",
-          "id": "colorSubBar",
-          "label": "color sub bars",
-          "defaultValue": { "color": "#808080" }
+          "defaultValue": { "color": "#4682B4" }
         },
         {
           "type": "FONT_COLOR",
@@ -70,13 +64,13 @@
           "type": "TEXTINPUT",
           "id": "TitleText",
           "label": "Title Text",
-          "defaultValue": "Add a title"
+          "defaultValue": "Add a title in style 212"
         },
         {
           "type": "TEXTAREA",
           "id": "DescText",
           "label": "Description Text",
-          "defaultValue": "Add a description"
+          "defaultValue": "Add a description in style 212"
         }
       ]
     },

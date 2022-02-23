@@ -14,15 +14,28 @@ exports.LOCAL = false;
 window.onresize = function () {
     location.reload();
 };
-//Global constiables
+//Global variables
 var dateFormat = "%Y%m%d";
 var borderRadius = 8;
 var drawViz = function (vizData) {
+    console.log(vizData, vizData.fields.effectif.length, "vizData");
     //check size of the visualisation
+    if (!vizData.fields.date) {
+        throw new Error("No date field!");
+    }
+    if (!vizData.fields.effectif) {
+        throw new Error("No effectif field!");
+    }
+    if (vizData.fields.date.length === 0 ||
+        vizData.fields.effectif.length === 0) {
+        throw new Error("No data!");
+    }
+    if (vizData.fields.date[0].type !== "YEAR_MONTH_DAY") {
+        throw new Error("Date must be a valid format (YYYYMMDD)");
+    }
     if ((0, dscc_1.getWidth)() < 150 || (0, dscc_1.getHeight)() < 150) {
         throw new Error("This visualization deserves more space!");
     }
-    console.log(vizData, "vizData");
     //init variables
     //kpi
     var compactNumber = styleVal(vizData, "compactNumber");
