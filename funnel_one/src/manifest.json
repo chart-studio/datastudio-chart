@@ -1,9 +1,9 @@
 {
-  "name": "My Visualizations",
-  "organization": "Lokalistic",
-  "description": "Data Design",
-  "logoUrl": "https://logo",
-  "organizationUrl": "https://url",
+  "name": "ChartStudio - Funnel chart",
+  "organization": "ChartStudio",
+  "description": "Enhance capability of your dashbord",
+  "logoUrl": "https://www.chart-studio.com/logo/logo.png",
+  "organizationUrl": "https://www.chart-studio.com",
   "supportUrl": "https://url",
   "privacyPolicyUrl": "https://url",
   "termsOfServiceUrl": "https://url",
@@ -11,9 +11,9 @@
   "devMode": "DEVMODE_BOOL",
   "components": [
     {
-      "name": "Lokalistic-Funnel_one",
-      "description": "Funnel chart",
-      "iconUrl": "https://url",
+      "name": "Funnel chart",
+      "description": "Funnel visualizations help you quickly see where drop-off rates and overall conversion rates in your stepped process exist",
+      "iconUrl": "https://www.chart-studio.com/logo/logo.png",
       "resource": {
         "js": "YOUR_GCS_BUCKET/index.js",
         "config": "YOUR_GCS_BUCKET/index.json",
