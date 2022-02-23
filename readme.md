@@ -2,9 +2,9 @@
 
 ## Presentation
 
-I share all the code for those who want to learn. You can pull request and help me improve the code or just use it as it is.
+I share all the code for those who want to learn. You can pull request and help me improve the code or just use as it is.
 
-If you want to learn who to create a chart for data studio, i put some link at the end of the document for you.
+If you want to learn how to create a chart for data studio, i put some link at the end of the document for you.
 
 If you want to improve yourself and learn with other, join our [slack community](https://join.slack.com/t/chartstudio/shared_invite/zt-13z6rsc39-5OZWm~YDUU37GZb6Kl_klA)
 
