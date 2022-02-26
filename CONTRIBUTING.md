@@ -19,8 +19,8 @@ Breaking any of these rules will result in your pull request being closed. Pleas
 
 ## Chart creation
 
-- Google have a really [good tutorial](https://codelabs.developers.google.com/codelabs/community-visualization#0) (a step bystep guide)
-- View [our documentation](create-your-own-graph.md) with usefull links and youtube videos as another support
+- Google have a really [good tutorial](https://codelabs.developers.google.com/codelabs/community-visualization#0) (a step bystep guide).
+- View [our documentation](create-your-own-graph.md) with usefull links and youtube videos as another support.
 
 <!--## Chart guidelines
 
