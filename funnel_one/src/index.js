@@ -4,7 +4,7 @@ exports.LOCAL = void 0;
 var dscc_1 = require("@google/dscc");
 var local = require("./localMessage");
 var FunnelGraph = require("funnel-graph-js");
-//when compiling some error due to FieldType enum not updated
+//when compiling some error due to FieldType not updated
 // change this to 'true' for local development
 // change this to 'false' before deploying
 exports.LOCAL = false;

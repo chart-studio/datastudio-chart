@@ -8,6 +8,7 @@
     "print": "printMessage.js"
   },
   "scripts": {
+    "prebuild:prod": "rimraf build && tsc ./src/index.ts",
     "prebuild:dev": "rimraf build && tsc ./src/index.ts",
     "build:dev": "dscc-scripts viz build -d dev",
     "build:prod": "dscc-scripts viz build -d prod",

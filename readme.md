@@ -1,3 +1,5 @@
+![This is an image](https://myoctocat.com/assets/images/base-octocat.svg)
+
 # 🔥 Welcome to Chart studio 🔥
 
 ## Presentation
