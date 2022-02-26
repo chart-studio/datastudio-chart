@@ -2,7 +2,7 @@
 
 # Welcome to Chart studio
 
-> More than a library, a samll community.
+> More than a library, a small community.
 
 - Visit [our website](https://chart-studio.com) to view our library.
 - Create your collection of charts.
