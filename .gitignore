@@ -20,7 +20,11 @@ server
 /funnel_one/data
 
 
-*/src/index.js
+/funnel_one/src/index.js
+/timebrush2/src/index.js
+/timebrush/src/index.js
+/scorecard/src/index.js
+
 /timebrush2/data
 /website/.next
 .vscode
