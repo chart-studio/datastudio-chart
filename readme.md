@@ -1,4 +1,4 @@
-![This is an image](chartstudio.JPG)
+<p align="center"><img src="chartstudio.JPG" /></p>
 
 # 🔥 Welcome to Chart studio 🔥
 
@@ -93,7 +93,7 @@ You can use whatever javascript library you want.
 
 devMode allow to use cache to serve data quickly
 
-#### Buil a d3js graph by example
+#### Build a d3js graph by example
 
 [Create custom javascript vizualisation in datastudio](https://codelabs.developers.google.com/codelabs/community-visualization#13)
 
