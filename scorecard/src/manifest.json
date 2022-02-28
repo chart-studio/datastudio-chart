@@ -1,0 +1,24 @@
+{
+  "name": "ChartStudio - Scorecards",
+  "organization": "ChartStudio",
+  "description": "Enhance capability of your dashbord",
+  "logoUrl": "https://www.chart-studio.com/logo/logo.png",
+  "organizationUrl": "https://www.chart-studio.com",
+  "supportUrl": "https://url",
+  "privacyPolicyUrl": "https://url",
+  "termsOfServiceUrl": "https://url",
+  "packageUrl": "https://url",
+  "devMode": "DEVMODE_BOOL",
+  "components": [
+    {
+      "name": "Scorecards",
+      "description": "Display meaningfull informations",
+      "iconUrl": "https://www.chart-studio.com/logo/logo.png",
+      "resource": {
+        "js": "YOUR_GCS_BUCKET/index.js",
+        "config": "YOUR_GCS_BUCKET/index.json",
+        "css": "YOUR_GCS_BUCKET/index.css"
+      }
+    }
+  ]
+}

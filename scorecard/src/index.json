@@ -1,0 +1,304 @@
+{
+  "data": [
+    {
+      "id": "TimeBrush",
+      "label": "Time brush",
+      "elements": [
+        {
+          "id": "date",
+          "label": "Date format (YYYYMMDD)",
+          "type": "DIMENSION",
+          "options": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        {
+          "id": "effectif",
+          "label": "effectif (number)",
+          "type": "METRIC",
+          "options": {
+            "min": 1,
+            "max": 4
+          }
+        }
+      ]
+    }
+  ],
+  "style": [
+    {
+      "id": "kpi",
+      "label": "KPI",
+      "elements": [
+        {
+          "type": "FILL_COLOR",
+          "id": "colorTitleDim",
+          "label": "Header title color",
+          "defaultValue": { "color": "#ffffff" }
+        },
+        {
+          "type": "CHECKBOX",
+          "id": "compactNumber",
+          "label": "Use compact numbers",
+          "defaultValue": true
+        },
+        {
+          "type": "INTERVAL",
+          "id": "decimalPrecisionMetric",
+          "label": "Decimal precision for metrics",
+          "defaultValue": 1,
+          "options": [
+            {
+              "min": 1,
+              "max": 4
+            }
+          ]
+        },
+        {
+          "type": "INTERVAL",
+          "id": "decimalPrecisionChangePercent",
+          "label": "Decimal precision for change",
+          "defaultValue": 1,
+          "options": [
+            {
+              "min": 1,
+              "max": 4
+            }
+          ]
+        },
+        {
+          "type": "TEXTINPUT",
+          "id": "currency",
+          "label": "Currency",
+          "defaultValue": "€"
+        },
+        {
+          "type": "SELECT_SINGLE",
+          "id": "missingData",
+          "label": "Missing data or infinite number",
+          "defaultValue": "-",
+          "options": [
+            {
+              "label": "Show \"-\"",
+              "value": "-"
+            },
+            {
+              "label": "Show \"No data\"",
+              "value": "No data"
+            },
+            {
+              "label": "Show \"0\"",
+              "value": "0"
+            },
+            {
+              "label": "Leave blank",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "type": "FILL_COLOR",
+          "id": "colorSumRecap",
+          "label": "Color number",
+          "defaultValue": { "color": "#D3D3D3" }
+        },
+        {
+          "type": "FONT_SIZE",
+          "id": "fontSizeSumRecap",
+          "label": "Font size number",
+          "defaultValue": 24
+        },
+        {
+          "type": "CHECKBOX",
+          "id": "boldNumber",
+          "label": "Bold number",
+          "defaultValue": true
+        }
+      ]
+    },
+    {
+      "id": "colorBars",
+      "label": "Bars colors",
+      "elements": [
+        {
+          "type": "FILL_COLOR",
+          "id": "colorBar",
+          "label": "Color bars",
+          "defaultValue": { "color": "#D3D3D3" }
+        }
+      ]
+    },
+    {
+      "id": "colorCards",
+      "label": "Cards colors",
+      "elements": [
+        {
+          "type": "FILL_COLOR",
+          "id": "colorHeader",
+          "label": "Color header",
+          "defaultValue": { "color": "#4682B4" }
+        },
+        {
+          "type": "FILL_COLOR",
+          "id": "colorBackg",
+          "label": "Color background",
+          "defaultValue": { "color": "#D3D3D3" }
+        }
+      ]
+    },
+    {
+      "id": "styleGen",
+      "label": "General style",
+      "elements": [
+        {
+          "type": "FONT_FAMILY",
+          "id": "fontFamily",
+          "label": "Font Family",
+          "defaultValue": "Open Sans"
+        },
+        {
+          "type": "FONT_SIZE",
+          "id": "fontSize",
+          "label": "Metric number size",
+          "defaultValue": 12
+        },
+
+        {
+          "type": "INTERVAL",
+          "id": "horizontalGap",
+          "label": "Horizontal gap between cards",
+          "defaultValue": 15,
+          "options": [
+            {
+              "max": 0,
+              "min": 1000
+            }
+          ]
+        },
+        {
+          "type": "INTERVAL",
+          "id": "verticalGap",
+          "label": "Vertical gap between cards",
+          "defaultValue": 10,
+          "options": [
+            {
+              "max": 0,
+              "min": 1000
+            }
+          ]
+        },
+        {
+          "type": "CHECKBOX",
+          "id": "addBorder",
+          "label": "Add border",
+          "defaultValue": false
+        }
+      ]
+    },
+    {
+      "id": "compareVals",
+      "label": "Comparison values",
+      "elements": [
+        {
+          "type": "FONT_COLOR",
+          "id": "fillSvgNeg",
+          "label": "Color negative values",
+          "defaultValue": { "color": "#b30000" }
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "fillSvgPositiv",
+          "label": "Color positiv values",
+          "defaultValue": { "color": "#00b300" }
+        },
+        {
+          "type": "TEXTINPUT",
+          "id": "textToIllustrate",
+          "label": "Comaparison text",
+          "defaultValue": "Last period 30days"
+        },
+        {
+          "type": "CHECKBOX",
+          "id": "positionTextStartToIllustrate",
+          "label": "Comparison Text position on left",
+          "defaultValue": false
+        },
+        {
+          "type": "FONT_SIZE",
+          "id": "fontSizeTextToIllustrate",
+          "label": "Font size comparison text",
+          "defaultValue": 20
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorTextToIllustrate",
+          "label": "Color comparison text",
+          "defaultValue": { "color": "#222222" }
+        }
+      ]
+    },
+    {
+      "id": "infos",
+      "label": "Informations",
+      "elements": [
+        {
+          "type": "TEXTINPUT",
+          "id": "TitleText",
+          "label": "Title Text",
+          "defaultValue": "Add a title in style 212"
+        },
+        {
+          "type": "TEXTAREA",
+          "id": "DescText",
+          "label": "Description Text",
+          "defaultValue": "Add a description in style 212"
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorInfoBoxText",
+          "label": "Color text",
+          "defaultValue": { "color": "#808080" }
+        }
+      ]
+    },
+    {
+      "id": "colorButton",
+      "label": "Info Slide button (+)",
+      "elements": [
+        {
+          "type": "FONT_COLOR",
+          "id": "colorValueBack",
+          "label": "Background cross color",
+          "defaultValue": { "color": "#999999" }
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorValueCross",
+          "label": "Cross colors",
+          "defaultValue": { "color": "#fff" }
+        },
+        {
+          "type": "FONT_COLOR",
+          "id": "colorValueInfoBack",
+          "label": "Background color",
+          "defaultValue": { "color": "#fff" }
+        },
+        {
+          "type": "INTERVAL",
+          "id": "topPositionButton",
+          "label": "Position relative to top",
+          "defaultValue": 2,
+          "options": [
+            {
+              "max": 0,
+              "min": 50
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "features": {
+    "enableComparisonDateRange": true
+  }
+}

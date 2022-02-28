@@ -1,0 +1,72 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+server
+# dependencies
+/website2
+/website
+
+/website/node_modules
+/timebrush/node_modules
+/timebrush/data
+/timebrush/build
+
+/timebrush2/node_modules
+/funnel_one/node_modules
+/scorecard/node_modules
+/funnel_one/build
+/scorecard/build
+/scorecard/data
+
+/timebrush2/build
+/funnel_one/data
+
+
+/funnel_one/src/index.js
+/timebrush2/src/index.js
+/timebrush/src/index.js
+/scorecard/src/index.js
+
+localMessage.js
+
+/timebrush2/data
+/website/.next
+.vscode
+/test
+/Old_to_delete
+
+/.pnp
+.pnp.js
+
+*/data/2018 Movie Rankings.csv
+/data
+testt
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+yarn.lock
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
