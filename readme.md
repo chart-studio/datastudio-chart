@@ -12,7 +12,7 @@
 
 ## Want to contribute?
 
-- If you want to help us improve, take a minute to read the Contribution Guideline first.
+- If you want to help us improve, take a minute to read the [Contribution Guideline](CONTRIBUTING.md) first.
 - If you find a problem with a specific chart, please [open an issue](https://github.com/chart-studio/datastudio-chart/issues/new).
 
 ## Credits
